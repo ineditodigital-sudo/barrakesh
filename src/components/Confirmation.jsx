@@ -56,9 +56,6 @@ const Confirmation = ({ booking, onReset }) => {
                                 />
                                 <span className="font-mono text-[10px] tracking-widest mt-1">EST. 2024</span>
                             </div>
-                            <div className="border-2 border-black px-2 py-0.5 transform rotate-[-2deg]">
-                                <span className="font-bold text-xs uppercase tracking-wider">Pagado</span>
-                            </div>
                         </div>
 
                         {/* Barcode */}
@@ -69,6 +66,11 @@ const Confirmation = ({ booking, onReset }) => {
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Cliente</span>
                                 <span className="text-xl font-bold font-display uppercase tracking-wide">{booking?.customer?.name || 'TI'}</span>
+                            </div>
+                            {/* Location Row */}
+                            <div className="flex flex-col gap-1 mb-4">
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest text-primary">Sucursal</span>
+                                <span className="text-xl font-bold font-display uppercase tracking-wide">{booking?.location || 'CENTRO'}</span>
                             </div>
                             {/* Barber Row */}
                             <div className="flex flex-col gap-1">
@@ -114,8 +116,26 @@ const Confirmation = ({ booking, onReset }) => {
                     </div>
                 </div>
 
+                {/* Wallet Integration */}
+                <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                    <button className="flex-1 bg-black text-white py-3 px-4 rounded-xl flex items-center justify-center gap-3 border border-white/20 hover:bg-white/10 transition-colors">
+                        <span className="material-symbols-outlined">apple</span>
+                        <div className="flex flex-col items-start leading-tight">
+                            <span className="text-[10px] uppercase font-mono opacity-60">Add to</span>
+                            <span className="text-sm font-bold font-display">Apple Wallet</span>
+                        </div>
+                    </button>
+                    <button className="flex-1 bg-black text-white py-3 px-4 rounded-xl flex items-center justify-center gap-3 border border-white/20 hover:bg-white/10 transition-colors">
+                        <span className="material-symbols-outlined">wallet</span>
+                        <div className="flex flex-col items-start leading-tight">
+                            <span className="text-[10px] uppercase font-mono opacity-60">Add to</span>
+                            <span className="text-sm font-bold font-display">Google Wallet</span>
+                        </div>
+                    </button>
+                </div>
+
                 {/* Bottom Actions */}
-                <div className="mt-12 w-full max-w-sm flex flex-col items-center gap-4">
+                <div className="mt-8 w-full max-w-sm flex flex-col items-center gap-4">
                     <div className="flex items-center gap-2 opacity-60">
                         <span className="material-symbols-outlined text-white text-sm">info</span>
                         <p className="text-white font-mono text-[10px] uppercase">Muestra este ticket al llegar</p>

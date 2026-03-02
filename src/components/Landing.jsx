@@ -46,6 +46,15 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
     return (
         <div className="bg-background-dark text-text-main font-body antialiased selection:bg-primary selection:text-black">
+            {/* Status Ticker - Fixed at top edge */}
+            <div className="fixed top-0 left-0 right-0 z-[100] bg-primary text-black font-mono text-[10px] md:text-sm uppercase py-2 md:py-1 md:px-6 overflow-hidden border-b-2 border-black">
+                <div className="whitespace-nowrap animate-marquee font-bold tracking-[0.2em] flex items-center">
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                </div>
+            </div>
+
             <style>{`
                 html.lenis, html.lenis body {
                   height: auto;
@@ -91,47 +100,44 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         loop
                         muted
                         playsInline
-                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-125 brightness-50 opacity-60 transition-transform duration-[10s] hover:scale-105"
+                        preload="auto"
+                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-[0.75] opacity-80 transition-transform duration-[10s] hover:scale-105"
                     >
                         <source src="/Video Barrakesh Web.mp4" type="video/mp4" />
+                        {/* Fallback for Safari/Mobile if mp4 is picky */}
+                        Tu navegador no soporta videos.
                     </video>
-                    <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-[#111111]/70 md:via-[#111111]/30 to-transparent bottom-0 h-full"></div>
+                    <div className="absolute inset-0 bg-black/25 mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-[#111111]/60 md:via-[#111111]/20 to-transparent bottom-0 h-full"></div>
                 </div>
 
                 {/* Content Container */}
-                <div className="relative z-10 w-full md:w-1/2 flex flex-col justify-between h-full p-6 md:p-16">
-                    {/* Top Navigation / Header Area */}
-                    <header className="w-full pt-12 md:pt-0 flex flex-col items-center md:items-start">
-                        {/* Logo Stamp */}
-                        <div className="border-2 border-primary p-2 md:p-4 bg-black/80 backdrop-blur-md transform -rotate-1 hard-shadow md:shadow-[8px_8px_0px_#000000] mb-8 md:mb-16 animate-scale-in">
+                <div className="relative z-10 w-full md:w-1/2 flex flex-col justify-between h-full p-6 md:p-16 pt-24 pb-20">
+                    {/* Top Area: Logo */}
+                    <div className="flex justify-center md:justify-start">
+                        <div className="p-2 md:p-0 border-2 border-primary md:border-0 bg-black/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none transform md:-rotate-0 hard-shadow md:shadow-none animate-scale-in">
                             <img
                                 src="/LOGO-BARRAKESH-HORIZONTAL-TXT-BLANCO.png"
                                 alt="BARRAKESH"
-                                className="h-10 md:h-20 w-auto object-contain"
+                                className="h-14 md:h-36 w-auto object-contain"
                             />
                         </div>
+                    </div>
 
-                        {/* Desktop Headline */}
-                        <div className="hidden md:block mb-12 animate-fade-in-up [animation-delay:200ms]">
-                            <h2 className="font-display font-black text-7xl uppercase leading-[0.8] tracking-tighter italic text-white/90">
+                    {/* Middle Area: Headline */}
+                    <div className="flex-1 flex flex-col justify-center items-center md:items-start">
+                        <div className="animate-fade-in-up [animation-delay:200ms] text-center md:text-left">
+                            <h2 className="font-display font-black text-4xl md:text-7xl uppercase leading-[0.8] tracking-tighter italic text-white/90">
                                 NUEVO LOOK.<br />MISMO <span className="text-primary italic-none">FLOW.</span>
                             </h2>
-                            <p className="font-mono text-xs text-white/40 uppercase mt-6 tracking-[0.3em] border-l-2 border-primary pl-4">
+                            <p className="font-mono text-[10px] md:text-xs text-white/40 uppercase mt-6 tracking-[0.3em] md:border-l-2 border-primary md:pl-4 inline-block">
                                 Donde el estilo no se improvisa.<br />Se vive. 🔥
                             </p>
                         </div>
+                    </div>
 
-                        {/* Status Ticker */}
-                        <div className="w-full md:w-auto mt-6 bg-primary text-black font-mono text-sm uppercase py-1 md:px-6 overflow-hidden border-y-2 md:border-2 border-black relative transform rotate-1 md:-rotate-1 shadow-lg animate-fade-in-up [animation-delay:300ms]">
-                            <div className="whitespace-nowrap animate-marquee md:animate-none font-bold tracking-widest flex items-center">
-                                <span className="mx-4 md:mx-0 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA</span>
-                            </div>
-                        </div>
-                    </header>
-
-                    {/* Bottom Action Area */}
-                    <div className="w-full flex flex-col gap-4 md:max-w-md animate-fade-in-up [animation-delay:400ms]">
+                    {/* Bottom Area: Action Button */}
+                    <div className="w-full flex justify-center md:justify-start relative z-20 animate-fade-in-up [animation-delay:400ms] md:max-w-md">
                         <button
                             onClick={onBarberStart}
                             className="group relative w-full h-16 md:h-20 bg-primary text-black font-display text-xl md:text-3xl uppercase tracking-wider flex items-center justify-center overflow-hidden hard-shadow md:shadow-[6px_6px_0px_#000000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none transition-all active:scale-[0.99]"
@@ -141,42 +147,21 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                 Agenda tu cita 😎
                                 <span className="material-symbols-outlined text-2xl md:text-4xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </span>
-                            <div className="absolute top-0 right-0 w-3 h-3 bg-black transform rotate-45 translate-x-1.5 -translate-y-1.5"></div>
-                            <div className="absolute bottom-0 left-0 w-3 h-3 bg-black transform rotate-45 -translate-x-1.5 translate-y-1.5"></div>
                         </button>
-
-                        <div className="grid grid-cols-2 gap-4 mt-2">
-                            <button onClick={onBarberStart} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
-                                <span>Servicios</span>
-                                <span className="material-symbols-outlined text-sm md:text-xl text-primary">content_cut</span>
-                            </button>
-                            <button onClick={onBarberStart} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
-                                <span>Únete al Club</span>
-                                <span className="material-symbols-outlined text-sm md:text-xl text-primary">groups</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
-                {/* Right Side Decorative (Desktop) */}
-                <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden">
-                    <div className="opacity-10 border-2 border-white/20 p-12 rounded-full h-[30rem] w-[30rem] flex items-center justify-center animate-[spin_60s_linear_infinite] scale-0 animate-scale-in [animation-delay:600ms]">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rotate-45"></div>
-                        <img
-                            src="/LOGO-BARRAKESH-CUADRADO-TXT-BLANCO.png"
-                            alt=""
-                            className="w-48 h-48 object-contain opacity-50 grayscale invert"
-                        />
-                    </div>
-                    <div className="absolute bottom-12 right-12 text-right opacity-30 animate-fade-in-up [animation-delay:800ms]">
-                        <p className="font-mono text-[10px] uppercase tracking-[1em]">Terminal_Núcleo_v1.0.9</p>
-                    </div>
-                </div>
+                {/* Right Side Decorative (Desktop) Removed */}
             </section>
 
             {/* NUMERIALA & IDENTITY GROUPED */}
-            <section className="min-h-screen w-full flex flex-col justify-center snap-start bg-background-dark border-b border-white/10">
+            <section className="min-h-screen w-full flex flex-col justify-center snap-start bg-background-dark border-b border-white/10 relative overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <img src="/image 88.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" />
+                    <div className="absolute inset-0 bg-black/20"></div>
+                </div>
                 <motion.div
+                    className="relative z-10"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
@@ -226,7 +211,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                     <div className="flex-1 order-2 md:order-1">
                         <div className="relative aspect-video bg-surface overflow-hidden border border-white/10 hard-shadow">
                             <img
-                                src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop"
+                                src="/ESTUDIO/image 90.webp"
                                 alt="Studio"
                                 className="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
                             />
@@ -269,17 +254,20 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-surface/30">
                         {[
-                            { step: "01", title: "Corte Superior", desc: "Cada corte habla. Precisión y técnica para que quedes al 100.", icon: "content_cut" },
-                            { step: "02", title: "Barba con Actitud", desc: "Afeitado clásico y delineado fino. Actitud en cada trazado.", icon: "face" },
-                            { step: "03", title: "Experiencia Club", desc: "DJ sets, eventos y comunidad exclusiva. Esto es Barrakesh.", icon: "music_note" }
+                            { step: "01", title: "Corte Superior", desc: "Cada corte habla. Precisión y técnica para que quedes al 100.", icon: "content_cut", img: "/BARBER/image 91.webp" },
+                            { step: "02", title: "Barba con Actitud", desc: "Afeitado clásico y delineado fino. Actitud en cada trazado.", icon: "face", img: "/BARBER/image 92.webp" },
+                            { step: "03", title: "Experiencia Club", desc: "DJ sets, eventos y comunidad exclusiva. Esto es Barrakesh.", icon: "music_note", img: "/BARBER/image 93.webp" }
                         ].map((item, i) => (
-                            <div key={i} className="p-12 border-b md:border-b-0 md:border-r border-white/10 hover:bg-primary/5 transition-colors group">
-                                <div className="font-mono text-primary text-sm mb-8 flex justify-between items-center text-white/20 group-hover:text-primary transition-colors">
-                                    <span>#{item.step}</span>
-                                    <span className="material-symbols-outlined !text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</span>
+                            <div key={i} className="relative p-12 border-b md:border-b-0 md:border-r border-white/10 hover:bg-primary/5 transition-colors group overflow-hidden">
+                                <img src={item.img} className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-10 transition-opacity grayscale" alt="" />
+                                <div className="relative z-10">
+                                    <div className="font-mono text-primary text-sm mb-8 flex justify-between items-center text-white/20 group-hover:text-primary transition-colors">
+                                        <span>#{item.step}</span>
+                                        <span className="material-symbols-outlined !text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</span>
+                                    </div>
+                                    <h3 className="font-display text-3xl font-bold text-white uppercase mb-4 tracking-tight">{item.title}</h3>
+                                    <p className="text-white/40 font-mono text-sm leading-relaxed">{item.desc}</p>
                                 </div>
-                                <h3 className="font-display text-3xl font-bold text-white uppercase mb-4 tracking-tight">{item.title}</h3>
-                                <p className="text-white/40 font-mono text-sm leading-relaxed">{item.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -303,7 +291,10 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         <p className="font-mono text-lg font-bold uppercase mb-8">
                             No todos entran. Solo clientes. Accede a precios especiales, promociones exclusivas y eventos privados.
                         </p>
-                        <button onClick={onBarberStart} className="bg-black text-primary px-8 py-4 font-display font-black text-xl uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_#333]">
+                        <button
+                            onClick={() => window.open('https://wa.me/524495452271?text=Hola!%20Me%20interesa%20unirme%20al%20club%20Barrakesh%20🔥', '_blank')}
+                            className="bg-black text-primary px-8 py-4 font-display font-black text-xl uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_#333]"
+                        >
                             ¿Listo para ser parte?
                         </button>
                     </div>
@@ -317,18 +308,22 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
             {/* JOIN THE CREW SECTION */}
             <section id="join" className="min-h-screen w-full flex items-center snap-start py-32 px-6 relative bg-background-dark overflow-hidden border-y border-white/10">
+                <div className="absolute inset-0 z-0">
+                    <img src="/BARBER/image 91.webp" className="w-full h-full object-cover opacity-30 grayscale brightness-[0.7]" alt="" />
+                    <div className="absolute inset-0 bg-black/10"></div>
+                </div>
                 <motion.div
-                    className="max-w-6xl mx-auto text-center w-full"
+                    className="max-w-6xl mx-auto text-center w-full relative z-10"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.3 }}
                     variants={sectionVariants}
                 >
-                    <span className="text-white font-mono text-xs tracking-[0.8em] uppercase block mb-6 opacity-30">/// Reclutamiento Abierto</span>
+                    <span className="text-white font-mono text-xs tracking-[0.8em] uppercase block mb-6">/// Reclutamiento Abierto</span>
                     <h2 className="font-display text-6xl md:text-[10rem] font-black text-white uppercase leading-[0.7] tracking-tighter mb-12">
                         ÚNETE AL<br /><span className="text-primary italic">CREW.</span>
                     </h2>
-                    <p className="font-mono text-lg text-white/40 uppercase mb-16 max-w-2xl mx-auto tracking-widest leading-relaxed">
+                    <p className="font-mono text-lg text-white uppercase mb-16 max-w-2xl mx-auto tracking-widest leading-relaxed">
                         Buscamos barberos elite y productores con hambre de romperla. Si tienes la técnica y la actitud, aquí es tu lugar.
                     </p>
                     <div className="flex flex-col md:flex-row justify-center gap-6">
@@ -345,14 +340,14 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             {/* BRANCHES (SUCURSALES) SECTION */}
             <section id="branches" className="min-h-screen w-full flex flex-col justify-center snap-start py-12 md:py-24 px-6 bg-[#0a0a0a] overflow-y-auto no-scrollbar">
                 <div className="max-w-6xl mx-auto w-full">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-16 gap-4">
-                        <div>
+                    <div className="flex flex-col md:flex-row justify-between items-start mb-8 md:mb-16 gap-4">
+                        <div className="text-left">
                             <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-2 md:mb-4">/// Ubicaciones</span>
                             <h2 className="font-display text-4xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter">
-                                La<br /><span className="text-primary italic">Red</span>
+                                La <span className="text-primary italic">Red</span>
                             </h2>
                         </div>
-                        <div className="text-right hidden md:block">
+                        <div className="text-left hidden md:block">
                             <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed">
                                 Distribuidos por la jungla de asfalto.<br />Cáele a la estación más cercana. 💈
                             </p>
@@ -391,8 +386,18 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                         <span className="bg-primary text-black text-[10px] font-bold px-2 py-0.5 uppercase">Estado: Abierto</span>
                                         <span className="text-white/40 font-mono text-[10px]">{branch.dist}</span>
                                     </div>
-                                    <h3 className="font-display text-lg md:text-xl font-bold text-white uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{branch.name}</h3>
-                                    <p className="text-white/40 font-mono text-[8px] md:text-[10px] uppercase mb-4 md:mb-6 leading-relaxed">{branch.addr}</p>
+                                    <h3
+                                        className="font-display text-lg md:text-xl font-bold text-white uppercase tracking-tight mb-2 group-hover:text-primary transition-colors cursor-pointer"
+                                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.name + ' ' + branch.addr)}`, '_blank')}
+                                    >
+                                        {branch.name}
+                                    </h3>
+                                    <p
+                                        className="text-white/40 font-mono text-[8px] md:text-[10px] uppercase mb-4 md:mb-6 leading-relaxed cursor-pointer hover:text-white"
+                                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.addr)}`, '_blank')}
+                                    >
+                                        {branch.addr}
+                                    </p>
 
                                     <div className="space-y-2 md:space-y-4 pt-2 md:pt-4 border-t border-white/5">
                                         <div className="flex justify-between text-[10px] font-mono">
@@ -419,9 +424,13 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             </section>
 
             {/* FINAL CALL TO ACTION & FOOTER GROUPED */}
-            <section className="min-h-screen w-full flex flex-col snap-start bg-black overflow-y-auto no-scrollbar">
+            <section className="min-h-screen w-full flex flex-col snap-start bg-black overflow-y-auto no-scrollbar relative">
                 <div className="py-20 md:py-32 px-6 relative border-y border-primary/20 text-white/90">
-                    <div className="absolute inset-0 bg-noise opacity-30"></div>
+                    <div className="absolute inset-0 z-0">
+                        <img src="/BARBER/image 92.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" />
+                    </div>
+                    <div className="absolute inset-0 bg-black/20 z-[1]"></div>
+                    <div className="absolute inset-0 bg-noise opacity-30 z-[2]"></div>
                     <div className="relative z-10 max-w-4xl mx-auto text-center">
                         <h2 className="font-display text-4xl md:text-7xl font-black text-white uppercase leading-[0.85] tracking-tighter mb-8">
                             Si buscas buen estilo…<br /><span className="text-primary italic">La respuesta es Barrakesh.</span>
@@ -445,15 +454,19 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                     Ingeniería de precisión para el rebelde moderno. Establecido 2024. Especialistas con licencia.
                                 </p>
                                 <div className="flex gap-4">
-                                    {['facebook', 'instagram', 'twitter'].map(social => (
-                                        <div key={social} className="size-8 md:size-10 border border-white/10 flex items-center justify-center hover:border-primary cursor-pointer transition-colors group">
-                                            <img src={`https://cdn.simpleicons.org/${social}/white`} className="size-3 md:size-4 opacity-40 group-hover:opacity-100" />
-                                        </div>
+                                    {[
+                                        { name: 'facebook', url: 'https://www.facebook.com/BARRAKESH/' },
+                                        { name: 'instagram', url: 'https://www.instagram.com/barrakesh.ags/' },
+                                        { name: 'tiktok', url: 'https://www.tiktok.com/@barrakesh_barbershop' }
+                                    ].map(social => (
+                                        <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="size-8 md:size-10 border border-white/10 flex items-center justify-center hover:border-primary cursor-pointer transition-colors group">
+                                            <img src={`https://cdn.simpleicons.org/${social.name}/white`} className="size-3 md:size-4 opacity-40 group-hover:opacity-100" alt={social.name} />
+                                        </a>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 md:gap-8 col-span-1 md:col-span-2">
+                            <div className="grid grid-cols-1 gap-4 md:gap-8 col-span-1 md:col-span-2">
                                 <div>
                                     <h4 className="font-mono text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4 md:mb-8">Navegación</h4>
                                     <ul className="space-y-2 md:space-y-4 font-display text-lg md:text-2xl font-bold uppercase text-white/60">
@@ -465,24 +478,9 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                         <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('branches')}>Sucursales</li>
                                     </ul>
                                 </div>
-                                <div>
-                                    <h4 className="font-mono text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4 md:mb-8">Legal</h4>
-                                    <ul className="space-y-2 md:space-y-4 font-mono text-[8px] md:text-[10px] uppercase text-white/30 tracking-widest">
-                                        <li className="hover:text-white cursor-pointer">Privacidad</li>
-                                        <li className="hover:text-white cursor-pointer">Términos</li>
-                                        <li className="hover:text-white cursor-pointer">Reembolsos</li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
 
-                        <div className="pt-6 md:pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/20 font-mono text-[8px] md:text-[10px] uppercase tracking-widest">
-                            <span>© 2024 BARRAKESH_SYSTEMS.</span>
-                            <div className="flex gap-4 md:gap-8">
-                                <span>AGS_72°F</span>
-                                <span>ESTADO: OPERATIVO</span>
-                            </div>
-                        </div>
                     </div>
                 </footer>
             </section>

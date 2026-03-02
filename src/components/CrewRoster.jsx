@@ -24,7 +24,7 @@ const barbers = [
     }
 ];
 
-const CrewRoster = ({ onSelect, selectedBarber }) => {
+const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
     return (
         <div className="bg-background-dark font-display min-h-screen flex flex-col overflow-hidden relative selection:bg-primary selection:text-black">
             {/* Noise Texture Overlay */}
@@ -34,7 +34,7 @@ const CrewRoster = ({ onSelect, selectedBarber }) => {
             <header className="flex-none px-6 pt-8 pb-4 z-10 relative">
                 <div className="flex items-center justify-between mb-2">
                     <button
-                        onClick={() => window.location.reload()}
+                        onClick={onBack}
                         className="text-white hover:text-primary transition-colors duration-200"
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>

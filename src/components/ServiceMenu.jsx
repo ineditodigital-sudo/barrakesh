@@ -41,7 +41,7 @@ const services = [
     },
 ];
 
-const ServiceMenu = ({ onSelect, selectedService: initialSelected }) => {
+const ServiceMenu = ({ onSelect, onBack, selectedService: initialSelected }) => {
     const [selected, setSelected] = useState(initialSelected);
 
     const categories = [...new Set(services.map(s => s.category))];
@@ -57,7 +57,7 @@ const ServiceMenu = ({ onSelect, selectedService: initialSelected }) => {
                 <header className="sticky top-0 z-50 bg-[#111111]/95 backdrop-blur-sm border-b-2 border-primary pt-6 pb-4 px-5">
                     <div className="flex items-center justify-between mb-4">
                         <button
-                            onClick={() => window.location.reload()} // Simplified back to home
+                            onClick={onBack}
                             className="text-white hover:text-primary transition-colors"
                         >
                             <span className="material-symbols-outlined !text-3xl">arrow_back</span>

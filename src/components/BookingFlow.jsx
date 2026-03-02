@@ -39,9 +39,17 @@ const timeBlocks = [
     }
 ];
 
-const BookingFlow = ({ onComplete, booking }) => {
+const BookingFlow = ({ onComplete, onBack, booking }) => {
+    const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedDate, setSelectedDate] = useState(dates[0]);
     const [selectedTime, setSelectedTime] = useState(null);
+
+    const branches = [
+        { id: 1, name: "CENTRO", addr: "Madero 234" },
+        { id: 2, name: "PULGAS PANDAS", addr: "Univ. 1001" },
+        { id: 3, name: "ALTARIA", addr: "Blvd. Zacatecas" },
+        { id: 4, name: "VILLASUNCIÓN", addr: "S. Sur 220" },
+    ];
 
     const barber = booking?.barber || { name: "Kash", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjVGDclJ03HtJjhEY6sT6KueaFJU_KAkN31hOhCRfLwLmPzv_YRURdqMtKosR6vetPwImfMt_ERO3D7Dhw7qbeIaKvIV_qOs-8JvPD3zcdvqMlJMruutzUf4SiAIGeDNc36dICIuHQEAqGey-BKdCdgLq_gFeGvPCc2XIv8YUcj5TQqWkxPwiqseAUszCZXwA5UdXhgT8xToVYiivSJ9z5xm0XmmfsOTkfl0OV9FxydiIaZAo8i1NskqS3nWMo37pG3g9bcAJchQw" };
     const service = booking?.service || { name: "Skin Fade", price: 35 };
@@ -55,7 +63,7 @@ const BookingFlow = ({ onComplete, booking }) => {
             <header className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-sm border-b border-white/10 relative">
                 <div className="flex items-center justify-between p-4 h-16">
                     <button
-                        onClick={() => window.location.reload()}
+                        onClick={onBack}
                         className="flex items-center justify-center size-10 text-white hover:text-primary transition-colors"
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>
@@ -90,6 +98,29 @@ const BookingFlow = ({ onComplete, booking }) => {
                     </div>
 
                     {/* Date Selection */}
+                    {/* Location Selection */}
+                    <section className="animate-fade-in-up md:mt-4">
+                        <div className="px-4 mb-4">
+                            <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Sucursal</h2>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 px-4 pb-4">
+                            {branches.map((b) => {
+                                const isSelected = selectedLocation?.id === b.id;
+                                return (
+                                    <button
+                                        key={b.id}
+                                        onClick={() => setSelectedLocation(b)}
+                                        className={`p-4 border transition-all text-left group ${isSelected ? 'bg-primary border-primary text-black' : 'bg-surface border-white/10 text-white hover:border-white/30'}`}
+                                    >
+                                        <div className={`font-mono text-[8px] uppercase tracking-widest mb-1 ${isSelected ? 'text-black/60' : 'text-white/40'}`}>Sucursal</div>
+                                        <div className="font-display text-xl font-bold uppercase leading-none mb-1">{b.name}</div>
+                                        <div className={`font-mono text-[8px] uppercase ${isSelected ? 'text-black/60' : 'text-white/20'}`}>{b.addr}</div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </section>
+
                     <section className="mt-8 animate-fade-in-up [animation-delay:100ms]">
                         <div className="px-4 mb-4 flex justify-between items-end">
                             <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Fecha</h2>
@@ -171,6 +202,10 @@ const BookingFlow = ({ onComplete, booking }) => {
                         </div>
 
                         <div className="space-y-4">
+                            <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2 text-primary">
+                                <span className="text-white/60 text-xs font-mono uppercase">Sucursal</span>
+                                <span className="font-bold uppercase">{selectedLocation?.name || '---'}</span>
+                            </div>
                             <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2">
                                 <span className="text-white/60 text-xs font-mono uppercase">Servicio</span>
                                 <span className="text-white font-bold uppercase">{service.name}</span>
@@ -191,9 +226,9 @@ const BookingFlow = ({ onComplete, booking }) => {
                                 <span className="text-primary text-4xl font-display font-black">${service.price.toFixed(2)}</span>
                             </div>
                             <button
-                                disabled={!selectedTime}
-                                onClick={() => onComplete({ date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
-                                className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime ? 'bg-primary text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
+                                disabled={!selectedTime || !selectedLocation}
+                                onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
+                                className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime && selectedLocation ? 'bg-primary text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
                             >
                                 <span>LOCKED IN 🔥</span>
                                 <span className="material-symbols-outlined !text-3xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
@@ -217,9 +252,9 @@ const BookingFlow = ({ onComplete, booking }) => {
                         </span>
                     </div>
                     <button
-                        disabled={!selectedTime}
-                        onClick={() => onComplete({ date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
-                        className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime ? 'bg-primary text-black hover:bg-white' : 'bg-surface text-white/20 cursor-not-allowed'
+                        disabled={!selectedTime || !selectedLocation}
+                        onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
+                        className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime && selectedLocation ? 'bg-primary text-black hover:bg-white' : 'bg-surface text-white/20 cursor-not-allowed'
                             }`}
                     >
                         <span>ASEGURAR EL FLOW 🔥</span>

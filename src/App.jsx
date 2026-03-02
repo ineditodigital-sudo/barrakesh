@@ -54,7 +54,7 @@ const App = () => {
       time: null,
       customer: { name: '', phone: '' }
     });
-    setView('INTENT');
+    setView('LANDING');
   };
 
   // Hidden way to enter dashboard for this demo: triple tap bottom right or just a simple toggle for now
@@ -77,6 +77,7 @@ const App = () => {
       {view === 'SERVICES' && (
         <ServiceMenu
           onSelect={handleServiceSelect}
+          onBack={reset}
           selectedService={booking.service}
         />
       )}
@@ -84,6 +85,7 @@ const App = () => {
       {view === 'CREW' && (
         <CrewRoster
           onSelect={handleBarberSelect}
+          onBack={() => setView('SERVICES')}
           selectedBarber={booking.barber}
         />
       )}
@@ -91,6 +93,7 @@ const App = () => {
       {view === 'BOOKING' && (
         <BookingFlow
           onComplete={handleBookingDateTime}
+          onBack={() => setView('CREW')}
           booking={booking}
         />
       )}
@@ -98,6 +101,7 @@ const App = () => {
       {view === 'CONTACT' && (
         <ContactInfo
           onComplete={handleContactComplete}
+          onBack={() => setView('BOOKING')}
           booking={booking}
         />
       )}

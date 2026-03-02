@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ContactInfo = ({ onComplete, booking }) => {
+const ContactInfo = ({ onComplete, onBack, booking }) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
 
@@ -12,6 +12,16 @@ const ContactInfo = ({ onComplete, booking }) => {
     return (
         <div className="min-h-screen bg-background-dark font-display selection:bg-primary selection:text-black flex flex-col items-center justify-center p-6 relative">
             <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+
+            {/* Back Button */}
+            <div className="absolute top-8 left-8 z-20">
+                <button
+                    onClick={onBack}
+                    className="text-white hover:text-primary transition-colors flex items-center gap-2 font-mono text-xs uppercase tracking-widest group"
+                >
+                    <span className="material-symbols-outlined !text-4xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                </button>
+            </div>
 
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary opacity-5 blur-[150px] rounded-full"></div>
