@@ -6,14 +6,30 @@
 
 @layer base {
   body {
-    @apply bg-background-dark text-text-main font-body antialiased;
+    @apply bg-[#050505] text-white font-sans antialiased;
     min-height: 100vh;
   }
 }
 
 @layer utilities {
-  .hard-shadow {
-    box-shadow: 4px 4px 0px #000000;
+  .font-sans {
+    font-family: 'Rubik', sans-serif;
+  }
+
+  .ios-glass {
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5;
+  }
+
+  .ios-card {
+    @apply bg-[#111] border border-white/[0.05] rounded-2xl shadow-xl;
+  }
+
+  .ios-button {
+    @apply rounded-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center;
+  }
+
+  .ios-input {
+    @apply bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 focus:bg-white/[0.06] focus:border-primary/40 outline-none transition-all text-sm;
   }
 
   .hard-shadow-sm {

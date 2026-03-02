@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './components/Landing';
 import ServiceMenu from './components/ServiceMenu';
 import CrewRoster from './components/CrewRoster';
 import BookingFlow from './components/BookingFlow';
 import Confirmation from './components/Confirmation';
 import Dashboard from './components/Dashboard';
-import IntentSelection from './components/IntentSelection';
 import ContactInfo from './components/ContactInfo';
 import RecordingStudio from './components/RecordingStudio';
 import JoinTeam from './components/JoinTeam';
 
+// Admin Imports
+import { AuthProvider } from './admin/AuthContext';
+import Login from './admin/Login';
+import AdminLayout from './admin/AdminLayout';
+import AdminDashboard from './admin/AdminDashboard';
+import BarberManagement from './admin/BarberManagement';
+import GeneralAgenda from './admin/GeneralAgenda';
+import BarberAgenda from './admin/BarberAgenda';
+import BranchesManagement from './admin/BranchesManagement';
+import CustomerManagement from './admin/CustomerManagement';
+import AppointmentHistory from './admin/AppointmentHistory';
+import BarberProfile from './admin/BarberProfile';
+
 const App = () => {
-  const [view, setView] = useState('LANDING'); // LANDING, SERVICES, CREW, BOOKING, CONTACT, CONFIRMATION, DASHBOARD, STUDIO, JOIN
+  const [view, setView] = useState('LANDING');
   const [booking, setBooking] = useState({
     service: null,
     barber: null,
@@ -21,7 +34,6 @@ const App = () => {
   });
 
   const nextStep = (step) => setView(step);
-
   const handleBarberStart = () => nextStep('SERVICES');
   const handleStudioStart = () => nextStep('STUDIO');
   const handleJoinStart = () => nextStep('JOIN');
@@ -57,10 +69,7 @@ const App = () => {
     setView('LANDING');
   };
 
-  // Hidden way to enter dashboard for this demo: triple tap bottom right or just a simple toggle for now
-  const openDashboard = () => setView('DASHBOARD');
-
-  return (
+  const UserPlatform = () => (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-black">
       {view === 'LANDING' && (
         <Landing
@@ -71,7 +80,6 @@ const App = () => {
       )}
 
       {view === 'STUDIO' && <RecordingStudio onBack={reset} />}
-
       {view === 'JOIN' && <JoinTeam onBack={reset} />}
 
       {view === 'SERVICES' && (
@@ -112,22 +120,34 @@ const App = () => {
           onReset={reset}
         />
       )}
-
-      {view === 'DASHBOARD' && (
-        <Dashboard onExit={reset} />
-      )}
-
-      {/* Admin Secret Entry - Bottom Right Invisible Area */}
-      {view === 'LANDING' && (
-        <div
-          onClick={(e) => {
-            if (e.detail === 3) openDashboard(); // Triple click
-          }}
-          className="fixed bottom-0 right-0 w-16 h-16 z-[60] cursor-default"
-          title="Admin Access"
-        />
-      )}
     </div>
+  );
+
+  return (
+    <AuthProvider>
+      <Routes>
+        {/* User Facing App */}
+        <Route path="/" element={<UserPlatform />} />
+
+        {/* Admin Login */}
+        <Route path="/admin/login" element={<Login />} />
+
+        {/* Admin Platform */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="agenda" element={<GeneralAgenda />} />
+          <Route path="my-agenda" element={<BarberAgenda />} />
+          <Route path="barbers" element={<BarberManagement />} />
+          <Route path="branches" element={<BranchesManagement />} />
+          <Route path="customers" element={<CustomerManagement />} />
+          <Route path="profile" element={<BarberProfile />} />
+          <Route path="appointments" element={<AppointmentHistory />} />
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </AuthProvider>
   );
 };
 
