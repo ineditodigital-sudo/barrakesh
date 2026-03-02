@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barrakesh - Service Manifest</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FEE101", // Updated to match PRD "Caution Tape" Yellow
+                        "asphalt": "#111111", // Asphalt Black
+                        "concrete": "#1E1E1E", // Wet Concrete
+                        "chalk": "#F2F2F2", // Chalk White
+                        "steel": "#666666", // Steel Grey
+                        "spray-red": "#FF3333", // Spray Paint Red
+                        "background-light": "#f8f8f5", // Fallback
+                        "background-dark": "#111111", // Asphalt Black
+                    },
+                    fontFamily: {
+                        "stencil": ["Saira Stencil One", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"],
+                        "display": ["Space Grotesk", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E')",
+                        'hazard-stripe': "repeating-linear-gradient(45deg, #FEE101, #FEE101 10px, #000 10px, #000 20px)",
+                    },
+                    boxShadow: {
+                        'hard': '4px 4px 0px #000000',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for that raw feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FEE101;
+        }
+        
+        .clip-cut {
+            clip-path: polygon(
+                0 0, 
+                100% 0, 
+                100% calc(100% - 10px), 
+                calc(100% - 10px) 100%, 
+                0 100%
+            );
+        }
+
+        .checkbox-checked {
+            background-color: #FEE101;
+            border-color: #FEE101;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen font-display overflow-x-hidden relative selection:bg-primary selection:text-asphalt">
+<!-- Noise Texture Overlay -->
+<div class="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col min-h-screen max-w-md mx-auto bg-asphalt shadow-2xl border-x border-[#333]">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-asphalt/95 backdrop-blur-sm border-b-2 border-primary pt-6 pb-4 px-5">
+<div class="flex items-center justify-between mb-4">
+<button class="text-chalk hover:text-primary transition-colors">
+<span class="material-symbols-outlined !text-3xl">arrow_back</span>
+</button>
+<div class="flex flex-col items-end">
+<span class="text-primary font-mono text-xs tracking-widest">ORDER #4492</span>
+<span class="text-steel font-mono text-[10px]">STEP 2/5</span>
+</div>
+</div>
+<h1 class="text-chalk font-stencil text-4xl leading-[0.9] tracking-tighter uppercase mb-1">
+                Service<br/>Manifest
+            </h1>
+<p class="text-steel font-mono text-xs uppercase tracking-wide">Select procedure below</p>
+</header>
+<!-- Service List -->
+<main class="flex-1 p-5 flex flex-col gap-4 pb-32">
+<!-- Category: Cuts -->
+<div class="flex items-center gap-3 mb-2">
+<div class="h-[1px] bg-primary w-6"></div>
+<span class="text-primary font-mono text-xs tracking-widest uppercase">Hair Procedures</span>
+<div class="h-[1px] bg-[#333] flex-1"></div>
+</div>
+<!-- Card 1: Selected State -->
+<div class="group relative bg-concrete p-5 border-2 border-primary shadow-hard cursor-pointer transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-chalk font-display font-bold text-xl uppercase tracking-tight">Razor Fade</h3>
+<span class="bg-primary text-black text-[10px] font-bold px-1.5 py-0.5 font-mono uppercase">Pop</span>
+</div>
+<p class="text-steel font-mono text-xs leading-relaxed max-w-[200px]">Zero guard or foil shaver. Precision gradient. Straight razor finish.</p>
+</div>
+<div class="flex flex-col items-end gap-3">
+<span class="text-primary font-stencil text-2xl">$35</span>
+<div class="size-6 border-2 border-primary bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-black !text-lg font-bold">close</span>
+</div>
+</div>
+</div>
+<!-- Mechanical details -->
+<div class="absolute bottom-0 right-0 p-1 opacity-20">
+<span class="material-symbols-outlined text-white !text-4xl">cut</span>
+</div>
+</div>
+<!-- Card 2: Default State -->
+<div class="group relative bg-concrete p-5 border border-transparent border-b border-dashed border-b-[#444] hover:border-l-2 hover:border-l-white transition-all cursor-pointer active:scale-[0.98]">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h3 class="text-chalk font-display font-bold text-xl uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">Scissor Cut</h3>
+<p class="text-steel font-mono text-xs leading-relaxed max-w-[200px]">All shear work. Textured crop or classic flow. Wash &amp; style included.</p>
+</div>
+<div class="flex flex-col items-end gap-3">
+<span class="text-chalk group-hover:text-primary font-stencil text-2xl transition-colors">$40</span>
+<div class="size-6 border-2 border-[#444] group-hover:border-white flex items-center justify-center transition-colors">
+<!-- Empty for unselected -->
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Default State -->
+<div class="group relative bg-concrete p-5 border border-transparent border-b border-dashed border-b-[#444] hover:border-l-2 hover:border-l-white transition-all cursor-pointer active:scale-[0.98]">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h3 class="text-chalk font-display font-bold text-xl uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">Buzz Cut</h3>
+<p class="text-steel font-mono text-xs leading-relaxed max-w-[200px]">Single guard all over. Line up included. Quick &amp; clean.</p>
+</div>
+<div class="flex flex-col items-end gap-3">
+<span class="text-chalk group-hover:text-primary font-stencil text-2xl transition-colors">$25</span>
+<div class="size-6 border-2 border-[#444] group-hover:border-white flex items-center justify-center transition-colors">
+</div>
+</div>
+</div>
+</div>
+<!-- Category: Grooming -->
+<div class="flex items-center gap-3 mt-6 mb-2">
+<div class="h-[1px] bg-primary w-6"></div>
+<span class="text-primary font-mono text-xs tracking-widest uppercase">Grooming</span>
+<div class="h-[1px] bg-[#333] flex-1"></div>
+</div>
+<!-- Card 4: Default State -->
+<div class="group relative bg-concrete p-5 border border-transparent border-b border-dashed border-b-[#444] hover:border-l-2 hover:border-l-white transition-all cursor-pointer active:scale-[0.98]">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h3 class="text-chalk font-display font-bold text-xl uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">Beard Sculpt</h3>
+<p class="text-steel font-mono text-xs leading-relaxed max-w-[200px]">Hot towel prep. Oil treatment. Razor line up and shape.</p>
+</div>
+<div class="flex flex-col items-end gap-3">
+<span class="text-chalk group-hover:text-primary font-stencil text-2xl transition-colors">$25</span>
+<div class="size-6 border-2 border-[#444] group-hover:border-white flex items-center justify-center transition-colors">
+</div>
+</div>
+</div>
+</div>
+<!-- Card 5: Disabled State Example (Optional but good for completeness) -->
+<div class="group relative bg-concrete/40 p-5 border-b border-dashed border-b-[#333] opacity-60 pointer-events-none">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-steel font-display font-bold text-xl uppercase tracking-tight line-through">The Works</h3>
+<span class="border border-spray-red text-spray-red text-[9px] font-bold px-1 py-0 font-mono uppercase">Booked Out</span>
+</div>
+<p class="text-[#444] font-mono text-xs leading-relaxed max-w-[200px]">Full service cut + beard + facial.</p>
+</div>
+<div class="flex flex-col items-end gap-3">
+<span class="text-steel font-stencil text-2xl">$60</span>
+<div class="size-6 border-2 border-[#333] flex items-center justify-center">
+<span class="material-symbols-outlined text-[#444] !text-lg">block</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Footer Summary -->
+<div class="fixed bottom-0 left-0 w-full z-40 px-5 pb-6 pt-10 bg-gradient-to-t from-asphalt via-asphalt to-transparent pointer-events-none">
+<div class="max-w-md mx-auto pointer-events-auto">
+<!-- Summary Line -->
+<div class="flex justify-between items-end mb-3 px-1">
+<div class="flex flex-col">
+<span class="text-steel font-mono text-[10px] uppercase">Est. Total</span>
+<span class="text-primary font-stencil text-3xl leading-none">$35.00</span>
+</div>
+<span class="text-white font-mono text-xs mb-1">1 ITEM SELECTED</span>
+</div>
+<!-- Primary CTA Button -->
+<button class="w-full relative group bg-primary hover:bg-[#ffe63b] active:translate-y-1 transition-all">
+<!-- Hazard Stripe Deco -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-hazard-stripe opacity-50"></div>
+<div class="relative flex items-center justify-between px-6 py-4 border-2 border-primary bg-primary clip-cut">
+<span class="text-asphalt font-display font-black text-lg uppercase tracking-wider">Confirm Selection</span>
+<span class="material-symbols-outlined text-asphalt font-bold !text-2xl animate-pulse">arrow_forward</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</body></html>

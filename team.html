@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barrakesh - The Squad</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9dc06",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#050505", /* Overriding to match PRD "Void Black" */
+                        "surface-dark": "#1A1A1A",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Vertical text utility */
+        .writing-vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+        /* Text Outline Utility */
+        .text-outline {
+            -webkit-text-stroke: 1px #f9dc06; /* Primary color */
+            color: transparent;
+        }
+        .text-outline-white {
+            -webkit-text-stroke: 1px white;
+            color: transparent;
+        }
+        /* High contrast grayscale filter */
+        .img-brutal {
+            filter: grayscale(100%) contrast(120%) brightness(90%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-hidden selection:bg-primary selection:text-black">
+<!-- Header Section -->
+<header class="flex-none px-6 pt-8 pb-4 z-10 relative">
+<div class="flex items-center justify-between mb-2">
+<button class="text-white hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-size: 32px;">arrow_back</span>
+</button>
+<div class="flex gap-1">
+<div class="w-1 h-1 bg-primary rounded-full"></div>
+<div class="w-1 h-1 bg-neutral-700 rounded-full"></div>
+<div class="w-1 h-1 bg-neutral-700 rounded-full"></div>
+</div>
+</div>
+<h1 class="text-5xl font-bold text-white uppercase leading-[0.85] tracking-tighter">
+            Select<br/>
+<span class="text-primary">Fighter</span>
+</h1>
+<p class="text-neutral-400 text-xs font-mono uppercase mt-2 tracking-widest">/// Choose your barber</p>
+</header>
+<!-- Main Carousel Area -->
+<main class="flex-1 w-full overflow-x-auto snap-x snap-mandatory flex gap-6 px-6 items-center no-scrollbar pb-6 relative z-0">
+<!-- Card 1: ACTIVE (Kash) -->
+<div class="snap-center shrink-0 w-[80vw] h-[60vh] relative group cursor-pointer">
+<!-- Card Container -->
+<div class="absolute inset-0 bg-surface-dark rounded-sm overflow-hidden border border-neutral-800">
+<!-- Image Background -->
+<div class="absolute inset-0 bg-cover bg-center img-brutal transition-transform duration-700 group-hover:scale-105" data-alt="Intense portrait of a barber with tattoos and a fresh fade looking stoic" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBLgrqD8JRSoso5i_J9RPepkZYNZh7692WWxPJar-WkNUtKc9USsnyppiEjqiR6e9LXqDboycnkgJqbVmId6gAJhufkkKa2-bOTfy_Mz8kasLPBy5HZmStSwTmrxm0V22-yjFPQgpcsLIon3U4dCiTN0_hK5lXVr4J6J7fYfK9WmEECTLiPvOBst-KIC_5PPnJmfJxR9seaDAYtXgGyHLGiQ5Oz1wokSl2h8kjrNatOVhRR5jW69ycD0xDKPw_Fon909ks2KSFD7fs');">
+</div>
+<!-- Gradient Overlay for readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+<!-- Vertical Name (Left Side) -->
+<div class="absolute top-0 left-0 h-full w-20 flex items-center justify-center pointer-events-none z-10">
+<h2 class="writing-vertical text-8xl font-bold uppercase tracking-tighter text-outline drop-shadow-xl whitespace-nowrap">
+                        KASH
+                    </h2>
+</div>
+<!-- Status Indicator (Top Right) -->
+<div class="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1 border border-neutral-700 rounded-sm">
+<div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+<span class="text-white text-[10px] font-bold tracking-widest uppercase">LIVE</span>
+</div>
+<!-- Barber Stats / Details (Bottom Right) -->
+<div class="absolute bottom-20 right-4 text-right">
+<p class="text-neutral-400 text-[10px] font-mono uppercase mb-1">Spec</p>
+<p class="text-white text-lg font-bold uppercase leading-none">Fades ///</p>
+<p class="text-white text-lg font-bold uppercase leading-none">Lineups</p>
+</div>
+</div>
+<!-- Select Button (External to card for distinct tap area) -->
+<button class="absolute -bottom-6 left-0 right-0 h-14 bg-primary text-black font-bold text-lg uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-white transition-colors duration-200 border-2 border-transparent hover:border-primary -translate-y-6">
+<span>Select</span>
+<span class="material-symbols-outlined text-xl font-bold">arrow_forward</span>
+</button>
+</div>
+<!-- Card 2: INACTIVE (Jax) -->
+<div class="snap-center shrink-0 w-[80vw] h-[60vh] relative group opacity-70 grayscale">
+<!-- Card Container -->
+<div class="absolute inset-0 bg-surface-dark rounded-sm overflow-hidden border border-neutral-800">
+<!-- Image Background (Darker) -->
+<div class="absolute inset-0 bg-cover bg-center img-brutal brightness-50" data-alt="Moody portrait of a bearded barber with sunglasses in a dark studio" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDKggvCU8UeYT6V0IbhZuT8v4IerSC33clz1BFiAbEHn9cTC3ta_YQZOW-cVy-dKTJAHqfY9iQPKICKjDaQdmDJpYycugseT9RVwliCd5L_blOTWWGtBPRpXnEOObLbCgKmXYj0Ij4KkesMpXpNu6Mx3_Q5pen_6IA3sJPaiJqnO8BfKJY3JnDXvfsNw4GqRYRxpbfq0tbuSjiMZp_DFfN5Nai_RIF0h50GnbbHMk3pbGQiPi86f1eY2dzoRSgDzhU12Vo8uMniwhA');">
+</div>
+<!-- Vertical Name (Left Side) -->
+<div class="absolute top-0 left-0 h-full w-20 flex items-center justify-center pointer-events-none z-10">
+<h2 class="writing-vertical text-8xl font-bold uppercase tracking-tighter text-outline-white opacity-50 whitespace-nowrap">
+                        JAX
+                    </h2>
+</div>
+<!-- OFF DUTY Stamp -->
+<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+<div class="border-4 border-neutral-500 text-neutral-500 px-6 py-2 -rotate-12 text-4xl font-bold uppercase tracking-widest opacity-80 backdrop-blur-sm bg-black/30">
+                        Off Duty
+                    </div>
+</div>
+<!-- Status Indicator (Top Right) -->
+<div class="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1 border border-neutral-700 rounded-sm opacity-50">
+<div class="w-2 h-2 bg-neutral-500 rounded-full"></div>
+<span class="text-neutral-400 text-[10px] font-bold tracking-widest uppercase">AWAY</span>
+</div>
+</div>
+<!-- Disabled Button -->
+<button class="absolute -bottom-6 left-0 right-0 h-14 bg-neutral-800 text-neutral-500 font-bold text-lg uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed border-t border-neutral-700 -translate-y-6">
+<span>Unavailable</span>
+</button>
+</div>
+<!-- Card 3: ACTIVE (Rico) -->
+<div class="snap-center shrink-0 w-[80vw] h-[60vh] relative group cursor-pointer">
+<!-- Card Container -->
+<div class="absolute inset-0 bg-surface-dark rounded-sm overflow-hidden border border-neutral-800">
+<!-- Image Background -->
+<div class="absolute inset-0 bg-cover bg-center img-brutal transition-transform duration-700 group-hover:scale-105" data-alt="Close up portrait of a stylish barber with a durag looking confident" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDi_zO8TF93ZyE2qtxYd9z4eDkRi9hz_Lf3rlOCMWac8fZyOMRaBTNxBpN8kYDhiMwKOIiPNB0HJ-gRHniIjafEHg0qyLkDIeu-f85wkW_48FRd6Noo0_0dZF93aZpfVPwSZxpdVHe63XV4VY2vuQKaxTNBaxvQpmMn_Q4gbsiH5UMYkXoAsBO-cb46ojMh51ktIhWfqPKZNojUOSkKAELtshfq_tEm20i9juE4unFekNnexMm0ThAqHAYE8ZVwvFLAU8NqzqkRMgI');">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+<!-- Vertical Name -->
+<div class="absolute top-0 left-0 h-full w-20 flex items-center justify-center pointer-events-none z-10">
+<h2 class="writing-vertical text-8xl font-bold uppercase tracking-tighter text-outline drop-shadow-xl whitespace-nowrap">
+                        RICO
+                    </h2>
+</div>
+<!-- Status Indicator -->
+<div class="absolute top-4 right-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1 border border-neutral-700 rounded-sm">
+<div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+<span class="text-white text-[10px] font-bold tracking-widest uppercase">LIVE</span>
+</div>
+<!-- Barber Stats -->
+<div class="absolute bottom-20 right-4 text-right">
+<p class="text-neutral-400 text-[10px] font-mono uppercase mb-1">Spec</p>
+<p class="text-white text-lg font-bold uppercase leading-none">Scissor ///</p>
+<p class="text-white text-lg font-bold uppercase leading-none">Style</p>
+</div>
+</div>
+<!-- Select Button -->
+<button class="absolute -bottom-6 left-0 right-0 h-14 bg-primary text-black font-bold text-lg uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-white transition-colors duration-200 border-2 border-transparent hover:border-primary -translate-y-6">
+<span>Select</span>
+<span class="material-symbols-outlined text-xl font-bold">arrow_forward</span>
+</button>
+</div>
+<!-- Spacer for scroll padding -->
+<div class="snap-center shrink-0 w-6"></div>
+</main>
+<!-- Bottom Navigation / Stats Bar -->
+<div class="flex-none bg-surface-dark border-t border-neutral-800 px-6 py-4">
+<div class="flex justify-between items-center text-xs font-mono uppercase">
+<div class="text-neutral-500">
+<span class="text-primary mr-1">///</span> Availability
+            </div>
+<div class="flex gap-4">
+<div class="text-white">Today <span class="text-primary">4 slots</span></div>
+<div class="text-neutral-500">TMRW <span class="text-white">Full</span></div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Nav (from Original Component List - Modified for this specific screen context) -->
+<div class="relative flex w-full flex-col bg-background-dark border-t border-neutral-800">
+<div class="flex gap-2 bg-[#181711] px-4 pb-3 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#bbb79b] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#bbb79b] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">content_cut</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Services</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">groups</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Team</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#bbb79b] hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">calendar_month</span>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Bookings</p>
+</a>
+</div>
+<div class="h-5 bg-[#181711]"></div>
+</div>
+</body></html>

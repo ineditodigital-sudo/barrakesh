@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barrakesh - Raw Industrial Barbershop</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Saira+Stencil+One&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FEE101", // Caution Tape Yellow
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#111111", // Asphalt Black
+                        "surface": "#1E1E1E", // Wet Concrete
+                        "text-main": "#F2F2F2", // Chalk White
+                        "accent-red": "#FF3333", // Spray Paint Red
+                    },
+                    fontFamily: {
+                        "display": ["Saira Stencil One", "sans-serif"],
+                        "body": ["Space Grotesk", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px", // Brutalist
+                        "sm": "2px",
+                        "md": "4px",
+                        "lg": "8px",
+                    },
+                    backgroundImage: {
+                        'noise': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+                        'hazard-stripe': "repeating-linear-gradient(45deg, #000, #000 10px, #FEE101 10px, #FEE101 20px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            animation: marquee 15s linear infinite;
+        }
+        
+        /* Hard Shadow Utility */
+        .hard-shadow {
+            box-shadow: 4px 4px 0px #000000;
+        }
+        .hard-shadow-sm {
+            box-shadow: 2px 2px 0px #000000;
+        }
+        
+        /* Custom Scrollbar hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glitch effect for hover */
+        .hover-glitch:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-text-main font-body antialiased overflow-hidden h-screen w-full relative">
+<!-- Noise Texture Overlay -->
+<div class="fixed inset-0 pointer-events-none z-50 bg-noise opacity-40 mix-blend-overlay"></div>
+<!-- Main Container -->
+<main class="relative h-full w-full flex flex-col justify-between">
+<!-- Video Background Layer -->
+<div class="absolute inset-0 z-0 overflow-hidden">
+<!-- Simulated Video Background with Grayscale Filter -->
+<div class="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75" data-alt="Gritty black and white photo of a barber working in a shop" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfhFq9nwBUdKN8_zGwYY7VJq59KFXF-Zia9TtfDbWTcbQaof64buUXaL5LbUmXFPacCpROmaXQEMgpp3F91sS7dY4GjE7DTcqNODIcUFcAFlFNNveQ-2geKTuuRQiz9m1OOCuYdLL394hEl09xZEgVc_ZPqT49arfS6iYk_joUDSIRjsiwrnlYIO6h6vMDfUhuL0gXjljwJ42g1O07ttgNvKCgsluGMI6N577MYhAH1VOtOJ7Bfdog02ixQ_6aowsyO6R-lDTNdm8');">
+</div>
+<!-- Video Grain Overlay (Simulated) -->
+<div class="absolute inset-0 bg-black/20 mix-blend-multiply"></div>
+<!-- Bottom Gradient Fade for Readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/80 to-transparent bottom-0 h-full"></div>
+</div>
+<!-- Top Navigation / Header Area -->
+<header class="relative z-10 w-full pt-12 pb-4 flex flex-col items-center">
+<!-- Floating Menu Buttons (Absolute) -->
+<button class="absolute top-12 left-6 p-2 bg-black/40 border border-white/20 backdrop-blur-sm active:bg-primary active:text-black transition-colors hard-shadow-sm group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 transition-transform">menu</span>
+</button>
+<button class="absolute top-12 right-6 p-2 bg-black/40 border border-white/20 backdrop-blur-sm active:bg-primary active:text-black transition-colors hard-shadow-sm group">
+<span class="material-symbols-outlined text-2xl group-active:scale-90 transition-transform">person</span>
+</button>
+<!-- Logo Stamp -->
+<div class="border-2 border-primary px-4 py-2 bg-black/80 backdrop-blur-md transform -rotate-1 hard-shadow">
+<h1 class="font-display text-4xl tracking-tighter text-white uppercase select-none">
+                    BARRAKESH
+                </h1>
+</div>
+<!-- Status Ticker -->
+<div class="w-full mt-6 bg-primary text-black font-mono text-sm uppercase py-1 overflow-hidden border-y-2 border-black relative transform rotate-1 shadow-lg">
+<div class="whitespace-nowrap animate-marquee font-bold tracking-widest flex items-center">
+<span class="mx-4">/// OPEN TIL 9PM</span>
+<span class="mx-4">/// WALK-INS WELCOME</span>
+<span class="mx-4">/// CASH ONLY</span>
+<span class="mx-4">/// NO APPOINTMENT NO ENTRY</span>
+<span class="mx-4">/// RAW CUTS</span>
+<span class="mx-4">/// OPEN TIL 9PM</span>
+<span class="mx-4">/// WALK-INS WELCOME</span>
+<span class="mx-4">/// CASH ONLY</span>
+</div>
+</div>
+</header>
+<!-- Spacer for Layout Balance -->
+<div class="flex-grow relative z-10 flex flex-col items-center justify-center pointer-events-none">
+<!-- Center decorative element -->
+<div class="opacity-30 border border-white/30 p-8 rounded-full h-64 w-64 flex items-center justify-center">
+<div class="border border-primary/20 p-2 h-full w-full rounded-full animate-[spin_10s_linear_infinite]">
+<div class="w-2 h-2 bg-primary rounded-full absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Area -->
+<div class="relative z-20 w-full px-6 pb-10 flex flex-col gap-4">
+<!-- Info badges -->
+<div class="flex justify-between items-end mb-2">
+<div class="flex flex-col gap-1">
+<span class="bg-surface text-white/60 text-[10px] font-mono px-2 py-0.5 inline-block w-max border-l-2 border-primary">
+                        LOC: BROOKLYN, NY
+                    </span>
+<span class="bg-surface text-white/60 text-[10px] font-mono px-2 py-0.5 inline-block w-max border-l-2 border-primary">
+                        TEMP: 72°F
+                    </span>
+</div>
+<div class="text-right">
+<div class="text-primary font-display text-xl leading-none">EST. 2024</div>
+<div class="text-white/40 font-mono text-xs uppercase tracking-widest">Concrete Jungle</div>
+</div>
+</div>
+<!-- Primary CTA Button -->
+<button class="group relative w-full h-16 bg-primary text-black font-display text-xl uppercase tracking-wider flex items-center justify-center overflow-hidden hard-shadow hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none transition-all active:scale-[0.99]">
+<!-- Hazard Stripes (Hover Effect) -->
+<div class="absolute inset-0 bg-hazard-stripe opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+<span class="relative z-10 flex items-center gap-2 font-bold group-hover:tracking-[0.15em] transition-all">
+                    Get In The Chair
+                    <span class="material-symbols-outlined text-2xl font-bold">arrow_forward</span>
+</span>
+<!-- Corner Cut decoration -->
+<div class="absolute top-0 right-0 w-3 h-3 bg-black transform rotate-45 translate-x-1.5 -translate-y-1.5"></div>
+<div class="absolute bottom-0 left-0 w-3 h-3 bg-black transform rotate-45 -translate-x-1.5 translate-y-1.5"></div>
+</button>
+<!-- Secondary Links / Nav -->
+<div class="grid grid-cols-2 gap-4 mt-2">
+<button class="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs uppercase py-3 px-4 flex items-center justify-between hover:bg-white/10 transition-colors">
+<span>Services</span>
+<span class="material-symbols-outlined text-sm text-primary">content_cut</span>
+</button>
+<button class="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs uppercase py-3 px-4 flex items-center justify-between hover:bg-white/10 transition-colors">
+<span>The Crew</span>
+<span class="material-symbols-outlined text-sm text-primary">groups</span>
+</button>
+</div>
+<!-- Bottom decoration line -->
+<div class="w-full h-px bg-white/10 mt-4 flex items-center justify-center gap-1">
+<div class="w-1 h-1 bg-primary"></div>
+<div class="w-full h-px bg-white/10"></div>
+<div class="w-1 h-1 bg-primary"></div>
+</div>
+</div>
+</main>
+</body></html>

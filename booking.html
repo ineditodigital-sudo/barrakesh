@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barrakesh - Secure The Bag</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&amp;family=Thunder:wght@100..900&amp;display=swap" rel="stylesheet"/> <!-- Fallback for Thunder if not available -->
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FEE101", // Safety Yellow from PRD
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#050505", // Void Black from PRD
+                        "surface": "#1A1A1A",
+                    },
+                    fontFamily: {
+                        "display": ["Oswald", "sans-serif"], // Using Oswald as Thunder fallback
+                        "mono": ["Space Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px", // Sharp corners per PRD
+                        "sm": "0px",
+                        "md": "0px",
+                        "lg": "0px",
+                        "full": "9999px",
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Brutalist marquee effect */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-mono antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 bg-background-dark/90 backdrop-blur-sm border-b border-white/10">
+<div class="flex items-center justify-between p-4 h-16">
+<button class="flex items-center justify-center size-10 text-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">arrow_back</span>
+</button>
+<h1 class="font-display font-bold text-2xl tracking-tighter uppercase text-white">SECURE THE BAG</h1>
+<div class="size-10"></div> <!-- Spacer for alignment -->
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-1 bg-surface">
+<div class="h-full w-2/3 bg-primary"></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col pb-24">
+<!-- Barber Info Strip -->
+<div class="px-4 py-6 border-b border-white/10 bg-surface/50">
+<div class="flex items-center gap-4">
+<div class="relative size-14 overflow-hidden border border-white/20">
+<img alt="High contrast black and white portrait of barber Kash" class="object-cover w-full h-full grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjVGDclJ03HtJjhEY6sT6KueaFJU_KAkN31hOhCRfLwLmPzv_YRURdqMtKosR6vetPwImfMt_ERO3D7Dhw7qbeIaKvIV_qOs-8JvPD3zcdvqMlJMruutzUf4SiAIGeDNc36dICIuHQEAqGey-BKdCdgLq_gFeGvPCc2XIv8YUcj5TQqWkxPwiqseAUszCZXwA5UdXhgT8xToVYiivSJ9z5xm0XmmfsOTkfl0OV9FxydiIaZAo8i1NskqS3nWMo37pG3g9bcAJchQw"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-primary font-bold tracking-widest uppercase mb-1">Barber</span>
+<span class="font-display text-3xl font-bold uppercase leading-none tracking-tight">Kash</span>
+</div>
+<div class="ml-auto flex flex-col items-end">
+<span class="text-xs text-white/60 font-mono mb-1">Service</span>
+<span class="font-bold text-white uppercase text-sm border-b border-primary pb-0.5">Skin Fade</span>
+</div>
+</div>
+</div>
+<!-- Date Selection (Horizontal Scroll) -->
+<section class="mt-8">
+<div class="px-4 mb-4 flex justify-between items-end">
+<h2 class="font-display text-4xl font-bold uppercase text-white leading-none">Select Date</h2>
+<span class="text-xs font-mono text-primary animate-pulse">LIVE UPDATES</span>
+</div>
+<div class="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar snap-x snap-mandatory">
+<!-- Active Date -->
+<button class="snap-start shrink-0 w-20 h-24 bg-primary text-black flex flex-col items-center justify-center border-2 border-primary group relative">
+<span class="text-xs font-bold uppercase tracking-wider mb-1">Sep</span>
+<span class="font-display text-4xl font-bold leading-none">12</span>
+<span class="text-xs font-bold uppercase mt-1">Mon</span>
+<div class="absolute -bottom-1 -right-1 size-3 bg-black"></div>
+</button>
+<!-- Inactive Date -->
+<button class="snap-start shrink-0 w-20 h-24 bg-transparent text-white border border-white/20 hover:border-primary/50 flex flex-col items-center justify-center transition-colors">
+<span class="text-xs font-mono uppercase tracking-wider mb-1 opacity-60">Sep</span>
+<span class="font-display text-4xl font-bold leading-none">13</span>
+<span class="text-xs font-mono uppercase mt-1 opacity-60">Tue</span>
+</button>
+<!-- Inactive Date -->
+<button class="snap-start shrink-0 w-20 h-24 bg-transparent text-white border border-white/20 hover:border-primary/50 flex flex-col items-center justify-center transition-colors">
+<span class="text-xs font-mono uppercase tracking-wider mb-1 opacity-60">Sep</span>
+<span class="font-display text-4xl font-bold leading-none">14</span>
+<span class="text-xs font-mono uppercase mt-1 opacity-60">Wed</span>
+</button>
+<!-- Inactive Date -->
+<button class="snap-start shrink-0 w-20 h-24 bg-transparent text-white border border-white/20 hover:border-primary/50 flex flex-col items-center justify-center transition-colors">
+<span class="text-xs font-mono uppercase tracking-wider mb-1 opacity-60">Sep</span>
+<span class="font-display text-4xl font-bold leading-none">15</span>
+<span class="text-xs font-mono uppercase mt-1 opacity-60">Thu</span>
+</button>
+<!-- Inactive Date -->
+<button class="snap-start shrink-0 w-20 h-24 bg-transparent text-white border border-white/20 hover:border-primary/50 flex flex-col items-center justify-center transition-colors">
+<span class="text-xs font-mono uppercase tracking-wider mb-1 opacity-60">Sep</span>
+<span class="font-display text-4xl font-bold leading-none">16</span>
+<span class="text-xs font-mono uppercase mt-1 opacity-60">Fri</span>
+</button>
+<div class="w-4 shrink-0"></div> <!-- Padding end -->
+</div>
+</section>
+<!-- Marquee Separator -->
+<div class="my-6 border-y border-white/10 bg-surface py-2 marquee-container">
+<div class="marquee-content font-mono text-xs text-white/50 tracking-[0.2em] uppercase">
+                /// Select Time Slot /// Zone: EST /// No Refunds /// Select Time Slot /// Zone: EST /// No Refunds /// Select Time Slot /// Zone: EST /// No Refunds ///
+            </div>
+</div>
+<!-- Time Grid -->
+<section class="px-4 flex-1">
+<h2 class="font-display text-4xl font-bold uppercase text-white mb-6">Availability</h2>
+<div class="grid grid-cols-3 gap-3">
+<!-- Morning Block -->
+<div class="col-span-3 text-xs text-white/40 font-mono uppercase tracking-widest mt-2 mb-1 pl-1">Morning</div>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">10:00</span>
+</button>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">10:45</span>
+</button>
+<!-- Available Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white text-white hover:bg-white hover:text-black transition-all duration-200">
+<span class="font-mono text-sm font-bold">11:30</span>
+</button>
+<!-- Afternoon Block -->
+<div class="col-span-3 text-xs text-white/40 font-mono uppercase tracking-widest mt-6 mb-1 pl-1">Afternoon</div>
+<!-- Available Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white text-white hover:bg-white hover:text-black transition-all duration-200">
+<span class="font-mono text-sm font-bold">13:00</span>
+</button>
+<!-- Selected Slot -->
+<button class="relative h-14 w-full flex items-center justify-center bg-primary text-black border-2 border-primary shadow-[0_0_15px_rgba(254,225,1,0.3)] z-10">
+<span class="font-mono text-sm font-bold">14:00</span>
+<!-- Selection Indicator Triangle -->
+<div class="absolute -top-1 -right-1 w-0 h-0 border-t-[8px] border-r-[8px] border-t-black border-r-transparent rotate-90"></div>
+</button>
+<!-- Available Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white text-white hover:bg-white hover:text-black transition-all duration-200">
+<span class="font-mono text-sm font-bold">14:45</span>
+</button>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">15:30</span>
+</button>
+<!-- Available Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white text-white hover:bg-white hover:text-black transition-all duration-200">
+<span class="font-mono text-sm font-bold">16:15</span>
+</button>
+<!-- Available Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white text-white hover:bg-white hover:text-black transition-all duration-200">
+<span class="font-mono text-sm font-bold">17:00</span>
+</button>
+<!-- Evening Block -->
+<div class="col-span-3 text-xs text-white/40 font-mono uppercase tracking-widest mt-6 mb-1 pl-1">Evening</div>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">18:00</span>
+</button>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">18:45</span>
+</button>
+<!-- Booked Slot -->
+<button class="group relative h-14 w-full flex items-center justify-center border border-white/10 bg-white/5 text-white/30 cursor-not-allowed" disabled="">
+<span class="font-mono text-sm font-bold line-through decoration-white/30">19:30</span>
+</button>
+</div>
+<div class="h-20"></div> <!-- Spacing for sticky footer -->
+</section>
+</main>
+<!-- Sticky Footer Action -->
+<div class="fixed bottom-0 left-0 w-full bg-background-dark border-t border-white/10 p-4 z-40">
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center text-xs font-mono uppercase text-white/60">
+<span>Total Due</span>
+<span>Includes Tax</span>
+</div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-white font-display text-2xl font-bold">$45.00</span>
+<span class="text-primary font-mono text-sm">MON 12 @ 14:00</span>
+</div>
+<button class="w-full bg-primary h-14 flex items-center justify-between px-6 text-black font-bold uppercase tracking-wider hover:bg-white transition-colors group">
+<span>CONFIRM BOOKING</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>
