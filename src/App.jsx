@@ -5,17 +5,26 @@ import CrewRoster from './components/CrewRoster';
 import BookingFlow from './components/BookingFlow';
 import Confirmation from './components/Confirmation';
 import Dashboard from './components/Dashboard';
+import IntentSelection from './components/IntentSelection';
+import ContactInfo from './components/ContactInfo';
+import RecordingStudio from './components/RecordingStudio';
+import JoinTeam from './components/JoinTeam';
 
 const App = () => {
-  const [view, setView] = useState('LANDING'); // LANDING, SERVICES, CREW, BOOKING, CONFIRMATION, DASHBOARD
+  const [view, setView] = useState('LANDING'); // LANDING, SERVICES, CREW, BOOKING, CONTACT, CONFIRMATION, DASHBOARD, STUDIO, JOIN
   const [booking, setBooking] = useState({
     service: null,
     barber: null,
     date: null,
-    time: null
+    time: null,
+    customer: { name: '', phone: '' }
   });
 
   const nextStep = (step) => setView(step);
+
+  const handleBarberStart = () => nextStep('SERVICES');
+  const handleStudioStart = () => nextStep('STUDIO');
+  const handleJoinStart = () => nextStep('JOIN');
 
   const handleServiceSelect = (service) => {
     setBooking(prev => ({ ...prev, service }));
@@ -27,14 +36,25 @@ const App = () => {
     nextStep('BOOKING');
   };
 
-  const handleBookingComplete = ({ date, time }) => {
+  const handleBookingDateTime = ({ date, time }) => {
     setBooking(prev => ({ ...prev, date, time }));
+    nextStep('CONTACT');
+  };
+
+  const handleContactComplete = (customer) => {
+    setBooking(prev => ({ ...prev, customer }));
     nextStep('CONFIRMATION');
   };
 
   const reset = () => {
-    setBooking({ service: null, barber: null, date: null, time: null });
-    setView('LANDING');
+    setBooking({
+      service: null,
+      barber: null,
+      date: null,
+      time: null,
+      customer: { name: '', phone: '' }
+    });
+    setView('INTENT');
   };
 
   // Hidden way to enter dashboard for this demo: triple tap bottom right or just a simple toggle for now
@@ -42,7 +62,17 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary selection:text-black">
-      {view === 'LANDING' && <Landing onNext={() => nextStep('SERVICES')} />}
+      {view === 'LANDING' && (
+        <Landing
+          onBarberStart={handleBarberStart}
+          onStudioStart={handleStudioStart}
+          onJoinStart={handleJoinStart}
+        />
+      )}
+
+      {view === 'STUDIO' && <RecordingStudio onBack={reset} />}
+
+      {view === 'JOIN' && <JoinTeam onBack={reset} />}
 
       {view === 'SERVICES' && (
         <ServiceMenu
@@ -60,7 +90,14 @@ const App = () => {
 
       {view === 'BOOKING' && (
         <BookingFlow
-          onComplete={handleBookingComplete}
+          onComplete={handleBookingDateTime}
+          booking={booking}
+        />
+      )}
+
+      {view === 'CONTACT' && (
+        <ContactInfo
+          onComplete={handleContactComplete}
           booking={booking}
         />
       )}

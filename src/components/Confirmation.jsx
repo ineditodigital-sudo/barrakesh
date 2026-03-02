@@ -16,15 +16,15 @@ const Confirmation = ({ booking, onReset }) => {
                 <div className="whitespace-nowrap animate-marquee flex gap-8 items-center font-mono font-bold text-sm tracking-widest text-black">
                     <span>GENERANDO TICKET...</span>
                     <span>///</span>
-                    <span>ASEGURA TU CITA</span>
+                    <span>ASEGURA EL FLOW 🔥</span>
                     <span>///</span>
-                    <span>CONFIRMANDO CITA</span>
+                    <span>LOCKED IN 🔥</span>
                     <span>///</span>
                     <span>GENERANDO TICKET...</span>
                     <span>///</span>
-                    <span>ASEGURA TU CITA</span>
+                    <span>ASEGURA EL FLOW 🔥</span>
                     <span>///</span>
-                    <span>CONFIRMANDO CITA</span>
+                    <span>LOCKED IN 🔥</span>
                     <span>///</span>
                 </div>
             </div>
@@ -33,8 +33,8 @@ const Confirmation = ({ booking, onReset }) => {
             <main className="flex-grow flex flex-col items-center justify-center px-4 relative mt-12 pb-20 z-10 overflow-hidden">
                 {/* Status Header */}
                 <div className="text-center mb-8 animate-fade-in-up">
-                    <h1 className="text-white text-5xl font-bold uppercase tracking-tighter leading-none mb-1">ASEGURADO</h1>
-                    <p className="text-primary font-mono text-xs tracking-[0.2em] uppercase">Cita Confirmada</p>
+                    <h1 className="text-white text-6xl font-black uppercase tracking-tighter leading-none mb-1">LOCKED IN <span className="text-primary italic-none">🔥</span></h1>
+                    <p className="text-primary font-mono text-[10px] tracking-[0.4em] uppercase">LISTO PA'L FLOW /// PASO 04</p>
                 </div>
 
                 {/* The Ticket Component */}
@@ -68,7 +68,7 @@ const Confirmation = ({ booking, onReset }) => {
                             {/* Client Row */}
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Cliente</span>
-                                <span className="text-xl font-bold font-display uppercase tracking-wide">Tú</span>
+                                <span className="text-xl font-bold font-display uppercase tracking-wide">{booking?.customer?.name || 'TI'}</span>
                             </div>
                             {/* Barber Row */}
                             <div className="flex flex-col gap-1">
@@ -125,7 +125,7 @@ const Confirmation = ({ booking, onReset }) => {
                         className="text-white font-display text-lg uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2 py-4 group"
                     >
                         <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">west</span>
-                        Volver al Inicio
+                        Volver al Club
                     </button>
                 </div>
             </main>

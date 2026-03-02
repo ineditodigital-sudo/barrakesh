@@ -60,7 +60,10 @@ const BookingFlow = ({ onComplete, booking }) => {
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>
                     </button>
-                    <h1 className="font-display font-bold text-2xl tracking-tighter uppercase text-white">ASEGURA TU CITA</h1>
+                    <div className="flex flex-col items-center">
+                        <h1 className="font-display font-bold text-2xl tracking-tighter uppercase text-white">ASEGURA EL FLOW</h1>
+                        <span className="text-steel font-mono text-[8px] uppercase tracking-widest leading-none mt-1">PASO 03</span>
+                    </div>
                     <div className="size-10"></div>
                 </div>
                 {/* Progress Bar */}
@@ -116,7 +119,7 @@ const BookingFlow = ({ onComplete, booking }) => {
                     {/* Marquee Separator */}
                     <div className="my-6 border-y border-white/10 bg-surface py-2 overflow-hidden whitespace-nowrap animate-fade-in-up [animation-delay:200ms]">
                         <div className="inline-block animate-marquee font-mono text-[10px] text-white/50 tracking-[0.2em] uppercase">
-            /// Seleccionar Horario /// Zona: EST /// Sin Reembolsos /// Seleccionar Horario /// Zona: EST /// Sin Reembolsos /// Seleccionar Horario /// Zona: EST /// Sin Reembolsos /// Seleccionar Horario /// Zona: EST /// Sin Reembolsos ///
+            /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO ///
                         </div>
                     </div>
 
@@ -192,7 +195,7 @@ const BookingFlow = ({ onComplete, booking }) => {
                                 onClick={() => onComplete({ date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
                                 className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime ? 'bg-primary text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
                             >
-                                <span>ASEGURAR CITA</span>
+                                <span>LOCKED IN 🔥</span>
                                 <span className="material-symbols-outlined !text-3xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </button>
                         </div>
@@ -219,7 +222,7 @@ const BookingFlow = ({ onComplete, booking }) => {
                         className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime ? 'bg-primary text-black hover:bg-white' : 'bg-surface text-white/20 cursor-not-allowed'
                             }`}
                     >
-                        <span>CONFIRMAR CITA</span>
+                        <span>ASEGURAR EL FLOW 🔥</span>
                         <span className="material-symbols-outlined !text-3xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </button>
                 </div>

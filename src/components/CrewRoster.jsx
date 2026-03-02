@@ -39,17 +39,15 @@ const CrewRoster = ({ onSelect, selectedBarber }) => {
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>
                     </button>
-                    <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-neutral-700"></div>
-                        <div className="w-1.5 h-1.5 bg-primary"></div>
-                        <div className="w-1.5 h-1.5 bg-neutral-700"></div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-steel font-mono text-[10px] uppercase">PASO 02</span>
                     </div>
                 </div>
                 <h1 className="text-5xl font-bold text-white uppercase leading-[0.85] tracking-tighter">
-                    Elegir<br />
-                    <span className="text-primary">Barbero</span>
+                    EL<br />
+                    <span className="text-primary">CREW</span>
                 </h1>
-                <p className="text-neutral-400 text-xs font-mono uppercase mt-2 tracking-widest">/// Escoge a tu especialista</p>
+                <p className="text-neutral-400 text-xs font-mono uppercase mt-2 tracking-widest">/// Selecciona tu especialista de flow 🔥</p>
             </header>
 
             {/* Main Carousel Area / Grid on Desktop */}
@@ -114,7 +112,7 @@ const CrewRoster = ({ onSelect, selectedBarber }) => {
                                     'bg-primary text-black hover:bg-white border-2 border-transparent hover:border-primary active:scale-95'
                                     }`}
                             >
-                                <span>{isAway ? 'No Disponible' : 'Seleccionar'}</span>
+                                <span>{isAway ? 'No Disponible' : 'ELEGIR ESTILO'}</span>
                                 {!isAway && <span className="material-symbols-outlined text-xl font-bold">arrow_forward</span>}
                             </button>
                         </div>

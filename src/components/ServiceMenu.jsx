@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const services = [
     {
         id: 1,
-        category: "Procedimientos de Cabello",
+        category: "MÉTELE AL CABELLO",
         name: "Fade a Navaja",
         price: 35,
         desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.",
@@ -11,28 +11,28 @@ const services = [
     },
     {
         id: 2,
-        category: "Procedimientos de Cabello",
+        category: "MÉTELE AL CABELLO",
         name: "Corte a Tijera",
         price: 40,
         desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido."
     },
     {
         id: 3,
-        category: "Procedimientos de Cabello",
+        category: "MÉTELE AL CABELLO",
         name: "Corte Rapado",
         price: 25,
         desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio."
     },
     {
         id: 4,
-        category: "Aseo Personal",
+        category: "BARBA Y MÁS",
         name: "Esculpido de Barba",
         price: 25,
         desc: "Toalla caliente. Tratamiento de aceite. Delineado a navaja y forma."
     },
     {
         id: 5,
-        category: "Aseo Personal",
+        category: "BARBA Y MÁS",
         name: "El Paquete Completo",
         price: 60,
         desc: "Corte completo + barba + facial.",
@@ -64,13 +64,13 @@ const ServiceMenu = ({ onSelect, selectedService: initialSelected }) => {
                         </button>
                         <div className="flex flex-col items-end">
                             <span className="text-primary font-mono text-xs tracking-widest uppercase">ORDEN #4492</span>
-                            <span className="text-steel font-mono text-[10px] uppercase">PASO 1/4</span>
+                            <span className="text-steel font-mono text-[10px] uppercase">PASO 01</span>
                         </div>
                     </div>
                     <h1 className="text-white font-display text-4xl leading-[0.9] tracking-tighter uppercase mb-1">
-                        Manifiesto de<br />Servicios
+                        EL ARSENAL
                     </h1>
-                    <p className="text-steel font-mono text-xs uppercase tracking-wide">Selecciona el procedimiento abajo</p>
+                    <p className="text-steel font-mono text-xs uppercase tracking-wide">Elige tu flow abajo</p>
                 </header>
 
                 {/* Service List */}
@@ -162,7 +162,7 @@ const ServiceMenu = ({ onSelect, selectedService: initialSelected }) => {
                             {/* Hazard Stripe Deco */}
                             <div className="absolute bottom-0 left-0 w-full h-1 bg-hazard-stripe opacity-50"></div>
                             <div className="relative flex items-center justify-between px-6 py-4 border-2 border-primary bg-primary overflow-hidden">
-                                <span className="text-black font-display font-black text-lg uppercase tracking-wider">Confirmar Selección</span>
+                                <span className="text-black font-display font-black text-lg uppercase tracking-wider">Confirmar Flow 🔥</span>
                                 <span className="material-symbols-outlined text-black font-bold !text-2xl animate-pulse">arrow_forward</span>
                             </div>
                         </button>

@@ -1,21 +1,102 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import Lenis from 'lenis';
 
-const Landing = ({ onNext }) => {
+const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
+    useEffect(() => {
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 1.5,
+            lerp: 0.1, // Smoothness intensity
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+        };
+    }, []);
+
+    const scrollToId = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const sectionVariants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        }
+    };
+
     return (
-        <div className="bg-background-dark text-text-main font-body antialiased selection:bg-primary selection:text-black min-h-screen overflow-x-hidden">
-            {/* Noise Texture Overlay */}
-            <div className="fixed inset-0 pointer-events-none z-50 bg-noise opacity-40 mix-blend-overlay"></div>
+        <div className="bg-background-dark text-text-main font-body antialiased selection:bg-primary selection:text-black">
+            <style>{`
+                html.lenis, html.lenis body {
+                  height: auto;
+                }
+                .lenis.lenis-smooth {
+                  scroll-behavior: auto !important;
+                }
+                .lenis.lenis-smooth [data-lenis-prevent] {
+                  overscroll-behavior: contain;
+                }
+                .lenis.lenis-stopped {
+                  overflow: hidden;
+                }
+                .lenis.lenis-scrolling iframe {
+                  pointer-events: none;
+                }
+                /* Snapping works better when managed by CSS on the root while Lenis handles delta */
+                html {
+                   scroll-behavior: auto !important;
+                }
+                section {
+                   min-height: 100vh;
+                   width: 100%;
+                }
+                /* Hidden scrollbar */
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
+            {/* Noise Texture Overlay (Fixed) */}
+            <div className="fixed inset-0 pointer-events-none z-[60] bg-noise opacity-40 mix-blend-overlay"></div>
 
             {/* HERO SECTION */}
-            <section className="relative h-screen w-full flex flex-col md:flex-row justify-between overflow-hidden border-b border-white/10">
-                {/* Video/Image Background Layer */}
-                <div className="absolute inset-0 z-0 overflow-hidden">
-                    <div
-                        className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75 transition-transform duration-[10s] hover:scale-110"
-                        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfhFq9nwBUdKN8_zGwYY7VJq59KFXF-Zia9TtfDbWTcbQaof64buUXaL5LbUmXFPacCpROmaXQEMgpp3F91sS7dY4GjE7DTcqNODIcUFcAFlFNNveQ-2geKTuuRQiz9m1OOCuYdLL394hEl09xZEgVc_ZPqT49arfS6iYk_joUDSIRjsiwrnlYIO6h6vMDfUhuL0gXjljwJ42g1O07ttgNvKCgsluGMI6N577MYhAH1VOtOJ7Bfdog02ixQ_6aowsyO6R-lDTNdm8')" }}
-                    />
-                    <div className="absolute inset-0 bg-black/20 mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-[#111111]/80 md:via-[#111111]/40 to-transparent bottom-0 h-full"></div>
+            <section id="hero" className="relative h-screen w-full flex flex-col md:flex-row justify-between overflow-hidden border-b border-white/10 shrink-0">
+                {/* Video Background Layer */}
+                <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-125 brightness-50 opacity-60 transition-transform duration-[10s] hover:scale-105"
+                    >
+                        <source src="/Video Barrakesh Web.mp4" type="video/mp4" />
+                    </video>
+                    <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-[#111111]/70 md:via-[#111111]/30 to-transparent bottom-0 h-full"></div>
                 </div>
 
                 {/* Content Container */}
@@ -33,11 +114,11 @@ const Landing = ({ onNext }) => {
 
                         {/* Desktop Headline */}
                         <div className="hidden md:block mb-12 animate-fade-in-up [animation-delay:200ms]">
-                            <h2 className="font-display font-black text-6xl uppercase leading-[0.8] tracking-tighter italic text-white/90">
-                                CORTES<br />INDUSTRIALES<br /><span className="text-primary italic-none">CRUDOS</span>
+                            <h2 className="font-display font-black text-7xl uppercase leading-[0.8] tracking-tighter italic text-white/90">
+                                NUEVO LOOK.<br />MISMO <span className="text-primary italic-none">FLOW.</span>
                             </h2>
                             <p className="font-mono text-xs text-white/40 uppercase mt-6 tracking-[0.3em] border-l-2 border-primary pl-4">
-                                Ingeniería de Precisión <br />para el Rebelde Moderno
+                                Donde el estilo no se improvisa.<br />Se vive. 🔥
                             </p>
                         </div>
 
@@ -52,12 +133,12 @@ const Landing = ({ onNext }) => {
                     {/* Bottom Action Area */}
                     <div className="w-full flex flex-col gap-4 md:max-w-md animate-fade-in-up [animation-delay:400ms]">
                         <button
-                            onClick={onNext}
+                            onClick={onBarberStart}
                             className="group relative w-full h-16 md:h-20 bg-primary text-black font-display text-xl md:text-3xl uppercase tracking-wider flex items-center justify-center overflow-hidden hard-shadow md:shadow-[6px_6px_0px_#000000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none transition-all active:scale-[0.99]"
                         >
                             <div className="absolute inset-0 bg-hazard-stripe opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                             <span className="relative z-10 flex items-center gap-2 font-bold group-hover:tracking-[0.15em] transition-all">
-                                Súbete a la silla
+                                Agenda tu cita 😎
                                 <span className="material-symbols-outlined text-2xl md:text-4xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </span>
                             <div className="absolute top-0 right-0 w-3 h-3 bg-black transform rotate-45 translate-x-1.5 -translate-y-1.5"></div>
@@ -65,12 +146,12 @@ const Landing = ({ onNext }) => {
                         </button>
 
                         <div className="grid grid-cols-2 gap-4 mt-2">
-                            <button onClick={onNext} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
+                            <button onClick={onBarberStart} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
                                 <span>Servicios</span>
                                 <span className="material-symbols-outlined text-sm md:text-xl text-primary">content_cut</span>
                             </button>
-                            <button onClick={onNext} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
-                                <span>El Equipo</span>
+                            <button onClick={onBarberStart} className="bg-surface/80 backdrop-blur-sm border border-white/10 text-white font-mono text-xs md:text-sm uppercase py-3 md:py-5 px-4 flex items-center justify-between hover:bg-white/10 transition-colors shadow-hard">
+                                <span>Únete al Club</span>
                                 <span className="material-symbols-outlined text-sm md:text-xl text-primary">groups</span>
                             </button>
                         </div>
@@ -93,38 +174,104 @@ const Landing = ({ onNext }) => {
                 </div>
             </section>
 
-            {/* NUMERIALA (STATS) SECTION */}
-            <section className="py-20 px-6 bg-[#0a0a0a] border-b border-white/10 overflow-hidden">
-                <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {[
-                        { val: "4.9/5", label: "Calificación" },
-                        { val: "10,000+", label: "Clientes felices" },
-                        { val: "4", label: "Sucursales" },
-                        { val: "15+", label: "Años de experiencia" }
-                    ].map((stat, i) => (
-                        <div key={i} className="text-center group border-l border-white/5 pl-4 hover:border-primary transition-colors">
-                            <div className="font-display text-4xl md:text-6xl font-black text-primary leading-none mb-2 tracking-tighter group-active:scale-95 transition-transform">{stat.val}</div>
-                            <div className="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-[0.2em]">{stat.label}</div>
+            {/* NUMERIALA & IDENTITY GROUPED */}
+            <section className="min-h-screen w-full flex flex-col justify-center snap-start bg-background-dark border-b border-white/10">
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={sectionVariants}
+                >
+                    {/* NUMERIALA (STATS) */}
+                    <div className="py-12 px-6 bg-[#0a0a0a] border-y border-white/5 overflow-hidden">
+                        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+                            {[
+                                { val: "4.9/5", label: "Rating Real" },
+                                { val: "10k+", label: "Fieles al Club" },
+                                { val: "4", label: "Estaciones" },
+                                { val: "15+", label: "Años rompiéndola" }
+                            ].map((stat, i) => (
+                                <div key={i} className="text-center group border-l border-white/5 pl-4 hover:border-primary transition-colors">
+                                    <div className="font-display text-4xl md:text-6xl font-black text-primary leading-none mb-2 tracking-tighter group-active:scale-95 transition-transform">{stat.val}</div>
+                                    <div className="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-[0.2em]">{stat.label}</div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </div>
+
+                    {/* IDENTITY */}
+                    <div className="py-20 px-6 overflow-hidden text-white/90">
+                        <div className="max-w-4xl mx-auto text-center">
+                            <h2 className="font-display text-4xl md:text-7xl font-black text-white uppercase leading-none mb-8 tracking-tighter">
+                                Aquí se arma el <span className="text-primary italic">estilo.</span>
+                            </h2>
+                            <p className="font-mono text-lg md:text-xl text-white/60 leading-relaxed uppercase">
+                                Barrakesh es más que una barbería. 💈 Es un punto de encuentro, es música, es cultura urbana y es imagen con actitud. Cáele y queda fino. 🔥
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* RECORDING STUDIO SECTION */}
+            <section id="studio" className="min-h-screen w-full flex items-center snap-start relative bg-black overflow-hidden border-b border-white/10 py-12 px-6">
+                <div className="absolute inset-0 bg-blue-500/5 opacity-40"></div>
+                <motion.div
+                    className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-16"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={sectionVariants}
+                >
+                    <div className="flex-1 order-2 md:order-1">
+                        <div className="relative aspect-video bg-surface overflow-hidden border border-white/10 hard-shadow">
+                            <img
+                                src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop"
+                                alt="Studio"
+                                className="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
+                            />
+                            <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay"></div>
+                        </div>
+                    </div>
+                    <div className="flex-1 order-1 md:order-2">
+                        <span className="text-[#00ccff] font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// El Laboratorio</span>
+                        <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter mb-8">
+                            Barrakesh<br /><span className="text-[#00ccff] italic">Studio.</span>
+                        </h2>
+                        <p className="font-mono text-lg text-white/40 uppercase mb-10 leading-relaxed border-l-2 border-[#00ccff] pl-6">
+                            Captura tu flow en nuestra cabina profesional. Sonido cristalino, beats a medida y la actitud de la calle en cada toma.
+                        </p>
+                        <button
+                            onClick={onStudioStart}
+                            className="bg-[#00ccff] text-black px-10 py-5 font-display font-black text-xl uppercase tracking-widest hover:translate-y-[-4px] transition-all shadow-[6px_6px_0px_#003344] active:shadow-none active:translate-y-0"
+                        >
+                            Reservar Estudio 🎙️
+                        </button>
+                    </div>
+                </motion.div>
             </section>
 
             {/* HOW IT WORKS SECTION */}
-            <section className="py-24 px-6 relative overflow-hidden bg-background-dark">
-                <div className="max-w-6xl mx-auto">
+            <section id="services" className="min-h-screen w-full flex items-center snap-start py-24 px-6 relative overflow-hidden bg-background-dark border-b border-white/10">
+                <motion.div
+                    className="max-w-6xl mx-auto w-full"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={sectionVariants}
+                >
                     <div className="mb-20">
-                        <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// El Proceso</span>
+                        <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// Armamos tu Flow</span>
                         <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter italic">
-                            Cómo<br /><span className="text-primary not-italic">Obtener tu Corte</span>
+                            Cada detalle<br /><span className="text-primary not-italic">cuenta.</span>
                         </h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-surface/30">
                         {[
-                            { step: "01", title: "Seleccionar Servicio", desc: "Elige tu procedimiento del manifiesto. Fades, buzzes o el servicio completo.", icon: "content_cut" },
-                            { step: "02", title: "Elegir Barbero", desc: "Selecciona a tu especialista. Cada barbero tiene su propio estilo distintivo.", icon: "person_search" },
-                            { step: "03", title: "Asegurar Cita", desc: "Reserva tu horario y obtén tu ticket de confirmación digital.", icon: "confirmation_number" }
+                            { step: "01", title: "Corte Superior", desc: "Cada corte habla. Precisión y técnica para que quedes al 100.", icon: "content_cut" },
+                            { step: "02", title: "Barba con Actitud", desc: "Afeitado clásico y delineado fino. Actitud en cada trazado.", icon: "face" },
+                            { step: "03", title: "Experiencia Club", desc: "DJ sets, eventos y comunidad exclusiva. Esto es Barrakesh.", icon: "music_note" }
                         ].map((item, i) => (
                             <div key={i} className="p-12 border-b md:border-b-0 md:border-r border-white/10 hover:bg-primary/5 transition-colors group">
                                 <div className="font-mono text-primary text-sm mb-8 flex justify-between items-center text-white/20 group-hover:text-primary transition-colors">
@@ -136,34 +283,90 @@ const Landing = ({ onNext }) => {
                             </div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
+            </section>
+
+            {/* BARRAKESH CLUB SECTION */}
+            <section id="club" className="min-h-screen w-full flex items-center snap-start py-24 px-6 bg-primary text-black relative overflow-hidden">
+                <div className="absolute inset-0 bg-hazard-stripe opacity-10"></div>
+                <motion.div
+                    className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-12"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={sectionVariants}
+                >
+                    <div className="flex-1">
+                        <h2 className="font-display text-6xl md:text-8xl font-black uppercase leading-[0.8] tracking-tighter mb-6">
+                            BARRAKESH<br />CLUB 🔥
+                        </h2>
+                        <p className="font-mono text-lg font-bold uppercase mb-8">
+                            No todos entran. Solo clientes. Accede a precios especiales, promociones exclusivas y eventos privados.
+                        </p>
+                        <button onClick={onBarberStart} className="bg-black text-primary px-8 py-4 font-display font-black text-xl uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_#333]">
+                            ¿Listo para ser parte?
+                        </button>
+                    </div>
+                    <div className="flex-1 flex justify-center">
+                        <div className="border-[10px] border-black p-4 rotate-3 bg-white hard-shadow">
+                            <img src="/LOGO-BARRAKESH-CUADRADO-TXT-NEGRO.png" alt="Club" className="w-64 h-64 object-contain" />
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* JOIN THE CREW SECTION */}
+            <section id="join" className="min-h-screen w-full flex items-center snap-start py-32 px-6 relative bg-background-dark overflow-hidden border-y border-white/10">
+                <motion.div
+                    className="max-w-6xl mx-auto text-center w-full"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={sectionVariants}
+                >
+                    <span className="text-white font-mono text-xs tracking-[0.8em] uppercase block mb-6 opacity-30">/// Reclutamiento Abierto</span>
+                    <h2 className="font-display text-6xl md:text-[10rem] font-black text-white uppercase leading-[0.7] tracking-tighter mb-12">
+                        ÚNETE AL<br /><span className="text-primary italic">CREW.</span>
+                    </h2>
+                    <p className="font-mono text-lg text-white/40 uppercase mb-16 max-w-2xl mx-auto tracking-widest leading-relaxed">
+                        Buscamos barberos elite y productores con hambre de romperla. Si tienes la técnica y la actitud, aquí es tu lugar.
+                    </p>
+                    <div className="flex flex-col md:flex-row justify-center gap-6">
+                        <button
+                            onClick={onJoinStart}
+                            className="bg-white text-black font-display font-black text-2xl px-16 py-6 uppercase tracking-widest hover:bg-primary shadow-[6px_6px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-y-1 transition-all"
+                        >
+                            Aplicar Ahora ⚡
+                        </button>
+                    </div>
+                </motion.div>
             </section>
 
             {/* BRANCHES (SUCURSALES) SECTION */}
-            <section className="py-24 px-6 bg-[#0a0a0a]">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
+            <section id="branches" className="min-h-screen w-full flex flex-col justify-center snap-start py-12 md:py-24 px-6 bg-[#0a0a0a] overflow-y-auto no-scrollbar">
+                <div className="max-w-6xl mx-auto w-full">
+                    <div className="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-16 gap-4">
                         <div>
-                            <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// Ubicaciones</span>
-                            <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter">
+                            <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-2 md:mb-4">/// Ubicaciones</span>
+                            <h2 className="font-display text-4xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter">
                                 La<br /><span className="text-primary italic">Red</span>
                             </h2>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right hidden md:block">
                             <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed">
-                                Distribuidos por la jungla de asfalto.<br />Encuentra tu estación más cercana.
+                                Distribuidos por la jungla de asfalto.<br />Cáele a la estación más cercana. 💈
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                         {/* Map Container */}
-                        <div className="relative aspect-square md:aspect-video lg:aspect-square bg-surface border border-white/10 grayscale contrast-125 brightness-75 hover:grayscale-0 transition-all duration-700 overflow-hidden group">
+                        <div className="relative aspect-square md:aspect-video lg:aspect-square bg-surface border border-white/10 brightness-110 hover:brightness-100 transition-all duration-700 overflow-hidden group hidden md:block">
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d118497.1082142289!2d-102.378978018286!3d21.882315800000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8429ee671125879b%3A0xc3f8e584f27c444c!2sAguascalientes%2C%20Ags.!5e0!3m2!1ses-419!2smx!4v1709395200000!5m2!1ses-419!2smx"
                                 width="100%"
                                 height="100%"
-                                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(150%)' }}
+                                style={{ border: 0 }}
                                 allowFullScreen=""
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
@@ -180,18 +383,18 @@ const Landing = ({ onNext }) => {
                                 { name: "Barrakesh Altaria", addr: "Plaza Altaria, Blvd. a Zacatecas Nte. 849, Aguascalientes", dist: "4.4km", hours: "10:00 - 21:00", phone: "+52 449 234 5678" },
                                 { name: "Barrakesh Villasunción", addr: "Av. Aguascalientes Sur 220, Villasunción, Aguascalientes", dist: "4.8km", hours: "09:00 - 20:00", phone: "+52 449 345 6789" }
                             ].map((branch, i) => (
-                                <div key={i} className="bg-surface/50 border border-white/5 p-6 hover:border-primary transition-all group relative overflow-hidden">
+                                <div key={i} className="bg-surface/50 border border-white/5 p-4 md:p-6 hover:border-primary transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-20 transition-opacity">
                                         <span className="material-symbols-outlined !text-4xl text-primary">location_on</span>
                                     </div>
-                                    <div className="flex justify-between items-start mb-4">
+                                    <div className="flex justify-between items-start mb-2 md:mb-4">
                                         <span className="bg-primary text-black text-[10px] font-bold px-2 py-0.5 uppercase">Estado: Abierto</span>
                                         <span className="text-white/40 font-mono text-[10px]">{branch.dist}</span>
                                     </div>
-                                    <h3 className="font-display text-xl font-bold text-white uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{branch.name}</h3>
-                                    <p className="text-white/40 font-mono text-[10px] uppercase mb-6 leading-relaxed">{branch.addr}</p>
+                                    <h3 className="font-display text-lg md:text-xl font-bold text-white uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{branch.name}</h3>
+                                    <p className="text-white/40 font-mono text-[8px] md:text-[10px] uppercase mb-4 md:mb-6 leading-relaxed">{branch.addr}</p>
 
-                                    <div className="space-y-4 pt-4 border-t border-white/5">
+                                    <div className="space-y-2 md:space-y-4 pt-2 md:pt-4 border-t border-white/5">
                                         <div className="flex justify-between text-[10px] font-mono">
                                             <span className="text-white/20 uppercase tracking-widest">Horario</span>
                                             <span className="text-white/60">{branch.hours}</span>
@@ -203,8 +406,8 @@ const Landing = ({ onNext }) => {
                                     </div>
 
                                     <button
-                                        onClick={onNext}
-                                        className="mt-6 w-full py-3 bg-white/5 text-white/60 font-mono text-[10px] uppercase tracking-widest border border-white/10 hover:bg-primary hover:text-black hover:border-primary transition-all active:scale-95"
+                                        onClick={onBarberStart}
+                                        className="mt-4 md:mt-6 w-full py-2 md:py-3 bg-white/5 text-white/60 font-mono text-[8px] md:text-[10px] uppercase tracking-widest border border-white/10 hover:bg-primary hover:text-black hover:border-primary transition-all active:scale-95"
                                     >
                                         Reservar Aquí
                                     </button>
@@ -215,74 +418,74 @@ const Landing = ({ onNext }) => {
                 </div>
             </section>
 
-            {/* FINAL CALL TO ACTION */}
-            <section className="py-32 px-6 relative bg-primary overflow-hidden">
-                <div className="absolute inset-0 bg-hazard-stripe opacity-10"></div>
-                <div className="relative z-10 max-w-4xl mx-auto text-center">
-                    <h2 className="font-display text-6xl md:text-9xl font-black text-black uppercase leading-[0.85] tracking-tighter mb-12">
-                        Deja de<br />Verte Mal
-                    </h2>
-                    <button
-                        onClick={onNext}
-                        className="bg-black text-primary font-display text-2xl md:text-4xl px-12 py-6 uppercase font-black hover:tracking-widest transition-all duration-300 active:scale-95 shadow-[8px_8px_0px_rgba(0,0,0,0.3)]"
-                    >
-                        Reserva Ahora
-                    </button>
+            {/* FINAL CALL TO ACTION & FOOTER GROUPED */}
+            <section className="min-h-screen w-full flex flex-col snap-start bg-black overflow-y-auto no-scrollbar">
+                <div className="py-20 md:py-32 px-6 relative border-y border-primary/20 text-white/90">
+                    <div className="absolute inset-0 bg-noise opacity-30"></div>
+                    <div className="relative z-10 max-w-4xl mx-auto text-center">
+                        <h2 className="font-display text-4xl md:text-7xl font-black text-white uppercase leading-[0.85] tracking-tighter mb-8">
+                            Si buscas buen estilo…<br /><span className="text-primary italic">La respuesta es Barrakesh.</span>
+                        </h2>
+                        <button
+                            onClick={onBarberStart}
+                            className="bg-primary text-black font-display text-2xl md:text-4xl px-12 py-6 uppercase font-black hover:tracking-widest transition-all duration-300 active:scale-95 shadow-[8px_8px_0px_rgba(255,255,255,0.1)]"
+                        >
+                            📲 Agenda tu cita ahora
+                        </button>
+                    </div>
                 </div>
-                {/* Visual Distortions */}
-                <div className="absolute top-0 left-0 w-full h-2 bg-black/20"></div>
-                <div className="absolute bottom-0 left-0 w-full h-2 bg-black/20"></div>
+
+                {/* FOOTER */}
+                <footer className="bg-background-dark py-12 md:py-20 px-6 border-t border-white/10 text-white/90 flex-1 flex items-center">
+                    <div className="max-w-6xl mx-auto w-full">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 mb-12 md:mb-20">
+                            <div className="flex flex-col gap-6 md:gap-8">
+                                <img src="/LOGO-BARRAKESH-HORIZONTAL-TXT-BLANCO.png" alt="Logo" className="h-8 md:h-12 w-auto object-contain self-start grayscale" />
+                                <p className="text-white/40 font-mono text-[10px] md:text-xs uppercase tracking-widest leading-relaxed max-w-xs">
+                                    Ingeniería de precisión para el rebelde moderno. Establecido 2024. Especialistas con licencia.
+                                </p>
+                                <div className="flex gap-4">
+                                    {['facebook', 'instagram', 'twitter'].map(social => (
+                                        <div key={social} className="size-8 md:size-10 border border-white/10 flex items-center justify-center hover:border-primary cursor-pointer transition-colors group">
+                                            <img src={`https://cdn.simpleicons.org/${social}/white`} className="size-3 md:size-4 opacity-40 group-hover:opacity-100" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 md:gap-8 col-span-1 md:col-span-2">
+                                <div>
+                                    <h4 className="font-mono text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4 md:mb-8">Navegación</h4>
+                                    <ul className="space-y-2 md:space-y-4 font-display text-lg md:text-2xl font-bold uppercase text-white/60">
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('hero')}>Inicio</li>
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('services')}>Servicios</li>
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('studio')}>Renta de Estudio</li>
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('join')}>Sé Parte de Barrakesh</li>
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('club')}>Club Barrakesh</li>
+                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('branches')}>Sucursales</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-mono text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4 md:mb-8">Legal</h4>
+                                    <ul className="space-y-2 md:space-y-4 font-mono text-[8px] md:text-[10px] uppercase text-white/30 tracking-widest">
+                                        <li className="hover:text-white cursor-pointer">Privacidad</li>
+                                        <li className="hover:text-white cursor-pointer">Términos</li>
+                                        <li className="hover:text-white cursor-pointer">Reembolsos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 md:pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/20 font-mono text-[8px] md:text-[10px] uppercase tracking-widest">
+                            <span>© 2024 BARRAKESH_SYSTEMS.</span>
+                            <div className="flex gap-4 md:gap-8">
+                                <span>AGS_72°F</span>
+                                <span>ESTADO: OPERATIVO</span>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
             </section>
-
-            {/* FOOTER */}
-            <footer className="bg-background-dark py-20 px-6 border-t border-white/10">
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-                        <div className="flex flex-col gap-8">
-                            <img src="/LOGO-BARRAKESH-HORIZONTAL-TXT-BLANCO.png" alt="Logo" className="h-12 w-auto object-contain self-start grayscale" />
-                            <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed max-w-xs">
-                                Ingeniería de precisión para el rebelde moderno. Establecido 2024. Especialistas con licencia.
-                            </p>
-                            <div className="flex gap-4">
-                                {['facebook', 'instagram', 'twitter'].map(social => (
-                                    <div key={social} className="size-10 border border-white/10 flex items-center justify-center hover:border-primary cursor-pointer transition-colors group">
-                                        <img src={`https://cdn.simpleicons.org/${social}/white`} className="size-4 opacity-40 group-hover:opacity-100" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-8 col-span-2">
-                            <div>
-                                <h4 className="font-mono text-primary text-xs font-bold uppercase tracking-[0.3em] mb-8">Navegación</h4>
-                                <ul className="space-y-4 font-display text-2xl font-bold uppercase text-white/60">
-                                    <li className="hover:text-primary transition-colors cursor-pointer" onClick={onNext}>Manifiesto</li>
-                                    <li className="hover:text-primary transition-colors cursor-pointer" onClick={onNext}>El Equipo</li>
-                                    <li className="hover:text-primary transition-colors cursor-pointer" onClick={onNext}>Asegurar Cita</li>
-                                    <li className="hover:text-primary transition-colors cursor-pointer">Iniciar Sesión</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-mono text-primary text-xs font-bold uppercase tracking-[0.3em] mb-8">Legal</h4>
-                                <ul className="space-y-4 font-mono text-[10px] uppercase text-white/30 tracking-widest">
-                                    <li className="hover:text-white cursor-pointer">Protocolo de Privacidad</li>
-                                    <li className="hover:text-white cursor-pointer">Términos de Servicio</li>
-                                    <li className="hover:text-white cursor-pointer">Política de Reembolso</li>
-                                    <li className="hover:text-white cursor-pointer">Registros de Cookies</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/20 font-mono text-[10px] uppercase tracking-widest">
-                        <span>© 2024 BARRAKESH_SYSTEMS. TODOS LOS DERECHOS RESERVADOS.</span>
-                        <div className="flex gap-8">
-                            <span>NY_72°F</span>
-                            <span>ESTADO: OPERATIVO</span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 };
