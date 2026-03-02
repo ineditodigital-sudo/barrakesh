@@ -4,16 +4,16 @@ const Dashboard = ({ onExit }) => {
     const [activeTab, setActiveTab] = useState('LOGS');
 
     const stats = [
-        { label: "Today's Revenue", value: "$490.00" },
-        { label: "Active Fighters", value: "3" },
-        { label: "System Load", value: "98.4%" },
+        { label: "Ingresos Hoy", value: "$490.00" },
+        { label: "Barberos Activos", value: "3" },
+        { label: "Carga del Sistema", value: "98.4%" },
     ];
 
     const appointments = [
-        { id: 1, client: "Alex V.", service: "Razor Fade", barber: "Kash", time: "10:00", status: "LOCKED" },
-        { id: 2, client: "Sarah J.", service: "Scissor Cut", barber: "Jax", time: "11:00", status: "LOCKED" },
-        { id: 3, client: "Mark K.", service: "Buzz Cut", barber: "Rico", time: "12:30", status: "PENDING" },
-        { id: 4, client: "Luna M.", service: "Beard Sculpt", barber: "Kash", time: "14:00", status: "CANCELLED" },
+        { id: 1, client: "Alex V.", service: "Fade a Navaja", barber: "Kash", time: "10:00", status: "ASEGURADO" },
+        { id: 2, client: "Sarah J.", service: "Corte a Tijera", barber: "Jax", time: "11:00", status: "ASEGURADO" },
+        { id: 3, client: "Mark K.", service: "Corte Rapado", barber: "Rico", time: "12:30", status: "PENDIENTE" },
+        { id: 4, client: "Luna M.", service: "Esculpido de Barba", barber: "Kash", time: "14:00", status: "CANCELADO" },
     ];
 
     return (
@@ -22,12 +22,19 @@ const Dashboard = ({ onExit }) => {
 
             {/* Header */}
             <header className="relative z-10 border-b border-white/10 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-void/50 backdrop-blur-md">
-                <div>
-                    <h1 className="text-4xl font-display font-black tracking-tighter text-primary uppercase leading-none">BARRAKESH_CORE</h1>
-                    <p className="text-[10px] text-white/40 uppercase mt-1 tracking-widest">/// Terminal v1.0.9 - Root Access</p>
+                <div className="flex items-center gap-4">
+                    <img
+                        src="/LOGO-BARRAKESH-HORIZONTAL-TXT-BLANCO.png"
+                        alt="BARRAKESH"
+                        className="h-10 w-auto object-contain"
+                    />
+                    <div className="flex flex-col">
+                        <span className="text-primary font-bold tracking-widest text-[10px] uppercase h-max leading-none">CORE_TERMINAL</span>
+                        <p className="text-[10px] text-white/40 uppercase mt-1 tracking-widest leading-none">/// Root Access v1.0.9</p>
+                    </div>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    {['LOGS', 'ROSTER', 'SUCURSALES', 'CONFIG'].map(tab => (
+                    {['REGISTROS', 'PERSONAL', 'SUCURSALES', 'CONFIG'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -41,7 +48,7 @@ const Dashboard = ({ onExit }) => {
                         onClick={onExit}
                         className="px-4 py-2 border border-accent-red text-accent-red text-[10px] font-bold uppercase hover:bg-accent-red hover:text-white transition-all"
                     >
-                        Shutdown
+                        Salir
                     </button>
                 </div>
             </header>
@@ -70,7 +77,7 @@ const Dashboard = ({ onExit }) => {
                     <div className="p-4 border-b border-white/10 flex justify-between items-center">
                         <h2 className="text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2">
                             <span className="w-2 h-2 bg-primary animate-pulse"></span>
-                            {activeTab} DIRECTORY
+                            {activeTab} DIRECTORIO
                         </h2>
                         <div className="flex gap-2">
                             <div className="w-1 h-1 bg-white/20"></div>
@@ -85,11 +92,11 @@ const Dashboard = ({ onExit }) => {
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="border-b border-white/10">
-                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Client</th>
-                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Service</th>
-                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Fighter</th>
-                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Time</th>
-                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40 text-right">Status</th>
+                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Cliente</th>
+                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Servicio</th>
+                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Barbero</th>
+                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40">Hora</th>
+                                            <th className="pb-4 text-[10px] uppercase font-bold text-white/40 text-right">Estado</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
@@ -100,9 +107,9 @@ const Dashboard = ({ onExit }) => {
                                                 <td className="py-4 text-xs text-white/60">{apt.barber}</td>
                                                 <td className="py-4 text-xs font-bold font-mono text-primary/80">{apt.time}</td>
                                                 <td className="py-4 text-right">
-                                                    <span className={`text-[9px] px-2 py-0.5 border font-bold ${apt.status === 'LOCKED' ? 'border-green-500 text-green-500' :
-                                                            apt.status === 'CANCELLED' ? 'border-accent-red text-accent-red' :
-                                                                'border-primary text-primary'
+                                                    <span className={`text-[9px] px-2 py-0.5 border font-bold ${apt.status === 'ASEGURADO' ? 'border-green-500 text-green-500' :
+                                                        apt.status === 'CANCELADO' ? 'border-accent-red text-accent-red' :
+                                                            'border-primary text-primary'
                                                         }`}>
                                                         {apt.status}
                                                     </span>
@@ -115,7 +122,7 @@ const Dashboard = ({ onExit }) => {
                         ) : (
                             <div className="py-24 text-center">
                                 <span className="material-symbols-outlined text-white/10 !text-9xl mb-4">settings_input_component</span>
-                                <p className="text-white/40 text-[10px] uppercase tracking-[0.5em]">Section Restricted</p>
+                                <p className="text-white/40 text-[10px] uppercase tracking-[0.5em]">Sección Restringida</p>
                             </div>
                         )}
                     </div>
@@ -124,7 +131,7 @@ const Dashboard = ({ onExit }) => {
 
             {/* Footer */}
             <footer className="relative z-10 p-6 border-t border-white/10 text-center font-mono text-[10px] text-white/20 uppercase tracking-[0.8em]">
-                End of Transmission /// Barrakesh OS v1.0.9
+                Fin de Transmisión /// Barrakesh OS v1.0.9
             </footer>
         </div>
     );

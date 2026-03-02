@@ -14,31 +14,31 @@ const Confirmation = ({ booking, onReset }) => {
             {/* Marquee Loader (Top) */}
             <div className="fixed top-0 left-0 w-full bg-primary z-50 overflow-hidden py-2 border-b-2 border-white">
                 <div className="whitespace-nowrap animate-marquee flex gap-8 items-center font-mono font-bold text-sm tracking-widest text-black">
-                    <span>GENERATING TICKET...</span>
+                    <span>GENERANDO TICKET...</span>
                     <span>///</span>
-                    <span>SECURE THE BAG</span>
+                    <span>ASEGURA TU CITA</span>
                     <span>///</span>
-                    <span>CONFIRMING APPOINTMENT</span>
+                    <span>CONFIRMANDO CITA</span>
                     <span>///</span>
-                    <span>GENERATING TICKET...</span>
+                    <span>GENERANDO TICKET...</span>
                     <span>///</span>
-                    <span>SECURE THE BAG</span>
+                    <span>ASEGURA TU CITA</span>
                     <span>///</span>
-                    <span>CONFIRMING APPOINTMENT</span>
+                    <span>CONFIRMANDO CITA</span>
                     <span>///</span>
                 </div>
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-grow flex flex-col items-center justify-center px-4 relative mt-12 pb-20 z-10">
+            <main className="flex-grow flex flex-col items-center justify-center px-4 relative mt-12 pb-20 z-10 overflow-hidden">
                 {/* Status Header */}
-                <div className="text-center mb-8 animate-pulse">
-                    <h1 className="text-white text-5xl font-bold uppercase tracking-tighter leading-none mb-1">LOCKED IN</h1>
-                    <p className="text-primary font-mono text-xs tracking-[0.2em] uppercase">Appointment Confirmed</p>
+                <div className="text-center mb-8 animate-fade-in-up">
+                    <h1 className="text-white text-5xl font-bold uppercase tracking-tighter leading-none mb-1">ASEGURADO</h1>
+                    <p className="text-primary font-mono text-xs tracking-[0.2em] uppercase">Cita Confirmada</p>
                 </div>
 
                 {/* The Ticket Component */}
-                <div className="relative w-full max-w-sm bg-white text-black shadow-2xl transform transition-transform duration-700 hover:scale-[1.02]">
+                <div className="relative w-full max-w-sm bg-white text-black shadow-2xl transform transition-transform duration-700 hover:scale-[1.02] animate-scale-in [animation-delay:200ms]">
                     {/* Ticket Notches */}
                     <div className="ticket-notch ticket-notch-left"></div>
                     <div className="ticket-notch ticket-notch-right"></div>
@@ -49,11 +49,15 @@ const Confirmation = ({ booking, onReset }) => {
                         {/* Header Logo / Brand */}
                         <div className="w-full flex justify-between items-start mb-8">
                             <div className="flex flex-col">
-                                <span className="font-display font-black text-2xl tracking-tight leading-none">BARRAKESH</span>
+                                <img
+                                    src="/LOGO-BARRAKESH-HORIZONTAL-TXT-NEGRO.png"
+                                    alt="BARRAKESH"
+                                    className="h-8 w-auto object-contain"
+                                />
                                 <span className="font-mono text-[10px] tracking-widest mt-1">EST. 2024</span>
                             </div>
                             <div className="border-2 border-black px-2 py-0.5 transform rotate-[-2deg]">
-                                <span className="font-bold text-xs uppercase tracking-wider">Paid</span>
+                                <span className="font-bold text-xs uppercase tracking-wider">Pagado</span>
                             </div>
                         </div>
 
@@ -63,12 +67,12 @@ const Confirmation = ({ booking, onReset }) => {
                         <div className="w-full space-y-6">
                             {/* Client Row */}
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Client</span>
-                                <span className="text-xl font-bold font-display uppercase tracking-wide">You</span>
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Cliente</span>
+                                <span className="text-xl font-bold font-display uppercase tracking-wide">Tú</span>
                             </div>
                             {/* Barber Row */}
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Barber</span>
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Barbero</span>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xl font-bold font-display uppercase tracking-wide">{barber.name}</span>
                                     <span className="material-symbols-outlined text-sm pt-0.5">verified</span>
@@ -76,7 +80,7 @@ const Confirmation = ({ booking, onReset }) => {
                             </div>
                             {/* Service Row */}
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Service</span>
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Servicio</span>
                                 <span className="text-xl font-bold font-display uppercase tracking-wide">{service.name}</span>
                             </div>
                         </div>
@@ -86,7 +90,7 @@ const Confirmation = ({ booking, onReset }) => {
                     <div className="p-6 pt-8 bg-gray-50">
                         <div className="flex justify-between items-end mb-6">
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Time</span>
+                                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Horario</span>
                                 <span className="text-2xl font-bold font-display uppercase leading-none">{timeStr}</span>
                                 <span className="text-sm font-mono font-bold uppercase">{dateStr}</span>
                             </div>
@@ -101,7 +105,7 @@ const Confirmation = ({ booking, onReset }) => {
                         <div className="pt-4 border-t border-gray-200 flex justify-center">
                             <button className="group flex items-center gap-1">
                                 <span className="font-mono text-[10px] font-bold uppercase tracking-widest relative">
-                                    Get Directions
+                                    Obtener Direcciones
                                     <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-primary group-hover:h-full group-hover:opacity-30 transition-all"></span>
                                 </span>
                                 <span className="material-symbols-outlined text-sm transform -rotate-45 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">arrow_forward</span>
@@ -114,14 +118,14 @@ const Confirmation = ({ booking, onReset }) => {
                 <div className="mt-12 w-full max-w-sm flex flex-col items-center gap-4">
                     <div className="flex items-center gap-2 opacity-60">
                         <span className="material-symbols-outlined text-white text-sm">info</span>
-                        <p className="text-white font-mono text-[10px] uppercase">Show this ticket upon arrival</p>
+                        <p className="text-white font-mono text-[10px] uppercase">Muestra este ticket al llegar</p>
                     </div>
                     <button
                         onClick={onReset}
                         className="text-white font-display text-lg uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2 py-4 group"
                     >
                         <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">west</span>
-                        Back to Base
+                        Volver al Inicio
                     </button>
                 </div>
             </main>
