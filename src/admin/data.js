@@ -61,6 +61,15 @@ const INITIAL_APPOINTMENTS = [
     { id: "BK-8820", date: "2026-03-02", time: "14:00", client: "Luna M.", service: "Completo", barber: "Jax", branch: "Altaria", total: "$60.00", status: "Finalizado" },
 ];
 
+export const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+};
+
 export const useDataService = (key, initialData) => {
     const [data, setData] = useState(() => {
         const saved = localStorage.getItem(`barrakesh_${key}`);

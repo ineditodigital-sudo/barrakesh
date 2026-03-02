@@ -10,8 +10,8 @@ import ContactInfo from './components/ContactInfo';
 import RecordingStudio from './components/RecordingStudio';
 import JoinTeam from './components/JoinTeam';
 
-// Admin Imports
 import { AuthProvider } from './admin/AuthContext';
+import { ThemeProvider } from './admin/ThemeContext';
 import Login from './admin/Login';
 import AdminLayout from './admin/AdminLayout';
 import AdminDashboard from './admin/AdminDashboard';
@@ -124,30 +124,32 @@ const App = () => {
   );
 
   return (
-    <AuthProvider>
-      <Routes>
-        {/* User Facing App */}
-        <Route path="/" element={<UserPlatform />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          {/* User Facing App */}
+          <Route path="/" element={<UserPlatform />} />
 
-        {/* Admin Login */}
-        <Route path="/admin/login" element={<Login />} />
+          {/* Admin Login */}
+          <Route path="/admin/login" element={<Login />} />
 
-        {/* Admin Platform */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="agenda" element={<GeneralAgenda />} />
-          <Route path="my-agenda" element={<BarberAgenda />} />
-          <Route path="barbers" element={<BarberManagement />} />
-          <Route path="branches" element={<BranchesManagement />} />
-          <Route path="customers" element={<CustomerManagement />} />
-          <Route path="profile" element={<BarberProfile />} />
-          <Route path="appointments" element={<AppointmentHistory />} />
-        </Route>
+          {/* Admin Platform */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="agenda" element={<GeneralAgenda />} />
+            <Route path="my-agenda" element={<BarberAgenda />} />
+            <Route path="barbers" element={<BarberManagement />} />
+            <Route path="branches" element={<BranchesManagement />} />
+            <Route path="customers" element={<CustomerManagement />} />
+            <Route path="profile" element={<BarberProfile />} />
+            <Route path="appointments" element={<AppointmentHistory />} />
+          </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </AuthProvider>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

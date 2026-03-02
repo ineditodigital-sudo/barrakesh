@@ -1,13 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Saira+Stencil+One&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Saira+Stencil+One&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --primary: #FEE101;
+    --primary-rgb: 254, 225, 1;
+  }
+
   body {
-    @apply bg-[#050505] text-white font-sans antialiased;
+    @apply bg-[#050505] text-white font-sans antialiased transition-colors duration-500;
     min-height: 100vh;
+  }
+
+  /* Light Mode Base */
+  .light-mode body {
+    @apply bg-[#F4F4F7] text-[#1D1D1F];
   }
 }
 
@@ -16,122 +26,97 @@
     font-family: 'Rubik', sans-serif;
   }
 
+  /* Glass Effects */
   .ios-glass {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5;
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 transition-all;
   }
 
+  .light-mode .ios-glass {
+    @apply bg-white/70 border-black/[0.05] shadow-sm;
+  }
+
+  /* Core Card Style */
   .ios-card {
-    @apply bg-[#111] border border-white/[0.05] rounded-2xl shadow-xl;
+    @apply bg-[#111] border border-white/[0.05] rounded-2xl transition-all;
   }
 
+  .light-mode .ios-card {
+    @apply bg-white border-black/[0.1] text-[#1D1D1F];
+  }
+
+  /* Interaction Utilities */
   .ios-button {
-    @apply rounded-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center;
+    @apply rounded-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center font-bold;
   }
 
   .ios-input {
     @apply bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 focus:bg-white/[0.06] focus:border-primary/40 outline-none transition-all text-sm;
   }
 
-  .hard-shadow-sm {
-    box-shadow: 2px 2px 0px #000000;
+  .light-mode .ios-input {
+    @apply bg-black/5 border-black/10 text-black focus:bg-white focus:border-primary/60;
   }
 
-  .no-scrollbar::-webkit-scrollbar {
+  /* High-Contrast Helpers (Avoid hijacking Tailwind classes) */
+  .txt-muted {
+    @apply opacity-40;
+  }
+
+  .light-mode .txt-muted {
+    @apply opacity-60;
+  }
+
+  .border-muted {
+    @apply border-white/5;
+  }
+
+  .light-mode .border-muted {
+    @apply border-black/10;
+  }
+
+  /* PDF/Print Export */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    .print-only {
+      display: block !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .ios-card {
+      background: white !important;
+      border: 1px solid #ddd !important;
+      box-shadow: none !important;
+      color: black !important;
+      margin: 10mm 0 !important;
+    }
+
+    .text-primary {
+      color: #000 !important;
+    }
+  }
+
+  .print-only {
     display: none;
   }
 
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .writing-vertical {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-  }
-
-  .text-outline {
-    -webkit-text-stroke: 1px #FEE101;
-    color: transparent;
-  }
-
-  .text-outline-white {
-    -webkit-text-stroke: 1px white;
-    color: transparent;
-  }
-
-  .img-brutal {
-    filter: grayscale(100%) contrast(120%) brightness(90%);
-  }
-
-  /* Ticket Utilities */
-  .ticket-notch {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: #050505;
-    border-radius: 50%;
-    top: 65%;
-    transform: translateY(-50%);
-    z-index: 20;
-  }
-
-  .ticket-notch-left {
-    left: -15px;
-  }
-
-  .ticket-notch-right {
-    right: -15px;
-  }
-
-  .ticket-dash {
-    position: absolute;
-    top: 65%;
-    left: 20px;
-    right: 20px;
-    border-top: 2px dashed #000;
-    transform: translateY(-50%);
-    opacity: 0.2;
-    z-index: 10;
-  }
-
-  .barcode {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 400 60'%3E%3Crect x='0' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='8' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='14' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='24' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='30' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='38' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='44' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='52' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='60' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='66' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='74' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='84' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='90' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='98' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='104' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='112' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='118' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='126' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='134' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='140' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='148' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='158' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='164' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='172' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='178' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='186' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='192' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='200' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='208' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='214' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='222' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='232' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='238' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='246' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='252' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='260' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='266' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='274' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='282' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='288' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='296' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='306' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='312' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='320' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='326' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='334' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='340' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='348' y='0' width='6' height='60' fill='%23000'/%3E%3Crect x='356' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='362' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='370' y='0' width='8' height='60' fill='%23000'/%3E%3Crect x='380' y='0' width='2' height='60' fill='%23000'/%3E%3Crect x='386' y='0' width='4' height='60' fill='%23000'/%3E%3Crect x='394' y='0' width='2' height='60' fill='%23000'/%3E%3C/svg%3E");
-    background-repeat: repeat-x;
-  }
-
-  .brutalist-grid {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .hard-shadow {
-    box-shadow: 4px 4px 0px #000000;
-  }
-
-  .hard-shadow-sm {
-    box-shadow: 2px 2px 0px #000000;
-  }
-
   .animate-fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInRight 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation: fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
   }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
 
   to {
@@ -140,84 +125,20 @@
   }
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 15s linear infinite;
-}
-
-@keyframes glitch {
-  0% {
-    transform: translate(0)
-  }
-
-  20% {
-    transform: translate(-2px, 2px)
-  }
-
-  40% {
-    transform: translate(-2px, -2px)
-  }
-
-  60% {
-    transform: translate(2px, 2px)
-  }
-
-  80% {
-    transform: translate(2px, -2px)
-  }
-
-  100% {
-    transform: translate(0)
-  }
-}
-
-.hover-glitch:hover {
-  animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-}
-
-/* Custom Scrollbar for the site */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background-dark;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary;
-  border-radius: 0px;
+  @apply bg-white/10;
+  border-radius: 10px;
+}
+
+.light-mode ::-webkit-scrollbar-thumb {
+  @apply bg-black/10;
 }

@@ -1,71 +1,134 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppointments } from './data';
+import { useTheme } from './ThemeContext';
 
 const AppointmentHistory = () => {
     const [appointments] = useAppointments();
+    const [searchTerm, setSearchTerm] = useState('');
+    const { isDarkMode } = useTheme();
+
+    const filtered = appointments.filter(apt =>
+        apt.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.service.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handlePrint = () => {
+        window.print();
+    };
 
     return (
-        <div className="space-y-6 animate-fade-in-up">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div className="space-y-6 animate-fade-in-up pb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print px-1">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Historial</h2>
-                    <p className="text-white/40 text-xs font-medium mt-0.5">Registro transaccional de todas las citas.</p>
+                    <h2 className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>Historial Operativo</h2>
+                    <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-[11px] font-bold mt-1 uppercase tracking-widest`}>Reporte detallado de citas y transacciones.</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="ios-button bg-white/5 border border-white/5 px-4 py-2 font-bold text-[10px] tracking-tight hover:bg-white/10 transition-all flex items-center gap-2">
-                        <span className="material-symbols-outlined !text-base">filter_list</span>
-                        Filtros
-                    </button>
-                    <button className="ios-button bg-white text-black px-4 py-2 font-bold text-[10px] tracking-tight hover:bg-primary transition-all flex items-center gap-2">
-                        <span className="material-symbols-outlined !text-base">download</span>
-                        Reporte
+                <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                    <div className={`relative flex-1 md:w-72 rounded-xl group overflow-hidden border transition-all ${isDarkMode ? 'bg-white/[0.03] border-white/5' : 'bg-black/5 border-black/10'}`}>
+                        <span className={`material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-white/20' : 'text-black/30'} !text-lg`}>search</span>
+                        <input
+                            type="text"
+                            placeholder="Buscar por ID, cliente o servicio..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={`w-full bg-transparent pl-10 py-3 font-bold text-[10px] uppercase tracking-widest outline-none ${isDarkMode ? 'text-white' : 'text-black'}`}
+                        />
+                    </div>
+                    <button
+                        onClick={handlePrint}
+                        className={`ios-button px-8 py-3 font-black text-[10px] tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 shadow-lg active:scale-95 ${isDarkMode
+                                ? 'bg-primary text-black hover:bg-white shadow-primary/20'
+                                : 'bg-black text-white hover:bg-primary hover:text-black shadow-black/30'
+                            }`}
+                    >
+                        <span className="material-symbols-outlined !text-lg">picture_as_pdf</span>
+                        Exportar PDF
                     </button>
                 </div>
             </div>
 
-            <div className="ios-card bg-white/[0.01] overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+            {/* Print Header (Only visible when printing) */}
+            <div className="print-only mb-10 text-black border-b-4 border-black pb-6 px-4">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter leading-none mb-1">BARRAKESH</h1>
+                        <h2 className="text-sm font-bold uppercase tracking-widest opacity-60">REPORTE OPERATIVO DETALLADO</h2>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-1">
+                        <div className="bg-black text-white px-2 py-1 text-[10px] font-black uppercase tracking-widest leading-none">Status: Operativo</div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-1">GÉNERADO: {new Date().toLocaleDateString()} @ {new Date().toLocaleTimeString()}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className={`ios-card overflow-hidden border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/10 shadow-sm'}`}>
+                <div className="overflow-x-auto no-scrollbar">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/5">
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest">ID</th>
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest">Fecha/Hora</th>
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest">Servicio</th>
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest">Ubicación</th>
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest text-right">Monto</th>
-                                <th className="px-6 py-4 text-[9px] font-bold text-white/20 uppercase tracking-widest">Estado</th>
+                            <tr className={`${isDarkMode ? 'bg-white/5' : 'bg-black/5'} print:bg-gray-100 print:border-b-2 print:border-black`}>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Folio ID</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Fecha / Hora</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Detalles Operativos</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'} hidden sm:table-cell`}>Sede</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest text-right print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Inversión</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Estado</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {appointments.map(apt => (
-                                <tr key={apt.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
+                        <tbody className={`divide-y print:divide-gray-200 ${isDarkMode ? 'divide-white/5' : 'divide-black/10'}`}>
+                            {filtered.length > 0 ? filtered.map(apt => (
+                                <tr key={apt.id} className={`hover:bg-primary/5 transition-all group cursor-pointer print:text-black print:bg-white page-break-inside-avoid ${isDarkMode ? 'text-white' : 'text-black'}`}>
                                     <td className="px-6 py-4">
-                                        <span className="text-[10px] font-bold text-primary tracking-tighter">{apt.id}</span>
+                                        <span className={`text-[10px] font-black tracking-tighter print:text-black flex items-center gap-1.5 ${isDarkMode ? 'text-primary' : 'text-black'}`}>
+                                            <span className="material-symbols-outlined !text-[10px]">drag_handle</span>
+                                            {apt.id}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-bold tracking-tight">{apt.date}</span>
-                                            <span className="text-[10px] text-white/40">{apt.time}</span>
+                                            <span className="text-[11px] font-black tracking-tight leading-none mb-1.5">{apt.date}</span>
+                                            <span className={`text-[9px] font-mono italic ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-gray-500`}>{apt.time}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-bold tracking-tight">{apt.client}</span>
-                                            <span className="text-[9px] text-white/40 font-bold uppercase tracking-tight">{apt.service} /// {apt.barber}</span>
+                                            <span className="text-[11px] font-black tracking-tight uppercase leading-none">{apt.client}</span>
+                                            <span className={`text-[9px] font-bold uppercase tracking-tight mt-2 ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-gray-500`}>{apt.service} /// {apt.barber}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-[10px] font-bold uppercase text-white/40">{apt.branch}</td>
-                                    <td className="px-6 py-4 text-right text-base font-bold tracking-tighter text-white">{apt.total}</td>
+                                    <td className={`px-6 py-4 text-[10px] font-black uppercase hidden sm:table-cell ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-black`}>{apt.branch}</td>
+                                    <td className={`px-6 py-4 text-right text-base font-black tracking-tighter print:text-black ${isDarkMode ? 'text-white' : 'text-black'}`}>{apt.total}</td>
                                     <td className="px-6 py-4">
-                                        <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest ${apt.status === 'Confirmado' ? 'bg-primary/20 text-primary' :
-                                                apt.status === 'Finalizado' ? 'bg-white/10 text-white/40' :
-                                                    'bg-red-500/10 text-red-500'
+                                        <span className={`text-[8px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-widest border print:border-black print:text-black ${apt.status === 'Confirmado' ? 'bg-primary/20 text-primary border-primary/20' :
+                                                apt.status === 'Finalizado' ? 'bg-green-500/10 text-green-500 border-green-500/10' :
+                                                    'bg-red-500/10 text-red-500 border-red-500/10'
                                             }`}>{apt.status}</span>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className="py-24 text-center">
+                                        <div className={`p-10 rounded-3xl mx-auto w-fit mb-4 ${isDarkMode ? 'bg-white/[0.02]' : 'bg-black/5'}`}>
+                                            <span className={`material-symbols-outlined !text-6xl ${isDarkMode ? 'text-white/5' : 'text-black/5'}`}>event_busy</span>
+                                        </div>
+                                        <p className={`text-[10px] font-black uppercase tracking-[0.4em] ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Folio sin resultados operativos</p>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            {/* Print Footer */}
+            <div className="print-only mt-20 pt-6 border-t-2 border-black flex justify-between items-end">
+                <div className="text-[9px] font-black uppercase tracking-widest opacity-40">
+                    BARRAKESH SYSTEMS /// CONTROL DE OPERACIONES
+                </div>
+                <div className="text-[10px] font-black text-right">
+                    AGUASCALIENTES, MÉXICO /// {new Date().getFullYear()}
+                    <br />
+                    <span className="opacity-40 text-[8px]">CONFIDENTIAL REPORT</span>
                 </div>
             </div>
         </div>
