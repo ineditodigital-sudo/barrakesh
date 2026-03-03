@@ -2,43 +2,43 @@ import React, { useState } from 'react';
 import { useBranches } from '../admin/data';
 
 const dates = [
-    { day: "SEP", num: "12", label: "Lun" },
-    { day: "SEP", num: "13", label: "Mar" },
-    { day: "SEP", num: "14", label: "Mié" },
-    { day: "SEP", num: "15", label: "Jue" },
-    { day: "SEP", num: "16", label: "Vie" },
-    { day: "SEP", num: "17", label: "Sáb" },
+    { day: "MAR", num: "03", label: "Hoy" },
+    { day: "MAR", num: "04", label: "Mié" },
+    { day: "MAR", num: "05", label: "Jue" },
+    { day: "MAR", num: "06", label: "Vie" },
+    { day: "MAR", num: "07", label: "Sáb" },
+    { day: "MAR", num: "09", label: "Lun" },
 ];
 
-const timeBlocks = [
-    {
-        label: "Mañana",
-        slots: [
-            { time: "10:00", booked: true },
-            { time: "10:45", booked: true },
-            { time: "11:30", booked: false },
-        ]
-    },
-    {
-        label: "Tarde",
-        slots: [
-            { time: "13:00", booked: false },
-            { time: "14:00", booked: false },
-            { time: "14:45", booked: false },
-            { time: "15:30", booked: true },
-            { time: "16:15", booked: false },
-            { time: "17:00", booked: false },
-        ]
-    },
-    {
-        label: "Noche",
-        slots: [
-            { time: "18:00", booked: true },
-            { time: "18:45", booked: true },
-            { time: "19:30", booked: true },
-        ]
-    }
-];
+const generateTimeSlots = () => {
+    return [
+        {
+            label: "Mañana",
+            slots: [
+                { time: "10:00", booked: false },
+                { time: "11:00", booked: false },
+                { time: "12:00", booked: false },
+            ]
+        },
+        {
+            label: "Tarde",
+            slots: [
+                { time: "13:00", booked: false },
+                { time: "14:00", booked: false },
+                { time: "15:00", booked: false },
+                { time: "16:00", booked: false },
+                { time: "17:00", booked: false },
+            ]
+        },
+        {
+            label: "Noche",
+            slots: [
+                { time: "18:00", booked: false },
+                { time: "19:00", booked: false },
+            ]
+        }
+    ];
+};
 
 const BookingFlow = ({ onComplete, onBack, booking }) => {
     const [branches, { loading: branchesLoading }] = useBranches();
@@ -46,16 +46,25 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
     const [selectedDate, setSelectedDate] = useState(dates[0]);
     const [selectedTime, setSelectedTime] = useState(null);
 
-    const barber = booking?.barber || { name: "Kash", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjVGDclJ03HtJjhEY6sT6KueaFJU_KAkN31hOhCRfLwLmPzv_YRURdqMtKosR6vetPwImfMt_ERO3D7Dhw7qbeIaKvIV_qOs-8JvPD3zcdvqMlJMruutzUf4SiAIGeDNc36dICIuHQEAqGey-BKdCdgLq_gFeGvPCc2XIv8YUcj5TQqWkxPwiqseAUszCZXwA5UdXhgT8xToVYiivSJ9z5xm0XmmfsOTkfl0OV9FxydiIaZAo8i1NskqS3nWMo37pG3g9bcAJchQw" };
-    const service = booking?.service || { name: "Skin Fade", price: 35 };
+    const isStudioBooking = booking.services.some(s => s.category === 'Music Studio');
+    const themeColor = isStudioBooking ? "#007AFF" : "#FEE101";
+    const accentColor = isStudioBooking ? "blue" : "primary";
+
+    const services = booking.services || [];
+    const barber = booking.barber || { name: "KASH" };
+
+    const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
+    const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
 
     if (branchesLoading) {
         return (
             <div className="min-h-screen bg-[#111111] flex items-center justify-center">
-                <div className="size-12 border-4 border-primary border-t-transparent animate-spin rounded-full"></div>
+                <div className={`size-12 border-4 border border-t-transparent animate-spin rounded-full`} style={{ borderColor: themeColor }}></div>
             </div>
         );
     }
+
+    const timeBlocks = generateTimeSlots();
 
     return (
         <div className="bg-background-dark text-white font-mono antialiased overflow-x-hidden min-h-screen flex flex-col relative">
@@ -63,23 +72,24 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
 
             {/* Sticky Header */}
-            <header className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-sm border-b border-white/10 relative">
+            <header className={`sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-sm border-b-2 relative`} style={{ borderBottomColor: themeColor }}>
                 <div className="flex items-center justify-between p-4 h-16">
                     <button
                         onClick={onBack}
-                        className="flex items-center justify-center size-10 text-white hover:text-primary transition-colors"
+                        className="flex items-center justify-center size-10 text-white transition-colors"
+                        style={{ '--hover-color': themeColor }}
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>
                     </button>
                     <div className="flex flex-col items-center">
                         <h1 className="font-display font-bold text-2xl tracking-tighter uppercase text-white">ASEGURA EL FLOW</h1>
-                        <span className="text-steel font-mono text-[8px] uppercase tracking-widest leading-none mt-1">PASO 03</span>
+                        <span className="font-mono text-[8px] uppercase tracking-widest leading-none mt-1" style={{ color: themeColor }}>PASO 03</span>
                     </div>
                     <div className="size-10"></div>
                 </div>
                 {/* Progress Bar */}
                 <div className="w-full h-1 bg-surface">
-                    <div className="h-full w-3/4 bg-primary transition-all duration-500"></div>
+                    <div className="h-full w-3/4 transition-all duration-500" style={{ backgroundColor: themeColor }}></div>
                 </div>
             </header>
 
@@ -87,20 +97,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             <main className="flex-1 flex flex-col md:flex-row md:max-w-6xl md:mx-auto md:w-full md:gap-16 pb-24 md:pb-12 relative z-10 p-4">
                 {/* Left Side: Selection */}
                 <div className="flex-1 flex flex-col md:overflow-y-auto md:max-h-[calc(100vh-160px)] no-scrollbar overflow-x-hidden md:pr-4">
-                    {/* Barber Info Strip (Mobile only) */}
-                    <div className="md:hidden py-6 border-b border-white/10 bg-surface/50 mb-8 -mx-4 px-4 animate-fade-in-up">
-                        <div className="flex items-center gap-4">
-                            <div className="relative size-14 overflow-hidden border border-white/20">
-                                <img src={barber.image || 'https://via.placeholder.com/400?text=' + barber.name} alt={barber.name} className="object-cover w-full h-full grayscale contrast-125" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] text-primary font-bold tracking-widest uppercase mb-1">Barbero</span>
-                                <span className="font-display text-3xl font-bold uppercase leading-none tracking-tight">{barber.name}</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Date Selection */}
                     {/* Location Selection */}
                     <section className="animate-fade-in-up md:mt-4">
                         <div className="px-4 mb-4">
@@ -113,7 +110,8 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                     <button
                                         key={b.id}
                                         onClick={() => setSelectedLocation(b)}
-                                        className={`p-4 border transition-all text-left group ${isSelected ? 'bg-primary border-primary text-black' : 'bg-surface border-white/10 text-white hover:border-white/30'}`}
+                                        className={`p-4 border transition-all text-left group ${isSelected ? 'text-black' : 'bg-surface border-white/10 text-white hover:border-white/30'}`}
+                                        style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                     >
                                         <div className={`font-mono text-[8px] uppercase tracking-widest mb-1 ${isSelected ? 'text-black/60' : 'text-white/40'}`}>Sucursal</div>
                                         <div className="font-display text-xl font-bold uppercase leading-none mb-1">{b.name}</div>
@@ -127,7 +125,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     <section className="mt-8 animate-fade-in-up [animation-delay:100ms]">
                         <div className="px-4 mb-4 flex justify-between items-end">
                             <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Fecha</h2>
-                            <span className="text-[10px] font-mono text-primary animate-pulse uppercase">ACTUALIZACIONES EN VIVO</span>
+                            <span className="text-[10px] font-mono animate-pulse uppercase" style={{ color: themeColor }}>ACTUALIZACIONES EN VIVO</span>
                         </div>
                         <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar snap-x snap-mandatory">
                             {dates.map((d, idx) => {
@@ -136,8 +134,8 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedDate(d)}
-                                        className={`snap-start shrink-0 w-20 h-24 flex flex-col items-center justify-center transition-all ${isSelected ? 'bg-primary text-black border-2 border-primary relative' : 'bg-transparent text-white border border-white/20 hover:border-primary/50'
-                                            }`}
+                                        className={`snap-start shrink-0 w-20 h-24 flex flex-col items-center justify-center transition-all ${isSelected ? 'text-black relative' : 'bg-transparent text-white border border-white/20'}`}
+                                        style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                     >
                                         <span className={`text-[10px] uppercase tracking-wider mb-1 ${isSelected ? 'font-bold' : 'font-mono opacity-60'}`}>{d.day}</span>
                                         <span className="font-display text-4xl font-bold leading-none">{d.num}</span>
@@ -153,7 +151,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     {/* Marquee Separator */}
                     <div className="my-6 border-y border-white/10 bg-surface py-2 overflow-hidden whitespace-nowrap animate-fade-in-up [animation-delay:200ms]">
                         <div className="inline-block animate-marquee font-mono text-[10px] text-white/50 tracking-[0.2em] uppercase">
-            /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO /// ASEGURA EL FLOW /// SIN REEMBOLSOS /// CÁELE CON TODO ///
+             /// {isStudioBooking ? 'RECORDING SESSION' : 'ASEGURA EL FLOW'} /// SIN REEMBOLSOS /// CÁELE CON TODO /// {isStudioBooking ? 'RECORDING SESSION' : 'ASEGURA EL FLOW'} ///
                         </div>
                     </div>
 
@@ -172,9 +170,10 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                                 disabled={slot.booked}
                                                 onClick={() => setSelectedTime(slot.time)}
                                                 className={`relative h-14 w-full flex items-center justify-center border font-mono text-sm font-bold transition-all ${slot.booked ? 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed' :
-                                                    isSelected ? 'bg-primary text-black border-2 border-primary shadow-[0_0_15px_rgba(254,225,1,0.3)] z-10' :
+                                                    isSelected ? 'text-black z-10' :
                                                         'border-white text-white hover:bg-white hover:text-black'
                                                     }`}
+                                                style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor, boxShadow: `0 0 15px ${themeColor}66` } : {}}
                                             >
                                                 <span className={slot.booked ? 'line-through decoration-white/30' : ''}>{slot.time}</span>
                                                 {isSelected && <div className="absolute -top-1 -right-1 w-0 h-0 border-t-[8px] border-r-[8px] border-t-black border-r-transparent rotate-90"></div>}
@@ -192,46 +191,63 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                 <aside className="hidden md:flex flex-col w-1/3 sticky top-32 h-max bg-surface border border-white/10 p-8 shadow-2xl animate-slide-in-right">
                     <div className="flex flex-col gap-8">
                         <div>
-                            <span className="text-[10px] text-primary font-bold tracking-[0.3em] uppercase block mb-4">/// Resumen</span>
+                            <span className="text-[10px] font-bold tracking-[0.3em] uppercase block mb-4" style={{ color: themeColor }}>/// Resumen</span>
                             <div className="flex items-center gap-4 border-b border-white/10 pb-6">
-                                <div className="size-20 overflow-hidden border border-white/20 border-primary">
-                                    <img src={barber.image || 'https://via.placeholder.com/400?text=' + barber.name} alt={barber.name} className="object-cover w-full h-full grayscale" />
+                                <div className="size-20 overflow-hidden border border-white/20" style={{ borderColor: themeColor }}>
+                                    {isStudioBooking ? (
+                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <span className="material-symbols-outlined !text-4xl" style={{ color: themeColor }}>mic</span>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-3xl italic">BK</div>
+                                    )}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-white/40 text-[10px] uppercase font-mono">Estilista</span>
-                                    <h3 className="font-display text-4xl font-black uppercase text-white">{barber.name}</h3>
+                                    <span className="text-white/40 text-[10px] uppercase font-mono">{isStudioBooking ? 'Proyecto' : 'Estilista'}</span>
+                                    <h3 className="font-display text-2xl font-black uppercase text-white leading-tight">{isStudioBooking ? 'STUDIO RENTAL' : (barber?.name || 'KASH')}</h3>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2 text-primary">
-                                <span className="text-white/60 text-xs font-mono uppercase">Sucursal</span>
-                                <span className="font-bold uppercase">{selectedLocation?.name || '---'}</span>
-                            </div>
                             <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2">
-                                <span className="text-white/60 text-xs font-mono uppercase">Servicio</span>
-                                <span className="text-white font-bold uppercase">{service.name}</span>
+                                <span className="text-white/60 text-xs font-mono uppercase">Sucursal</span>
+                                <span className="font-bold uppercase" style={{ color: themeColor }}>{selectedLocation?.name || '---'}</span>
                             </div>
+                            <div className="flex flex-col border-b border-dashed border-white/20 pb-2">
+                                <span className="text-white/60 text-xs font-mono uppercase mb-1">Servicios</span>
+                                <div className="flex flex-col items-end">
+                                    {services.map((s, i) => (
+                                        <span key={i} className="text-white text-[10px] font-bold uppercase">{s.name}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            {isStudioBooking && (
+                                <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2">
+                                    <span className="text-white/60 text-xs font-mono uppercase">Tiempo Renta</span>
+                                    <span className="text-white font-bold uppercase">{booking.studioInfo?.hours} HRS</span>
+                                </div>
+                            )}
                             <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2">
                                 <span className="text-white/60 text-xs font-mono uppercase">Fecha</span>
-                                <span className="text-primary font-bold uppercase">{selectedDate.label}, {selectedDate.num} {selectedDate.day}</span>
+                                <span className="font-bold uppercase" style={{ color: themeColor }}>{selectedDate.label}, {selectedDate.num} {selectedDate.day}</span>
                             </div>
                             <div className="flex justify-between items-end border-b border-dashed border-white/20 pb-2">
                                 <span className="text-white/60 text-xs font-mono uppercase">Horario</span>
-                                <span className="text-primary font-bold uppercase">{selectedTime || '---'}</span>
+                                <span className="font-bold uppercase" style={{ color: themeColor }}>{selectedTime || '---'}</span>
                             </div>
                         </div>
 
                         <div className="pt-4">
                             <div className="flex justify-between items-center mb-6">
                                 <span className="text-white text-xl font-display uppercase italic">Total Est.</span>
-                                <span className="text-primary text-4xl font-display font-black">${service.price.toFixed(2)}</span>
+                                <span className="text-4xl font-display font-black" style={{ color: themeColor }}>${totalPrice.toFixed(2)}</span>
                             </div>
                             <button
                                 disabled={!selectedTime || !selectedLocation}
                                 onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
-                                className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime && selectedLocation ? 'bg-primary text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
+                                className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime && selectedLocation ? 'text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
+                                style={selectedTime && selectedLocation ? { backgroundColor: themeColor } : {}}
                             >
                                 <span>LOCKED IN 🔥</span>
                                 <span className="material-symbols-outlined !text-3xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
@@ -249,16 +265,17 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                         <span>Impuestos Incluidos</span>
                     </div>
                     <div className="flex justify-between items-end mb-2">
-                        <span className="text-white font-display text-3xl font-bold">${service.price.toFixed(2)}</span>
-                        <span className="text-primary font-mono text-xs uppercase tracking-tight">
+                        <span className="text-white font-display text-3xl font-bold">${totalPrice.toFixed(2)}</span>
+                        <span className="font-mono text-xs uppercase tracking-tight" style={{ color: themeColor }}>
                             {selectedTime ? `${selectedDate.label} ${selectedDate.num} @ ${selectedTime}` : 'Selecciona un horario'}
                         </span>
                     </div>
                     <button
                         disabled={!selectedTime || !selectedLocation}
                         onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
-                        className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime && selectedLocation ? 'bg-primary text-black hover:bg-white' : 'bg-surface text-white/20 cursor-not-allowed'
+                        className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime && selectedLocation ? 'text-black' : 'bg-surface text-white/20 cursor-not-allowed'
                             }`}
+                        style={selectedTime && selectedLocation ? { backgroundColor: themeColor } : {}}
                     >
                         <span>ASEGURAR EL FLOW 🔥</span>
                         <span className="material-symbols-outlined !text-3xl group-hover:translate-x-1 transition-transform">arrow_forward</span>

@@ -8,6 +8,7 @@ import Confirmation from './components/Confirmation';
 import Dashboard from './components/Dashboard';
 import ContactInfo from './components/ContactInfo';
 import RecordingStudio from './components/RecordingStudio';
+import StudioDetails from './components/StudioDetails';
 import JoinTeam from './components/JoinTeam';
 
 import { AuthProvider } from './admin/AuthContext';
@@ -28,21 +29,46 @@ import FirebaseSeed from './admin/FirebaseSeed';
 const App = () => {
   const [view, setView] = useState('LANDING');
   const [booking, setBooking] = useState({
-    service: null,
+    services: [], // Changed from service to services
     barber: null,
     date: null,
     time: null,
-    customer: { name: '', phone: '' }
+    customer: { name: '', phone: '' },
+    studioInfo: { description: '', hours: 1 } // Added for Music Studio
   });
 
+  const [preferredCategory, setPreferredCategory] = useState(null);
+
   const nextStep = (step) => setView(step);
-  const handleBarberStart = () => nextStep('SERVICES');
-  const handleStudioStart = () => nextStep('STUDIO');
+  const handleBarberStart = () => {
+    setPreferredCategory('Barber Shop');
+    nextStep('SERVICES');
+  };
+  const handleStudioStart = () => {
+    setPreferredCategory('Music Studio');
+    nextStep('SERVICES');
+  };
   const handleJoinStart = () => nextStep('JOIN');
 
-  const handleServiceSelect = (service) => {
-    setBooking(prev => ({ ...prev, service }));
-    nextStep('CREW');
+  const handleServiceSelect = (selectedServices) => {
+    const isStudioBooking = selectedServices.some(s => s.category === 'Music Studio');
+
+    setBooking(prev => ({
+      ...prev,
+      services: selectedServices,
+      barber: isStudioBooking ? { name: 'ESTUDIO' } : prev.barber // Studio doesn't need a specific barber selection
+    }));
+
+    if (isStudioBooking) {
+      nextStep('STUDIO_DETAILS');
+    } else {
+      nextStep('CREW');
+    }
+  };
+
+  const handleStudioDetailsComplete = (details) => {
+    setBooking(prev => ({ ...prev, studioInfo: details }));
+    nextStep('BOOKING');
   };
 
   const handleBarberSelect = (barber) => {
@@ -50,8 +76,8 @@ const App = () => {
     nextStep('BOOKING');
   };
 
-  const handleBookingDateTime = ({ date, time }) => {
-    setBooking(prev => ({ ...prev, date, time }));
+  const handleBookingDateTime = ({ location, date, time }) => {
+    setBooking(prev => ({ ...prev, location, date, time }));
     nextStep('CONTACT');
   };
 
@@ -62,12 +88,14 @@ const App = () => {
 
   const reset = () => {
     setBooking({
-      service: null,
+      services: [],
       barber: null,
       date: null,
       time: null,
-      customer: { name: '', phone: '' }
+      customer: { name: '', phone: '' },
+      studioInfo: { description: '', hours: 1 }
     });
+    setPreferredCategory(null);
     setView('LANDING');
   };
 
@@ -84,11 +112,20 @@ const App = () => {
       {view === 'STUDIO' && <RecordingStudio onBack={reset} />}
       {view === 'JOIN' && <JoinTeam onBack={reset} />}
 
+      {view === 'STUDIO_DETAILS' && (
+        <StudioDetails
+          onComplete={handleStudioDetailsComplete}
+          onBack={() => setView('SERVICES')}
+          booking={booking}
+        />
+      )}
+
       {view === 'SERVICES' && (
         <ServiceMenu
           onSelect={handleServiceSelect}
           onBack={reset}
-          selectedService={booking.service}
+          initialSelected={booking.services}
+          preferredCategory={preferredCategory}
         />
       )}
 
