@@ -11,14 +11,14 @@ const ServicesManagement = () => {
 
     const [formData, setFormData] = useState({
         name: '',
-        category: 'MÉTELE AL CABELLO',
+        category: 'Barber Shop',
         price: '',
         desc: '',
         tag: '',
         disabled: false
     });
 
-    const categories = ["MÉTELE AL CABELLO", "BARBA Y MÁS", "TRATAMIENTOS", "ADICIONALES"];
+    const categories = ["Barber Shop", "Music Studio"];
 
     const handleEdit = (service) => {
         setCurrentService(service);
