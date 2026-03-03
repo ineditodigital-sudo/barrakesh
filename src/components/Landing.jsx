@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import Lenis from 'lenis';
+import { useBranches } from '../admin/data';
 
 const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
+    const [branches] = useBranches();
+
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.5,
@@ -372,25 +375,21 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
                         {/* Branches Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                                { name: "Barrakesh Centro", addr: "Av. Francisco I. Madero 234, Zona Centro, Aguascalientes", dist: "389m", hours: "09:00 - 20:00", phone: "+52 449 123 4567" },
-                                { name: "Barrakesh Pulgas Pandas", addr: "Av. Universidad 1001, Pulgas Pandas, Aguascalientes", dist: "2.6km", hours: "09:00 - 19:00", phone: "+52 449 456 7890" },
-                                { name: "Barrakesh Altaria", addr: "Plaza Altaria, Blvd. a Zacatecas Nte. 849, Aguascalientes", dist: "4.4km", hours: "10:00 - 21:00", phone: "+52 449 234 5678" },
-                                { name: "Barrakesh Villasunción", addr: "Av. Aguascalientes Sur 220, Villasunción, Aguascalientes", dist: "4.8km", hours: "09:00 - 20:00", phone: "+52 449 345 6789" }
-                            ].map((branch, i) => (
+                            {branches.map((branch, i) => (
                                 <div key={i} className="bg-surface/50 border border-white/5 p-4 md:p-6 hover:border-primary transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-20 transition-opacity">
                                         <span className="material-symbols-outlined !text-4xl text-primary">location_on</span>
                                     </div>
                                     <div className="flex justify-between items-start mb-2 md:mb-4">
-                                        <span className="bg-primary text-black text-[10px] font-bold px-2 py-0.5 uppercase">Estado: Abierto</span>
-                                        <span className="text-white/40 font-mono text-[10px]">{branch.dist}</span>
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 uppercase ${branch.status === 'Operativo' ? 'bg-primary text-black' : 'bg-red-500 text-white'}`}>
+                                            {branch.status === 'Operativo' ? 'Estado: Abierto' : 'Estado: ' + branch.status}
+                                        </span>
                                     </div>
                                     <h3
                                         className="font-display text-lg md:text-xl font-bold text-white uppercase tracking-tight mb-2 group-hover:text-primary transition-colors cursor-pointer"
-                                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.name + ' ' + branch.addr)}`, '_blank')}
+                                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Barrakesh ' + branch.name + ' ' + branch.addr)}`, '_blank')}
                                     >
-                                        {branch.name}
+                                        Barrakesh {branch.name}
                                     </h3>
                                     <p
                                         className="text-white/40 font-mono text-[8px] md:text-[10px] uppercase mb-4 md:mb-6 leading-relaxed cursor-pointer hover:text-white"
@@ -401,12 +400,12 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
                                     <div className="space-y-2 md:space-y-4 pt-2 md:pt-4 border-t border-white/5">
                                         <div className="flex justify-between text-[10px] font-mono">
-                                            <span className="text-white/20 uppercase tracking-widest">Horario</span>
-                                            <span className="text-white/60">{branch.hours}</span>
+                                            <span className="text-white/20 uppercase tracking-widest">Capacidad</span>
+                                            <span className="text-white/60">{branch.capacity}</span>
                                         </div>
                                         <div className="flex justify-between text-[10px] font-mono">
-                                            <span className="text-white/20 uppercase tracking-widest">Teléfono</span>
-                                            <span className="text-white/60">{branch.phone}</span>
+                                            <span className="text-white/20 uppercase tracking-widest">Ciudad</span>
+                                            <span className="text-white/60">{branch.city}</span>
                                         </div>
                                     </div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useBranches } from '../admin/data';
 
 const dates = [
     { day: "SEP", num: "12", label: "Lun" },
@@ -40,19 +41,21 @@ const timeBlocks = [
 ];
 
 const BookingFlow = ({ onComplete, onBack, booking }) => {
+    const [branches, { loading: branchesLoading }] = useBranches();
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedDate, setSelectedDate] = useState(dates[0]);
     const [selectedTime, setSelectedTime] = useState(null);
 
-    const branches = [
-        { id: 1, name: "CENTRO", addr: "Madero 234" },
-        { id: 2, name: "PULGAS PANDAS", addr: "Univ. 1001" },
-        { id: 3, name: "ALTARIA", addr: "Blvd. Zacatecas" },
-        { id: 4, name: "VILLASUNCIÓN", addr: "S. Sur 220" },
-    ];
-
     const barber = booking?.barber || { name: "Kash", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjVGDclJ03HtJjhEY6sT6KueaFJU_KAkN31hOhCRfLwLmPzv_YRURdqMtKosR6vetPwImfMt_ERO3D7Dhw7qbeIaKvIV_qOs-8JvPD3zcdvqMlJMruutzUf4SiAIGeDNc36dICIuHQEAqGey-BKdCdgLq_gFeGvPCc2XIv8YUcj5TQqWkxPwiqseAUszCZXwA5UdXhgT8xToVYiivSJ9z5xm0XmmfsOTkfl0OV9FxydiIaZAo8i1NskqS3nWMo37pG3g9bcAJchQw" };
     const service = booking?.service || { name: "Skin Fade", price: 35 };
+
+    if (branchesLoading) {
+        return (
+            <div className="min-h-screen bg-[#111111] flex items-center justify-center">
+                <div className="size-12 border-4 border-primary border-t-transparent animate-spin rounded-full"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-background-dark text-white font-mono antialiased overflow-x-hidden min-h-screen flex flex-col relative">
@@ -88,7 +91,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     <div className="md:hidden py-6 border-b border-white/10 bg-surface/50 mb-8 -mx-4 px-4 animate-fade-in-up">
                         <div className="flex items-center gap-4">
                             <div className="relative size-14 overflow-hidden border border-white/20">
-                                <img src={barber.image} alt={barber.name} className="object-cover w-full h-full grayscale contrast-125" />
+                                <img src={barber.image || 'https://via.placeholder.com/400?text=' + barber.name} alt={barber.name} className="object-cover w-full h-full grayscale contrast-125" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-primary font-bold tracking-widest uppercase mb-1">Barbero</span>
@@ -103,7 +106,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                         <div className="px-4 mb-4">
                             <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Sucursal</h2>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 px-4 pb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4">
                             {branches.map((b) => {
                                 const isSelected = selectedLocation?.id === b.id;
                                 return (
@@ -192,7 +195,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                             <span className="text-[10px] text-primary font-bold tracking-[0.3em] uppercase block mb-4">/// Resumen</span>
                             <div className="flex items-center gap-4 border-b border-white/10 pb-6">
                                 <div className="size-20 overflow-hidden border border-white/20 border-primary">
-                                    <img src={barber.image} alt={barber.name} className="object-cover w-full h-full grayscale" />
+                                    <img src={barber.image || 'https://via.placeholder.com/400?text=' + barber.name} alt={barber.name} className="object-cover w-full h-full grayscale" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-white/40 text-[10px] uppercase font-mono">Estilista</span>
@@ -267,4 +270,3 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
 };
 
 export default BookingFlow;
-

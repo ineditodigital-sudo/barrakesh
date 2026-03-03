@@ -3,6 +3,8 @@ import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
 import { useBarbers, useAppointments, useCustomers } from './data';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -20,12 +22,131 @@ const AdminDashboard = () => {
 
     if (!user || user.role !== 'SUPER_ADMIN') return null;
 
+    const totalRevenue = appointments.reduce((acc, apt) => {
+        const priceStr = String(apt.total || '0').replace(/[^0-9.]/g, '');
+        const price = parseFloat(priceStr) || 0;
+        return acc + price;
+    }, 0);
+
     const stats = [
-        { label: "Ventas Totales", value: "$12,450.00", icon: "payments", trend: "+12%", color: "primary" },
+        { label: "Ventas Totales", value: `$${totalRevenue.toLocaleString()}`, icon: "payments", trend: "+12%", color: "primary" },
         { label: "Citas Hoy", value: appointments.length, icon: "calendar_today", trend: `+${appointments.length}`, color: "white" },
         { label: "Clientes", value: customers.length, icon: "person_add", trend: "Activos", color: "white" },
         { label: "Staff", value: barbers.length, icon: "monitoring", trend: "Barberos", color: "white" },
     ];
+
+    const generateWeeklyPDF = async () => {
+        try {
+            console.log("Generating PDF with Logo...");
+            const doc = new jsPDF();
+
+            // Load logo image
+            const img = new Image();
+            img.src = '/LOGO-BARRAKESH-HORIZONTAL-TXT-NEGRO.png';
+
+            // Wait for image to load
+            await new Promise((resolve) => {
+                img.onload = resolve;
+                img.onerror = () => {
+                    console.error("Could not load logo image");
+                    resolve();
+                };
+            });
+
+            // Header Background
+            doc.setFillColor(254, 225, 1); // Primary Yellow
+            doc.rect(0, 0, 210, 40, 'F');
+
+            // Add Logo
+            try {
+                if (img.complete && img.naturalWidth !== 0) {
+                    // Logo is approx 4:1 ratio normally
+                    doc.addImage(img, 'PNG', 15, 8, 55, 15);
+                } else {
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(24);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("BARRAKESH", 20, 25);
+                }
+            } catch (e) {
+                console.warn("Logo error, fallback to text:", e);
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(24);
+                doc.setFont("helvetica", "bold");
+                doc.text("BARRAKESH", 20, 25);
+            }
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("SISTEMA DE GESTIÓN // REPORTE OPERATIVO", 20, 32);
+
+            const today = new Date().toLocaleDateString('es-MX', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(`GENERADO EL: ${today.toUpperCase()}`, 150, 25);
+
+            // Summary Section
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("RESUMEN DE MÉTRICAS", 20, 55);
+
+            autoTable(doc, {
+                startY: 60,
+                head: [['INDICADOR', 'VALOR']],
+                body: [
+                    ['INGRESOS ESTIMADOS', stats[0].value],
+                    ['TOTAL DE CITAS REALIZADAS', String(stats[1].value)],
+                    ['BASE DE CLIENTES', String(stats[2].value)],
+                    ['BARBEROS EN TURNO', String(stats[3].value)]
+                ],
+                theme: 'grid',
+                headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 9, cellPadding: 4, font: "helvetica" },
+                columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } }
+            });
+
+            // Detailed Appointments
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("DESGLOSE DE ACTIVIDAD RECIENTE", 20, doc.lastAutoTable.finalY + 15);
+
+            const tableData = appointments.slice(0, 25).map(apt => [
+                (apt.client || 'N/A').toUpperCase(),
+                (apt.barber || 'N/A').toUpperCase(),
+                (apt.service || 'N/A').toUpperCase(),
+                apt.time || 'N/A',
+                apt.total || 'N/A'
+            ]);
+
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [['CLIENTE', 'BARBERO', 'SERVICIO', 'HORA', 'MONTO']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [20, 20, 20] },
+                styles: { fontSize: 8, font: "helvetica" },
+                alternateRowStyles: { fillColor: [245, 245, 245] }
+            });
+
+            // Footer
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setFontSize(7);
+            doc.setTextColor(100, 100, 100);
+            doc.text("ESTE DOCUMENTO ES UN REPORTE GENERADO POR BARRAKESH CLOUD ERP.", 20, finalY);
+            doc.text("RESTRICCIONES: USO INTERNO Y CONFIDENCIAL.", 20, finalY + 4);
+
+            doc.save(`Barrakesh_Reporte_${new Date().getTime()}.pdf`);
+            console.log("PDF generated successfully");
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            alert("Error al generar el PDF. Verifica que la imagen existe.");
+        }
+    };
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">
@@ -76,20 +197,26 @@ const AdminDashboard = () => {
                                 </tr>
                             </thead>
                             <tbody className={`divide-y ${isDarkMode ? 'divide-white/5' : 'divide-black/5'}`}>
-                                {appointments.slice(0, 7).map((apt, idx) => (
-                                    <tr key={idx} className={`hover:bg-primary/5 transition-colors cursor-pointer group ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-black tracking-tight uppercase leading-none">{apt.client}</span>
-                                                <span className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-[9px] mt-2 font-bold`}>{apt.service}</span>
-                                            </div>
-                                        </td>
-                                        <td className={`px-6 py-4 text-[11px] font-bold ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}>{apt.barber}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <span className="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-lg">{apt.time}</span>
-                                        </td>
+                                {appointments.length > 0 ? (
+                                    appointments.slice(0, 7).map((apt, idx) => (
+                                        <tr key={idx} className={`hover:bg-primary/5 transition-colors cursor-pointer group ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-black tracking-tight uppercase leading-none">{apt.client}</span>
+                                                    <span className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-[9px] mt-2 font-bold`}>{apt.service}</span>
+                                                </div>
+                                            </td>
+                                            <td className={`px-6 py-4 text-[11px] font-bold ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}>{apt.barber}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-lg">{apt.time}</span>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="3" className="px-6 py-10 text-center text-[10px] font-bold uppercase tracking-widest text-white/20">No hay citas registradas</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -119,7 +246,7 @@ const AdminDashboard = () => {
                         </div>
                     </div>
 
-                    {/* Quick Action Card (Apple-style Notification) - THE PROBLEM CARD */}
+                    {/* Quick Action Card (Apple-style Notification) */}
                     <div className={`p-8 relative overflow-hidden rounded-2xl group hover:scale-[1.02] transition-all cursor-pointer shadow-2xl border ${isDarkMode ? '!bg-primary !border-primary shadow-primary/20' : '!bg-black !border-black shadow-black/30'}`}>
                         <div className={`absolute top-[-10px] right-[-10px] p-3 ${isDarkMode ? 'text-black/10' : 'text-white/10'}`}>
                             <span className="material-symbols-outlined !text-7xl rotate-12">receipt_long</span>
@@ -128,7 +255,7 @@ const AdminDashboard = () => {
                             <h3 className={`text-lg font-black tracking-tighter mb-1 select-none ${isDarkMode ? '!text-black' : '!text-white'}`}>Resumen</h3>
                             <p className={`text-[11px] font-bold mb-6 select-none leading-tight ${isDarkMode ? '!text-black/80' : '!text-white'}`}>Reporte semanal listo.</p>
                             <button
-                                onClick={(e) => { e.stopPropagation(); navigate('/admin/appointments'); }}
+                                onClick={(e) => { e.stopPropagation(); generateWeeklyPDF(); }}
                                 className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 ${isDarkMode
                                     ? '!bg-black !text-white hover:!bg-white hover:!text-black shadow-black/20'
                                     : '!bg-primary !text-black hover:!bg-white hover:!text-black shadow-primary/40'

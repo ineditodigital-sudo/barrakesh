@@ -37,6 +37,7 @@ const AdminLayout = () => {
         { name: 'Sucursales', path: '/admin/branches', icon: 'location_on', roles: ['SUPER_ADMIN'] },
         { name: 'Clientes', path: '/admin/customers', icon: 'person_search', roles: ['SUPER_ADMIN', 'BARBER'] },
         { name: 'Mi Perfil', path: '/admin/profile', icon: 'account_circle', roles: ['BARBER'] },
+        { name: 'Servicios', path: '/admin/services', icon: 'content_cut', roles: ['SUPER_ADMIN'] },
         { name: 'Historial', path: '/admin/appointments', icon: 'database', roles: ['SUPER_ADMIN'] },
     ];
 

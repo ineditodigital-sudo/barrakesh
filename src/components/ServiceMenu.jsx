@@ -1,50 +1,19 @@
 import React, { useState } from 'react';
-
-const services = [
-    {
-        id: 1,
-        category: "MÉTELE AL CABELLO",
-        name: "Fade a Navaja",
-        price: 35,
-        desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.",
-        tag: "Popular"
-    },
-    {
-        id: 2,
-        category: "MÉTELE AL CABELLO",
-        name: "Corte a Tijera",
-        price: 40,
-        desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido."
-    },
-    {
-        id: 3,
-        category: "MÉTELE AL CABELLO",
-        name: "Corte Rapado",
-        price: 25,
-        desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio."
-    },
-    {
-        id: 4,
-        category: "BARBA Y MÁS",
-        name: "Esculpido de Barba",
-        price: 25,
-        desc: "Toalla caliente. Tratamiento de aceite. Delineado a navaja y forma."
-    },
-    {
-        id: 5,
-        category: "BARBA Y MÁS",
-        name: "El Paquete Completo",
-        price: 60,
-        desc: "Corte completo + barba + facial.",
-        disabled: true,
-        tag: "Agotado"
-    },
-];
+import { useServices } from '../admin/data';
 
 const ServiceMenu = ({ onSelect, onBack, selectedService: initialSelected }) => {
+    const [services, { loading }] = useServices();
     const [selected, setSelected] = useState(initialSelected);
 
     const categories = [...new Set(services.map(s => s.category))];
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#111111] flex items-center justify-center">
+                <div className="size-12 border-4 border-primary border-t-transparent animate-spin rounded-full"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative min-h-screen bg-background-dark font-display selection:bg-primary selection:text-asphalt">
@@ -146,7 +115,7 @@ const ServiceMenu = ({ onSelect, onBack, selectedService: initialSelected }) => 
                         <div className="flex justify-between items-end mb-3 px-1">
                             <div className="flex flex-col">
                                 <span className="text-steel font-mono text-[10px] uppercase">Total Est.</span>
-                                <span className="text-primary font-display text-3xl leading-none">${selected ? selected.price.toFixed(2) : '0.00'}</span>
+                                <span className="text-primary font-display text-3xl leading-none">${selected ? parseFloat(selected.price).toFixed(2) : '0.00'}</span>
                             </div>
                             <span className="text-white font-mono text-xs mb-1 uppercase">
                                 {selected ? '1 ÍTEM SELECCIONADO' : '0 ÍTEMS SELECCIONADOS'}
@@ -174,4 +143,3 @@ const ServiceMenu = ({ onSelect, onBack, selectedService: initialSelected }) => 
 };
 
 export default ServiceMenu;
-

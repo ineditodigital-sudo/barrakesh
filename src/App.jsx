@@ -20,8 +20,10 @@ import GeneralAgenda from './admin/GeneralAgenda';
 import BarberAgenda from './admin/BarberAgenda';
 import BranchesManagement from './admin/BranchesManagement';
 import CustomerManagement from './admin/CustomerManagement';
+import ServicesManagement from './admin/ServicesManagement';
 import AppointmentHistory from './admin/AppointmentHistory';
 import BarberProfile from './admin/BarberProfile';
+import FirebaseSeed from './admin/FirebaseSeed';
 
 const App = () => {
   const [view, setView] = useState('LANDING');
@@ -141,9 +143,12 @@ const App = () => {
             <Route path="barbers" element={<BarberManagement />} />
             <Route path="branches" element={<BranchesManagement />} />
             <Route path="customers" element={<CustomerManagement />} />
+            <Route path="services" element={<ServicesManagement />} />
             <Route path="profile" element={<BarberProfile />} />
             <Route path="appointments" element={<AppointmentHistory />} />
           </Route>
+
+          <Route path="/admin/setup" element={<FirebaseSeed />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

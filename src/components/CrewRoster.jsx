@@ -1,30 +1,18 @@
 import React from 'react';
-
-const barbers = [
-    {
-        id: 1,
-        name: "KASH",
-        spec: ["Fades", "Delineados"],
-        status: "LIVE",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBLgrqD8JRSoso5i_J9RPepkZYNZh7692WWxPJar-WkNUtKc9USsnyppiEjqiR6e9LXqDboycnkgJqbVmId6gAJhufkkKa2-bOTfy_Mz8kasLPBy5HZmStSwTmrxm0V22-yjFPQgpcsLIon3U4dCiTN0_hK5lXVr4J6J7fYfK9WmEECTLiPvOBst-KIC_5PPnJmfJxR9seaDAYtXgGyHLGiQ5Oz1wokSl2h8kjrNatOVhRR5jW69ycD0xDKPw_Fon909ks2KSFD7fs"
-    },
-    {
-        id: 2,
-        name: "JAX",
-        spec: ["Barba", "Clásico"],
-        status: "AWAY",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKggvCU8UeYT6V0IbhZuT8v4IerSC33clz1BFiAbEHn9cTC3ta_YQZOW-cVy-dKTJAHqfY9iQPKICKjDaQdmDJpYycugseT9RVwliCd5L_blOTWWGtBPRpXnEOObLbCgKmXYj0Ij4KkesMpXpNu6Mx3_Q5pen_6IA3sJPaiJqnO8BfKJY3JnDXvfsNw4GqRYRxpbfq0tbuSjiMZp_DFfN5Nai_RIF0h50GnbbHMk3pbGQiPi86f1eY2dzoRSgDzhU12Vo8uMniwhA"
-    },
-    {
-        id: 3,
-        name: "RICO",
-        spec: ["Tijera", "Estilo"],
-        status: "LIVE",
-        image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDi_zO8TF93ZyE2qtxYd9z4eDkRi9hz_Lf3rlOCMWac8fZyOMRaBTNxBpN8kYDhiMwKOIiPNB0HJ-gRHniIjafEHg0qyLkDIeu-f85wkW_48FRd6Noo0_0dZF93aZpfVPwSZxpdVHe63XV4VY2vuQKaxTNBaxvQpmMn_Q4gbsiH5UMYkXoAsBO-cb46ojMh51ktIhWfqPKZNojUOSkKAELtshfq_tEm20i9juE4unFekNnexMm0ThAqHAYE8ZVwvFLAU8NqzqkRMgI"
-    }
-];
+import { useBarbers, useAppointments } from '../admin/data';
 
 const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
+    const [barbers, { loading: barbersLoading }] = useBarbers();
+    const [appointments, { loading: appointmentsLoading }] = useAppointments();
+
+    if (barbersLoading || appointmentsLoading) {
+        return (
+            <div className="min-h-screen bg-[#111111] flex items-center justify-center">
+                <div className="size-12 border-4 border-primary border-t-transparent animate-spin rounded-full"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-background-dark font-display min-h-screen flex flex-col overflow-hidden relative selection:bg-primary selection:text-black">
             {/* Noise Texture Overlay */}
@@ -53,7 +41,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
             {/* Main Carousel Area / Grid on Desktop */}
             <main className="flex-1 w-full overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory flex md:flex-row md:flex-wrap md:justify-center gap-6 md:gap-12 md:gap-y-24 px-6 md:px-16 items-center md:items-start no-scrollbar pb-12 md:pb-32 md:pt-12 relative z-0">
                 {barbers.map((b, idx) => {
-                    const isAway = b.status === "AWAY";
+                    const isAway = b.status === "AWAY" || b.status === "Inactivo";
                     return (
                         <div
                             key={b.id}
@@ -64,7 +52,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                                 {/* Image Background */}
                                 <div
                                     className={`absolute inset-0 bg-cover bg-center img-brutal transition-transform duration-700 ${!isAway && 'group-hover:scale-105'}`}
-                                    style={{ backgroundImage: `url('${b.image}')` }}
+                                    style={{ backgroundImage: `url('${b.image || 'https://via.placeholder.com/400x600?text=' + b.name}')` }}
                                 />
 
                                 {/* Gradient Overlay */}
@@ -98,9 +86,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                                 {!isAway && (
                                     <div className="absolute bottom-12 right-4 text-right">
                                         <p className="text-neutral-400 text-[10px] font-mono uppercase mb-1">Espec.</p>
-                                        {b.spec.map((s, idx) => (
-                                            <p key={idx} className="text-white text-lg font-bold uppercase leading-none">{s} ///</p>
-                                        ))}
+                                        <p className="text-white text-lg font-bold uppercase leading-none">{b.spec} ///</p>
                                     </div>
                                 )}
                             </div>
@@ -124,14 +110,13 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
 
 
             {/* Bottom Navigation / Stats Bar */}
-            <div className="flex-none bg-surface border-t border-neutral-800 px-6 py-6 font-mono uppercase">
+            <div className="flex-none bg-surface border-t border-neutral-800 px-6 py-6 font-mono uppercase" style={{ zIndex: 50 }}>
                 <div className="flex justify-between items-center text-xs">
                     <div className="text-neutral-500">
                         <span className="text-primary mr-1">///</span> Disponibilidad
                     </div>
                     <div className="flex gap-4">
-                        <div className="text-white">Hoy <span className="text-primary">4 espacios</span></div>
-                        <div className="text-neutral-500">Mañana <span className="text-white">Lleno</span></div>
+                        <div className="text-white">Hoy <span className="text-primary">ACTIVO</span></div>
                     </div>
                 </div>
             </div>
@@ -140,4 +125,3 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
 };
 
 export default CrewRoster;
-

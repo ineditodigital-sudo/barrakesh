@@ -111,12 +111,62 @@
   .animate-fade-in-up {
     animation: fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
   }
+
+  /* Modal System - Refined & Centered */
+  .modal-overlay {
+    @apply fixed inset-0 flex justify-center items-center overflow-y-auto overflow-x-hidden;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
+    z-index: 9999 !important;
+    padding: 1.5rem;
+    animation: fadeInOverlay 0.3s ease-out;
+  }
+
+  .modal-content-wrapper {
+    @apply relative w-full h-auto flex flex-col items-center;
+    z-index: 10000 !important;
+    pointer-events: none;
+    max-height: 90vh;
+    /* Prevents being cut off if too tall */
+  }
+
+  .modal-body {
+    @apply relative w-full pointer-events-auto;
+    z-index: 10001 !important;
+    animation: modalScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(20px);
   }
 
   to {
