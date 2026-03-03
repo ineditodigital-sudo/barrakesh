@@ -7,11 +7,13 @@ const AppointmentHistory = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { isDarkMode } = useTheme();
 
-    const filtered = appointments.filter(apt =>
-        apt.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.service.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = appointments.filter(apt => {
+        const clientName = apt.customer?.name || apt.client || "";
+        const serviceNames = Array.isArray(apt.services) ? apt.services.map(s => s.name).join(' ') : apt.service || "";
+        return clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            apt.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            serviceNames.toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
     const handlePrint = () => {
         window.print();
@@ -38,8 +40,8 @@ const AppointmentHistory = () => {
                     <button
                         onClick={handlePrint}
                         className={`ios-button px-8 py-3 font-black text-[10px] tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 shadow-lg active:scale-95 ${isDarkMode
-                                ? 'bg-primary text-black hover:bg-white shadow-primary/20'
-                                : 'bg-black text-white hover:bg-primary hover:text-black shadow-black/30'
+                            ? 'bg-primary text-black hover:bg-white shadow-primary/20'
+                            : 'bg-black text-white hover:bg-primary hover:text-black shadow-black/30'
                             }`}
                     >
                         <span className="material-symbols-outlined !text-lg">picture_as_pdf</span>
@@ -92,16 +94,18 @@ const AppointmentHistory = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-[11px] font-black tracking-tight uppercase leading-none">{apt.client}</span>
-                                            <span className={`text-[9px] font-bold uppercase tracking-tight mt-2 ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-gray-500`}>{apt.service} /// {apt.barber}</span>
+                                            <span className="text-[11px] font-black tracking-tight uppercase leading-none">{apt.customer?.name || apt.client || 'N/A'}</span>
+                                            <span className={`text-[9px] font-bold uppercase tracking-tight mt-2 ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-gray-500`}>
+                                                {Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service} /// {apt.barber?.name || apt.barber || 'N/A'}
+                                            </span>
                                         </div>
                                     </td>
                                     <td className={`px-6 py-4 text-[10px] font-black uppercase hidden sm:table-cell ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-black`}>{apt.branch}</td>
                                     <td className={`px-6 py-4 text-right text-base font-black tracking-tighter print:text-black ${isDarkMode ? 'text-white' : 'text-black'}`}>{apt.total}</td>
                                     <td className="px-6 py-4">
                                         <span className={`text-[8px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-widest border print:border-black print:text-black ${apt.status === 'Confirmado' ? 'bg-primary/20 text-primary border-primary/20' :
-                                                apt.status === 'Finalizado' ? 'bg-green-500/10 text-green-500 border-green-500/10' :
-                                                    'bg-red-500/10 text-red-500 border-red-500/10'
+                                            apt.status === 'Finalizado' ? 'bg-green-500/10 text-green-500 border-green-500/10' :
+                                                'bg-red-500/10 text-red-500 border-red-500/10'
                                             }`}>{apt.status}</span>
                                     </td>
                                 </tr>

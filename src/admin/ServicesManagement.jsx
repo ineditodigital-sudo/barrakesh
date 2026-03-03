@@ -55,7 +55,7 @@ const ServicesManagement = () => {
                     <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Define el arsenal de Barrakesh y ajusta precios.</p>
                 </div>
                 <button
-                    onClick={() => { setCurrentService(null); setFormData({ name: '', category: 'MÉTELE AL CABELLO', price: '', desc: '', tag: '', disabled: false }); setIsModalOpen(true); }}
+                    onClick={() => { setCurrentService(null); setFormData({ name: '', category: 'Barber Shop', price: '', desc: '', tag: '', disabled: false }); setIsModalOpen(true); }}
                     className="ios-button bg-primary text-black px-6 py-3 font-bold text-xs tracking-tight hover:bg-black hover:text-white transition-all shadow-lg w-full md:w-auto"
                 >
                     <span className="material-symbols-outlined !text-lg mr-2">add</span>

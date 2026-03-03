@@ -116,9 +116,9 @@ const AdminDashboard = () => {
             doc.text("DESGLOSE DE ACTIVIDAD RECIENTE", 20, doc.lastAutoTable.finalY + 15);
 
             const tableData = appointments.slice(0, 25).map(apt => [
-                (apt.client || 'N/A').toUpperCase(),
-                (apt.barber || 'N/A').toUpperCase(),
-                (apt.service || 'N/A').toUpperCase(),
+                (apt.customer?.name || apt.client || 'N/A').toUpperCase(),
+                (apt.barber?.name || apt.barber || 'N/A').toUpperCase(),
+                (Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service || 'N/A').toUpperCase(),
                 apt.time || 'N/A',
                 apt.total || 'N/A'
             ]);
@@ -202,11 +202,13 @@ const AdminDashboard = () => {
                                         <tr key={idx} className={`hover:bg-primary/5 transition-colors cursor-pointer group ${isDarkMode ? 'text-white' : 'text-black'}`}>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-black tracking-tight uppercase leading-none">{apt.client}</span>
-                                                    <span className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-[9px] mt-2 font-bold`}>{apt.service}</span>
+                                                    <span className="text-xs font-black tracking-tight uppercase leading-none">{apt.customer?.name || apt.client}</span>
+                                                    <span className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-[9px] mt-2 font-bold`}>
+                                                        {Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service}
+                                                    </span>
                                                 </div>
                                             </td>
-                                            <td className={`px-6 py-4 text-[11px] font-bold ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}>{apt.barber}</td>
+                                            <td className={`px-6 py-4 text-[11px] font-bold ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}>{apt.barber?.name || apt.barber}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <span className="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-lg">{apt.time}</span>
                                             </td>

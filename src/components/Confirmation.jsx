@@ -1,6 +1,8 @@
 import React from 'react';
+import { useBranches } from '../admin/data';
 
 const Confirmation = ({ booking, onReset }) => {
+    const [branches] = useBranches();
     const isStudioBooking = booking?.services?.some(s => s.category === 'Music Studio');
     const themeColor = isStudioBooking ? "#007AFF" : "#FEE101";
 
@@ -8,6 +10,19 @@ const Confirmation = ({ booking, onReset }) => {
     const services = booking?.services || [];
     const dateStr = booking?.date || "03 MAR";
     const timeStr = booking?.time || "14:00";
+
+    const selectedBranch = branches.find(b => b.name === booking?.location);
+    const googleMapsUrl = selectedBranch
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Barrakesh ' + selectedBranch.name + ' ' + selectedBranch.addr)}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Barrakesh Aguascalientes')}`;
+
+    const handleDirections = () => {
+        window.open(googleMapsUrl, '_blank');
+    };
+
+    const handleWallet = (platform) => {
+        alert(`¡Cita guardada en ${platform}! Revisa tus notificaciones.`);
+    };
 
     const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
@@ -73,7 +88,8 @@ const Confirmation = ({ booking, onReset }) => {
                                 {/* Location Row */}
                                 <div className="flex flex-col gap-1.5">
                                     <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Sede</span>
-                                    <span className="text-sm font-bold font-mono uppercase text-white">{booking?.location || 'BK CENTRO'}</span>
+                                    <span className="text-sm font-bold font-mono uppercase text-white leading-none">{booking?.location || 'BK CENTRO'}</span>
+                                    <span className="text-[10px] font-mono text-white/40 uppercase truncate">{selectedBranch?.addr || 'VER MAPA'}</span>
                                 </div>
                                 {/* Barber/Studio Row */}
                                 <div className="flex flex-col gap-1.5">
@@ -115,7 +131,10 @@ const Confirmation = ({ booking, onReset }) => {
 
                         {/* Directions Link */}
                         <div className="flex justify-center flex-col items-center gap-6">
-                            <button className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors">
+                            <button
+                                onClick={handleDirections}
+                                className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors"
+                            >
                                 <span className="font-mono text-[9px] font-bold uppercase tracking-widest ">
                                     Obtener Mapa de Acceso
                                 </span>
@@ -127,14 +146,20 @@ const Confirmation = ({ booking, onReset }) => {
 
                 {/* Wallet Integration - Enhanced Contrast */}
                 <div className="mt-10 flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-                    <button className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl">
+                    <button
+                        onClick={() => handleWallet('Apple Wallet')}
+                        className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl"
+                    >
                         <span className="material-symbols-outlined !text-2xl">apple</span>
                         <div className="flex flex-col items-start leading-tight">
                             <span className="text-[8px] uppercase font-mono font-black opacity-40">Add to</span>
                             <span className="text-xs font-black font-display uppercase tracking-tighter">Apple Wallet</span>
                         </div>
                     </button>
-                    <button className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl">
+                    <button
+                        onClick={() => handleWallet('Google Wallet')}
+                        className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl"
+                    >
                         <span className="material-symbols-outlined !text-2xl">wallet</span>
                         <div className="flex flex-col items-start leading-tight">
                             <span className="text-[8px] uppercase font-mono font-black opacity-40">Add to</span>

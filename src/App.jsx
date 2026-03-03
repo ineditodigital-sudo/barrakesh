@@ -25,6 +25,7 @@ import ServicesManagement from './admin/ServicesManagement';
 import AppointmentHistory from './admin/AppointmentHistory';
 import BarberProfile from './admin/BarberProfile';
 import FirebaseSeed from './admin/FirebaseSeed';
+import { useServices, useBranches, useAppointments } from './admin/data';
 
 const App = () => {
   const [view, setView] = useState('LANDING');
@@ -81,8 +82,23 @@ const App = () => {
     nextStep('CONTACT');
   };
 
-  const handleContactComplete = (customer) => {
-    setBooking(prev => ({ ...prev, customer }));
+  const [appointments, { addItem: addAppointment }] = useAppointments();
+
+  const handleContactComplete = async (customer) => {
+    const finalBooking = { ...booking, customer };
+    setBooking(finalBooking);
+
+    try {
+      // Save to Firebase
+      await addAppointment({
+        ...finalBooking,
+        status: 'Confirmed',
+        total: finalBooking.services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0) * (finalBooking.studioInfo?.hours || 1)
+      });
+    } catch (error) {
+      console.error("Error saving appointment:", error);
+    }
+
     nextStep('CONFIRMATION');
   };
 

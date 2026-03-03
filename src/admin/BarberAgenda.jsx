@@ -9,9 +9,10 @@ const BarberAgenda = () => {
     const [selectedDate, setSelectedDate] = useState('2026-03-02');
     const [appointments] = useAppointments();
 
-    const barberAppointments = appointments.filter(apt =>
-        apt.barber.toLowerCase() === user.name.toLowerCase()
-    );
+    const barberAppointments = appointments.filter(apt => {
+        const aptBarberName = apt.barber?.name || apt.barber || "";
+        return aptBarberName.toLowerCase() === user.name.toLowerCase();
+    });
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">
@@ -34,18 +35,20 @@ const BarberAgenda = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {barberAppointments.length > 0 ? barberAppointments.map((apt, idx) => (
                     <div key={idx} className={`ios-card p-5 group transition-all duration-300 hover:scale-[1.01] border ${apt.status === 'Confirmado' ? (isDarkMode ? 'bg-white/[0.02] border-white/10' : 'bg-white border-black/5 shadow-sm') :
-                            (isDarkMode ? 'bg-white/[0.01] opacity-50 border-white/5' : 'bg-black/[0.02] opacity-50 border-black/5')
+                        (isDarkMode ? 'bg-white/[0.01] opacity-50 border-white/5' : 'bg-black/[0.02] opacity-50 border-black/5')
                         }`}>
                         <div className="flex justify-between items-start mb-6">
                             <div className="text-3xl font-black tracking-tighter text-primary group-hover:scale-105 transition-transform">{apt.time}</div>
-                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border ${apt.status === 'Confirmado' ? 'bg-green-500/10 text-green-500 border-green-500/10' :
-                                    'bg-red-500/10 text-red-500 border-red-500/10'
-                                }`}>{apt.status}</span>
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border ${apt.status === 'Confirmed' || apt.status === 'Confirmado' ? 'bg-green-500/10 text-green-500 border-green-500/10' :
+                                'bg-red-500/10 text-red-500 border-red-500/10'
+                                }`}>{apt.status === 'Confirmed' ? 'Confirmado' : apt.status}</span>
                         </div>
 
                         <div className="space-y-1 mb-6">
-                            <h3 className={`text-base font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>{apt.client}</h3>
-                            <p className={`${isDarkMode ? 'text-white/40' : 'text-black/40'} text-[10px] font-bold uppercase tracking-widest`}>{apt.service}</p>
+                            <h3 className={`text-base font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-black'}`}>{apt.customer?.name || apt.client || 'Sin Nombre'}</h3>
+                            <p className={`${isDarkMode ? 'text-white/40' : 'text-black/40'} text-[10px] font-bold uppercase tracking-widest`}>
+                                {Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service}
+                            </p>
                         </div>
 
                         <div className={`flex items-center gap-2 pt-4 border-t ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
@@ -69,7 +72,7 @@ const BarberAgenda = () => {
                 )}
 
                 <div className={`ios-card border-2 border-dashed p-6 flex flex-col items-center justify-center min-h-[200px] transition-all cursor-pointer group ${isDarkMode ? 'bg-white/[0.01] border-white/5 text-white/5 hover:text-primary hover:border-primary/20 hover:bg-primary/5' :
-                        'bg-black/[0.01] border-black/5 text-black/5 hover:text-primary hover:border-primary/40 hover:bg-white'
+                    'bg-black/[0.01] border-black/5 text-black/5 hover:text-primary hover:border-primary/40 hover:bg-white'
                     }`}>
                     <span className="material-symbols-outlined !text-3xl mb-3 group-hover:scale-110 transition-transform">add_circle</span>
                     <span className="text-[10px] font-bold uppercase tracking-widest">Añadir Cita</span>

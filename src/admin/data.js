@@ -19,11 +19,11 @@ const INITIAL_BARBERS = [
 ];
 
 const INITIAL_SERVICES = [
-    { id: 1, category: "MÉTELE AL CABELLO", name: "Fade a Navaja", price: 35, desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.", tag: "Popular" },
-    { id: 2, category: "MÉTELE AL CABELLO", name: "Corte a Tijera", price: 40, desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido." },
-    { id: 3, category: "MÉTELE AL CABELLO", name: "Corte Rapado", price: 25, desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio." },
-    { id: 4, category: "BARBA Y MÁS", name: "Esculpido de Barba", price: 25, desc: "Toalla caliente. Tratamiento de aceite. Delineado a navaja y forma." },
-    { id: 5, category: "BARBA Y MÁS", name: "El Paquete Completo", price: 60, desc: "Corte completo + barba + facial.", disabled: true, tag: "Agotado" },
+    { id: 's1', category: "Barber Shop", name: "Fade a Navaja", price: 35, desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.", tag: "Popular" },
+    { id: 's2', category: "Barber Shop", name: "Corte a Tijera", price: 40, desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido." },
+    { id: 's3', category: "Barber Shop", name: "Corte Rapado", price: 25, desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio." },
+    { id: 's4', category: "Music Studio", name: "Sesión de Grabación", price: 50, desc: "Renta de cabina por hora. Incluye ingeniero básico.", tag: "Pro" },
+    { id: 's5', category: "Music Studio", name: "Mixing & Mastering", price: 80, desc: "Tratamiento profesional para tus tracks.", tag: "Estelar" },
 ];
 
 const INITIAL_BRANCHES = [

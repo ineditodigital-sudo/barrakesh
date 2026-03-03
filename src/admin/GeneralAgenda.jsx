@@ -55,17 +55,20 @@ const GeneralAgenda = () => {
                                         <span className={`text-xs font-bold transition-colors ${isDarkMode ? 'text-white/40 group-hover:text-primary' : 'text-black/60 group-hover:text-primary'}`}>{time}</span>
                                     </td>
                                     {barbers.map(barber => {
-                                        const apt = appointments.find(a => a.barber === barber.name && a.time === time);
+                                        const apt = appointments.find(a =>
+                                            (a.barber?.id === barber.id || a.barber?.name === barber.name || a.barber === barber.name) &&
+                                            a.time === time
+                                        );
                                         return (
                                             <td key={barber.id} className={`p-2 relative border-r last:border-r-0 min-h-[80px] ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
                                                 {apt ? (
-                                                    <div className={`p-3 rounded-xl h-full flex flex-col justify-center transition-all hover:scale-[1.02] cursor-pointer shadow-md ${apt.status === 'Confirmado'
+                                                    <div className={`p-3 rounded-xl h-full flex flex-col justify-center transition-all hover:scale-[1.02] cursor-pointer shadow-md ${apt.status === 'Confirmed' || apt.status === 'Confirmado'
                                                         ? 'bg-primary text-black'
                                                         : isDarkMode ? 'bg-white/5 border border-white/10 text-white' : 'bg-black/5 border border-black/10 text-black'
                                                         }`}>
-                                                        <span className="text-[10px] font-extrabold uppercase truncate">{apt.client}</span>
-                                                        <span className={`text-[8px] font-bold uppercase tracking-tight mt-0.5 ${apt.status === 'Confirmado' ? 'text-black/60' : isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
-                                                            {apt.service}
+                                                        <span className="text-[10px] font-extrabold uppercase truncate">{apt.customer?.name || apt.client || 'Sin Nombre'}</span>
+                                                        <span className={`text-[8px] font-bold uppercase tracking-tight mt-0.5 ${(apt.status === 'Confirmed' || apt.status === 'Confirmado') ? 'text-black/60' : isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
+                                                            {Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service}
                                                         </span>
                                                     </div>
                                                 ) : (
