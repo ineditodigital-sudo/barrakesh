@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { useBranches } from '../admin/data';
+import { useBranches, useAppointments } from '../admin/data';
 
-const dates = [
-    { day: "MAR", num: "03", label: "Hoy" },
-    { day: "MAR", num: "04", label: "Mié" },
-    { day: "MAR", num: "05", label: "Jue" },
-    { day: "MAR", num: "06", label: "Vie" },
-    { day: "MAR", num: "07", label: "Sáb" },
-    { day: "MAR", num: "09", label: "Lun" },
-];
+const generateDates = () => {
+    const days = [];
+    const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    const monthNames = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        days.push({
+            day: monthNames[d.getMonth()],
+            num: d.getDate().toString().padStart(2, '0'),
+            label: i === 0 ? "Hoy" : dayNames[d.getDay()],
+            fullDate: d.toISOString().split('T')[0]
+        });
+    }
+    return days;
+};
+
+const dynamicDates = generateDates();
 
 const generateTimeSlots = () => {
     return [
@@ -42,8 +53,9 @@ const generateTimeSlots = () => {
 
 const BookingFlow = ({ onComplete, onBack, booking }) => {
     const [branches, { loading: branchesLoading }] = useBranches();
+    const [appointments, { loading: appointmentsLoading }] = useAppointments();
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(dates[0]);
+    const [selectedDate, setSelectedDate] = useState(dynamicDates[0]);
     const [selectedTime, setSelectedTime] = useState(null);
 
     const isStudioBooking = booking.services.some(s => s.category === 'Music Studio');
@@ -56,7 +68,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
     const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
 
-    if (branchesLoading) {
+    if (branchesLoading || appointmentsLoading) {
         return (
             <div className="min-h-screen bg-[#111111] flex items-center justify-center">
                 <div className={`size-12 border-4 border border-t-transparent animate-spin rounded-full`} style={{ borderColor: themeColor }}></div>
@@ -64,12 +76,61 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
         );
     }
 
-    const timeBlocks = generateTimeSlots();
+    const checkAvailability = (time) => {
+        if (!selectedLocation || !selectedDate) return false;
+
+        // NEW: Check if time has already passed for TODAY
+        if (selectedDate.label === 'Hoy') {
+            const now = new Date();
+            const [slotH, slotM] = time.split(':').map(Number);
+            const currentH = now.getHours();
+            const currentM = now.getMinutes();
+            if (slotH < currentH || (slotH === currentH && slotM <= currentM)) {
+                return true; // Mark as "booked" (not available)
+            }
+        }
+
+        const barberName = barber?.name || "KASH";
+        const hoursRequested = isStudioBooking ? (booking.studioInfo?.hours || 1) : 1;
+
+        // Check if the current slot is taken
+        const isTaken = (t) => appointments.some(apt =>
+            apt.date === selectedDate.fullDate &&
+            apt.time === t &&
+            apt.location === selectedLocation.name &&
+            (apt.barber?.name === barberName || apt.barber === barberName) &&
+            apt.status !== 'Cancelado'
+        );
+
+        if (isTaken(time)) return true;
+
+        // For Studio: Check consecutive hours
+        if (isStudioBooking && hoursRequested > 1) {
+            const [h, m] = time.split(':').map(Number);
+            for (let i = 1; i < hoursRequested; i++) {
+                const nextH = h + i;
+                const nextTime = `${nextH.toString().padStart(2, '0')}:00`;
+                if (isTaken(nextTime)) return true;
+                if (nextH >= 20) return true;
+            }
+        }
+
+        return false;
+    };
+
+
+    const timeBlocks = generateTimeSlots().map(block => ({
+        ...block,
+        slots: block.slots.map(slot => ({
+            ...slot,
+            booked: checkAvailability(slot.time)
+        }))
+    }));
 
     return (
         <div className="bg-background-dark text-white font-mono antialiased overflow-x-hidden min-h-screen flex flex-col relative">
             {/* Noise Texture Overlay */}
-            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-[0.2]"></div>
 
             {/* Sticky Header */}
             <header className={`sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-sm border-b-2 relative`} style={{ borderBottomColor: themeColor }}>
@@ -94,7 +155,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col md:flex-row md:max-w-6xl md:mx-auto md:w-full md:gap-16 pb-24 md:pb-12 relative z-10 p-4">
+            <main className="flex-1 flex flex-col md:flex-row md:max-w-6xl md:mx-auto md:w-full md:gap-16 pb-44 md:pb-12 relative z-10 p-4">
                 {/* Left Side: Selection */}
                 <div className="flex-1 flex flex-col md:overflow-y-auto md:max-h-[calc(100vh-160px)] no-scrollbar overflow-x-hidden md:pr-4">
 
@@ -128,12 +189,12 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                             <span className="text-[10px] font-mono animate-pulse uppercase" style={{ color: themeColor }}>ACTUALIZACIONES EN VIVO</span>
                         </div>
                         <div className="flex overflow-x-auto gap-3 px-4 pb-4 no-scrollbar snap-x snap-mandatory">
-                            {dates.map((d, idx) => {
+                            {dynamicDates.map((d, idx) => {
                                 const isSelected = selectedDate.num === d.num;
                                 return (
                                     <button
                                         key={idx}
-                                        onClick={() => setSelectedDate(d)}
+                                        onClick={() => { setSelectedDate(d); setSelectedTime(null); }}
                                         className={`snap-start shrink-0 w-20 h-24 flex flex-col items-center justify-center transition-all ${isSelected ? 'text-black relative' : 'bg-transparent text-white border border-white/20'}`}
                                         style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                     >
@@ -157,8 +218,8 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
 
                     {/* Time Grid */}
                     <section className="px-4 flex-1 animate-fade-in-up [animation-delay:300ms]">
-                        <h2 className="font-display text-4xl font-bold uppercase text-white mb-6">Disponibilidad</h2>
-                        <div className="grid grid-cols-3 gap-3">
+                        <h2 className="font-display text-3xl md:text-4xl font-bold uppercase text-white mb-6">Disponibilidad</h2>
+                        <div className="grid grid-cols-3 gap-2 md:gap-3">
                             {timeBlocks.map((block, bIdx) => (
                                 <React.Fragment key={bIdx}>
                                     <div className="col-span-3 text-[10px] text-white/40 font-mono uppercase tracking-widest mt-6 first:mt-2 mb-1 pl-1">{block.label}</div>
@@ -169,7 +230,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                                 key={sIdx}
                                                 disabled={slot.booked}
                                                 onClick={() => setSelectedTime(slot.time)}
-                                                className={`relative h-14 w-full flex items-center justify-center border font-mono text-sm font-bold transition-all ${slot.booked ? 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed' :
+                                                className={`relative h-12 md:h-14 w-full flex items-center justify-center border font-mono text-sm font-bold transition-all ${slot.booked ? 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed' :
                                                     isSelected ? 'text-black z-10' :
                                                         'border-white text-white hover:bg-white hover:text-black'
                                                     }`}
@@ -245,7 +306,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                             </div>
                             <button
                                 disabled={!selectedTime || !selectedLocation}
-                                onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
+                                onClick={() => onComplete({ location: selectedLocation.name, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
                                 className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime && selectedLocation ? 'text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/10'}`}
                                 style={selectedTime && selectedLocation ? { backgroundColor: themeColor } : {}}
                             >
@@ -258,30 +319,37 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             </main>
 
             {/* Sticky Footer (Mobile Only) */}
-            <div className="md:hidden fixed bottom-0 left-0 w-full bg-[#050505] border-t border-white/10 p-4 z-40">
-                <div className="flex flex-col gap-3">
+            <div className="md:hidden fixed bottom-0 left-0 w-full bg-[#050505] border-t-2 p-4 z-40 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.8)]" style={{ borderTopColor: themeColor }}>
+                <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center text-[10px] font-mono uppercase text-white/60">
-                        <span>Total a Pagar</span>
-                        <span>Impuestos Incluidos</span>
+                        <span>Total flow</span>
+                        <span className="font-bold" style={{ color: themeColor }}>{selectedTime ? 'LISTO PARA AGENDAR' : 'COMPLETA TUS DATOS'}</span>
                     </div>
-                    <div className="flex justify-between items-end mb-2">
-                        <span className="text-white font-display text-3xl font-bold">${totalPrice.toFixed(2)}</span>
-                        <span className="font-mono text-xs uppercase tracking-tight" style={{ color: themeColor }}>
-                            {selectedTime ? `${selectedDate.label} ${selectedDate.num} @ ${selectedTime}` : 'Selecciona un horario'}
-                        </span>
+                    <div className="flex justify-between items-center bg-white/5 p-3 border border-white/10">
+                        <div className="flex flex-col">
+                            <span className="text-white font-display text-2xl font-bold leading-none mb-1">${totalPrice.toFixed(2)}</span>
+                            <span className="text-[9px] font-mono text-white/40 uppercase tracking-tighter italic">Servicios e impuestos incl.</span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-tight" style={{ color: themeColor }}>
+                                {selectedTime ? `${selectedDate.label} ${selectedDate.num} @ ${selectedTime}` : '---'}
+                            </span>
+                            <span className="text-[9px] font-mono text-white/40 uppercase">{selectedLocation?.name || 'Sin sucursal'}</span>
+                        </div>
                     </div>
                     <button
                         disabled={!selectedTime || !selectedLocation}
-                        onClick={() => onComplete({ location: selectedLocation.name, date: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
-                        className={`w-full h-14 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all group ${selectedTime && selectedLocation ? 'text-black' : 'bg-surface text-white/20 cursor-not-allowed'
+                        onClick={() => onComplete({ location: selectedLocation.name, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime })}
+                        className={`w-full h-14 mt-1 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all active:scale-[0.98] ${selectedTime && selectedLocation ? 'text-black shadow-lg' : 'bg-surface text-white/20 cursor-not-allowed'
                             }`}
                         style={selectedTime && selectedLocation ? { backgroundColor: themeColor } : {}}
                     >
-                        <span>ASEGURAR EL FLOW 🔥</span>
-                        <span className="material-symbols-outlined !text-3xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        <span className="text-sm">ASEGURAR EL FLOW 🔥</span>
+                        <span className="material-symbols-outlined !text-2xl group-active:translate-x-1 transition-transform">arrow_forward</span>
                     </button>
                 </div>
             </div>
+
         </div>
     );
 };

@@ -11,7 +11,7 @@ const RecordingStudio = ({ onBack }) => {
 
     return (
         <div className="min-h-screen bg-black font-display text-white selection:bg-accent-blue selection:text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
-            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+            {/* Noise Texture Overlay Removed */}
 
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-blue-500/10 blur-[150px] rounded-full"></div>

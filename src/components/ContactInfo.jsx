@@ -3,13 +3,24 @@ import React, { useState } from 'react';
 const ContactInfo = ({ onComplete, onBack, booking }) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
+    const [isPhoneValid, setIsPhoneValid] = useState(false);
 
     const isStudioBooking = booking?.services?.some(s => s.category === 'Music Studio');
     const themeColor = isStudioBooking ? "#007AFF" : "#FEE101";
 
+    const handlePhoneChange = (value) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length <= 10) {
+            setPhone(cleaned);
+            setIsPhoneValid(cleaned.length === 10);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onComplete({ name, phone });
+        if (isPhoneValid && name.trim()) {
+            onComplete({ name, phone });
+        }
     };
 
     return (
@@ -62,23 +73,27 @@ const ContactInfo = ({ onComplete, onBack, booking }) => {
                         </div>
 
                         <div className="flex flex-col group">
-                            <label className="text-white/20 font-mono text-[10px] uppercase tracking-widest mb-2 transition-colors">Teléfono (WhatsApp)</label>
+                            <label className={`font-mono text-[10px] uppercase tracking-widest mb-2 transition-colors ${isPhoneValid ? 'text-green-500' : 'text-white/20'}`}>Teléfono (WhatsApp)</label>
                             <input
                                 required
                                 type="tel"
-                                placeholder="Usa tu número 📲"
+                                placeholder="10 dígitos obligatorios"
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                className="bg-surface border-2 border-white/10 p-4 text-white font-display text-xl uppercase tracking-tighter focus:outline-none transition-all placeholder:text-white/10"
+                                onChange={(e) => handlePhoneChange(e.target.value)}
+                                className={`bg-surface border-2 p-4 text-white font-display text-xl uppercase tracking-tighter focus:outline-none transition-all placeholder:text-white/10 ${isPhoneValid ? 'border-green-500/50' : 'border-white/10'}`}
                                 onFocus={(e) => e.target.style.borderColor = themeColor}
-                                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                onBlur={(e) => e.target.style.borderColor = isPhoneValid ? 'rgba(34, 197, 94, 0.5)' : 'rgba(255,255,255,0.1)'}
                             />
+                            {!isPhoneValid && phone.length > 0 && (
+                                <span className="text-[8px] text-red-500 font-mono uppercase mt-1">Faltan {10 - phone.length} dígitos</span>
+                            )}
                         </div>
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full h-16 text-black font-display text-2xl font-black uppercase tracking-widest shadow-[6px_6px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95 mt-8 flex items-center justify-between px-8"
+                        disabled={!isPhoneValid || !name.trim()}
+                        className={`w-full h-16 text-black font-display text-2xl font-black uppercase tracking-widest shadow-[6px_6px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95 mt-8 flex items-center justify-between px-8 ${(!isPhoneValid || !name.trim()) ? 'opacity-30 cursor-not-allowed grayscale' : ''}`}
                         style={{ backgroundColor: themeColor }}
                     >
                         <span>{isStudioBooking ? 'LISTO PA\' GRABAR' : 'LISTO PA\'L FLOW'}</span>

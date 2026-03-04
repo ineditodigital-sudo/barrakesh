@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useServices } from './data';
 import { useTheme } from './ThemeContext';
+import { useToast } from './ToastContext';
 import Modal from './Modal';
 
 const ServicesManagement = () => {
     const [services, { addItem, updateItem, deleteItem }] = useServices();
     const { isDarkMode } = useTheme();
+    const { addToast } = useToast();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentService, setCurrentService] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -33,18 +36,43 @@ const ServicesManagement = () => {
         setIsModalOpen(true);
     };
 
+    const sanitize = (text) => {
+        if (typeof text !== 'string') return text;
+        return text.replace(/<[^>]*>?/gm, '');
+    };
+
     const handleSave = () => {
         const payload = {
             ...formData,
+            name: sanitize(formData.name),
+            desc: sanitize(formData.desc),
             price: parseFloat(formData.price) || 0
         };
 
-        if (currentService) {
-            updateItem(currentService.id, payload);
-        } else {
-            addItem(payload);
+        try {
+            if (currentService) {
+                updateItem(currentService.id, payload);
+                addToast('✅ Servicio actualizado', 'success');
+            } else {
+                addItem(payload);
+                addToast('✅ Servicio creado correctamente', 'success');
+            }
+            setIsModalOpen(false);
+        } catch (e) {
+            addToast('❌ Error al guardar el servicio', 'error');
         }
-        setIsModalOpen(false);
+    };
+
+    const confirmDelete = async () => {
+        if (deletingId) {
+            try {
+                await deleteItem(deletingId);
+                addToast('✅ Servicio eliminado', 'success');
+                setDeletingId(null);
+            } catch (e) {
+                addToast('❌ Error al eliminar', 'error');
+            }
+        }
     };
 
     return (
@@ -102,7 +130,7 @@ const ServicesManagement = () => {
                                 Editar
                             </button>
                             <button
-                                onClick={() => { if (window.confirm('¿Eliminar servicio?')) deleteItem(service.id); }}
+                                onClick={() => setDeletingId(service.id)}
                                 className="size-8 rounded-lg flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                             >
                                 <span className="material-symbols-outlined !text-base">delete</span>
@@ -180,6 +208,25 @@ const ServicesManagement = () => {
                     >
                         {currentService ? 'Guardar Cambios' : 'Agregar Servicio'}
                     </button>
+                </div>
+            </Modal>
+
+            {/* Deletion Confirm */}
+            <Modal isOpen={!!deletingId} onClose={() => setDeletingId(null)}>
+                <div className={`ios-card p-8 border-2 max-w-sm ${isDarkMode ? 'border-red-500/20 bg-[#0a0a0a]' : 'border-red-500/10 bg-white'}`}>
+                    <div className="flex flex-col items-center text-center">
+                        <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
+                            <span className="material-symbols-outlined !text-4xl">warning</span>
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tight mb-2">¿Eliminar Servicio?</h3>
+                        <p className={`text-xs mb-8 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
+                            Esta acción borrará el servicio del menú permanentemente.
+                        </p>
+                        <div className="flex gap-3 w-full">
+                            <button onClick={() => setDeletingId(null)} className={`flex-1 h-12 rounded-xl font-bold uppercase text-[10px] tracking-widest border transition-all ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}>Cancelar</button>
+                            <button onClick={confirmDelete} className="flex-1 h-12 bg-red-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-red-700 shadow-lg shadow-red-500/20">Eliminar</button>
+                        </div>
+                    </div>
                 </div>
             </Modal>
         </div>

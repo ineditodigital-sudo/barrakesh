@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useBranches } from '../admin/data';
+import * as htmlToImage from 'html-to-image';
 
 const Confirmation = ({ booking, onReset }) => {
+    const ticketRef = useRef(null);
     const [branches] = useBranches();
     const isStudioBooking = booking?.services?.some(s => s.category === 'Music Studio');
     const themeColor = isStudioBooking ? "#007AFF" : "#FEE101";
 
     const barber = booking?.barber || { name: "KASH" };
     const services = booking?.services || [];
-    const dateStr = booking?.date || "03 MAR";
+    const dateStr = booking?.dateLabel || booking?.date || "03 MAR";
     const timeStr = booking?.time || "14:00";
 
     const selectedBranch = branches.find(b => b.name === booking?.location);
@@ -20,17 +22,37 @@ const Confirmation = ({ booking, onReset }) => {
         window.open(googleMapsUrl, '_blank');
     };
 
-    const handleWallet = (platform) => {
-        alert(`¡Cita guardada en ${platform}! Revisa tus notificaciones.`);
-    };
+    const downloadReceipt = useCallback(() => {
+        if (ticketRef.current === null) return;
+
+        // Ensure we capture with high quality and correct styles
+        htmlToImage.toPng(ticketRef.current, {
+            cacheBust: true,
+            backgroundColor: '#050505',
+            style: {
+                transform: 'scale(1)',
+                margin: '0',
+            },
+            pixelRatio: 2 // Higher resolution
+        })
+            .then((dataUrl) => {
+                const link = document.createElement('a');
+                link.download = `Recibo-Barrakesh-${booking?.customer?.name || 'Cliente'}.png`;
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch((err) => {
+                console.error('Error al generar el recibo:', err);
+            });
+    }, [ticketRef, booking]);
 
     const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
 
     return (
-        <div className="bg-[#050505] min-h-screen flex flex-col font-display antialiased overflow-hidden brutalist-grid relative">
+        <div className="bg-[#020202] min-h-screen flex flex-col font-display antialiased overflow-y-auto no-scrollbar brutalist-grid relative">
             {/* Noise Texture Overlay */}
-            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-[0.2]"></div>
 
             {/* Marquee Loader (Top) */}
             <div className="fixed top-0 left-0 w-full z-50 overflow-hidden py-2 border-b-2 border-white" style={{ backgroundColor: themeColor }}>
@@ -46,7 +68,8 @@ const Confirmation = ({ booking, onReset }) => {
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-grow flex flex-col items-center justify-center px-4 relative mt-16 pb-20 z-10 overflow-hidden">
+            <main className="flex-grow flex flex-col items-center px-4 relative mt-20 pb-20 pt-10 z-10">
+
                 {/* Status Header */}
                 <div className="text-center mb-8 animate-fade-in-up">
                     <h1 className="text-white text-6xl font-black uppercase tracking-tighter leading-none mb-1">LOCKED IN <span style={{ color: themeColor }}>🔥</span></h1>
@@ -54,7 +77,7 @@ const Confirmation = ({ booking, onReset }) => {
                 </div>
 
                 {/* The Ticket Component - Updated to Black Background */}
-                <div className="relative w-full max-w-sm bg-black text-white border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform transition-transform duration-700 hover:scale-[1.02] animate-scale-in [animation-delay:200ms]">
+                <div ref={ticketRef} className="relative w-full max-w-sm bg-black text-white border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform transition-transform duration-700 hover:scale-[1.02] animate-scale-in [animation-delay:200ms]">
 
                     {/* Decorative Cutouts */}
                     <div className="absolute -left-3 top-1/2 -translate-y-1/2 size-6 rounded-full bg-[#050505] border-r border-white/20"></div>
@@ -144,26 +167,16 @@ const Confirmation = ({ booking, onReset }) => {
                     </div>
                 </div>
 
-                {/* Wallet Integration - Enhanced Contrast */}
-                <div className="mt-10 flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                {/* Download Button - Replaced Wallet Buttons */}
+                <div className="mt-10 w-full max-w-sm scale-in [animation-delay:400ms]">
                     <button
-                        onClick={() => handleWallet('Apple Wallet')}
-                        className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl"
+                        onClick={downloadReceipt}
+                        className="w-full bg-white text-black py-5 px-8 rounded-2xl flex items-center justify-center gap-4 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-[0_20px_40px_-15px_rgba(255,255,255,0.1)] group"
                     >
-                        <span className="material-symbols-outlined !text-2xl">apple</span>
-                        <div className="flex flex-col items-start leading-tight">
-                            <span className="text-[8px] uppercase font-mono font-black opacity-40">Add to</span>
-                            <span className="text-xs font-black font-display uppercase tracking-tighter">Apple Wallet</span>
-                        </div>
-                    </button>
-                    <button
-                        onClick={() => handleWallet('Google Wallet')}
-                        className="flex-1 bg-white text-black py-4 px-6 rounded-2xl flex items-center justify-center gap-3 border border-white/10 hover:bg-white/90 transition-all active:scale-95 shadow-xl"
-                    >
-                        <span className="material-symbols-outlined !text-2xl">wallet</span>
-                        <div className="flex flex-col items-start leading-tight">
-                            <span className="text-[8px] uppercase font-mono font-black opacity-40">Add to</span>
-                            <span className="text-xs font-black font-display uppercase tracking-tighter">Google Wallet</span>
+                        <span className="material-symbols-outlined !text-3xl group-hover:bounce">download</span>
+                        <div className="flex flex-col items-start leading-none">
+                            <span className="text-[8px] uppercase font-mono font-black opacity-40 mb-1">Clover Receipt</span>
+                            <span className="text-lg font-black font-display uppercase tracking-tight">Descargar Recibo PNG</span>
                         </div>
                     </button>
                 </div>

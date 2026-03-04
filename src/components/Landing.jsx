@@ -8,12 +8,12 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
 
     useEffect(() => {
         const lenis = new Lenis({
-            duration: 1.5,
+            duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true,
             wheelMultiplier: 1,
-            touchMultiplier: 1.5,
-            lerp: 0.1, // Smoothness intensity
+            touchMultiplier: 1.2,
+            lerp: 0.1,
         });
 
         function raf(time) {
@@ -91,8 +91,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                     scrollbar-width: none;
                 }
             `}</style>
-            {/* Noise Texture Overlay (Fixed) */}
-            <div className="fixed inset-0 pointer-events-none z-[60] bg-noise opacity-40 mix-blend-overlay"></div>
+            {/* Noise Texture Overlay Removed for Performance */}
 
             {/* HERO SECTION */}
             <section id="hero" className="relative h-screen w-full flex flex-col md:flex-row justify-between overflow-hidden border-b border-white/10 shrink-0">
@@ -103,15 +102,16 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         loop
                         muted
                         playsInline
-                        preload="auto"
-                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-[0.75] opacity-80 transition-transform duration-[10s] hover:scale-105"
+                        preload="metadata"
+                        poster="/hero.png"
+                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-[0.5] opacity-90"
+                        style={{ willChange: 'transform' }}
                     >
                         <source src="/Video Barrakesh Web.mp4" type="video/mp4" />
-                        {/* Fallback for Safari/Mobile if mp4 is picky */}
                         Tu navegador no soporta videos.
                     </video>
-                    <div className="absolute inset-0 bg-black/25 mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#111111] via-[#111111]/60 md:via-[#111111]/20 to-transparent bottom-0 h-full"></div>
+                    <div className="absolute inset-0 bg-black/50 mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#050505] via-[#050505]/80 md:via-[#050505]/20 to-transparent bottom-0 h-full"></div>
                 </div>
 
                 {/* Content Container */}
@@ -158,9 +158,9 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             </section>
 
             {/* NUMERIALA & IDENTITY GROUPED */}
-            <section className="min-h-screen w-full flex flex-col justify-center snap-start bg-background-dark border-b border-white/10 relative overflow-hidden">
+            <section className="min-h-screen w-full flex flex-col justify-center bg-background-dark border-b border-white/10 relative overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <img src="/image 88.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" />
+                    <img src="/image 88.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" loading="lazy" />
                     <div className="absolute inset-0 bg-black/20"></div>
                 </div>
                 <motion.div
@@ -202,7 +202,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             </section>
 
             {/* RECORDING STUDIO SECTION */}
-            <section id="studio" className="min-h-screen w-full flex items-center snap-start relative bg-black overflow-hidden border-b border-white/10 py-12 px-6">
+            <section id="studio" className="min-h-screen w-full flex items-center relative bg-black overflow-hidden border-b border-white/10 py-12 px-6">
                 <div className="absolute inset-0 bg-blue-500/5 opacity-40"></div>
                 <motion.div
                     className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-16"
@@ -217,6 +217,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                 src="/ESTUDIO/image 90.webp"
                                 alt="Studio"
                                 className="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
+                                loading="lazy"
                             />
                             <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay"></div>
                         </div>
@@ -240,7 +241,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             </section>
 
             {/* HOW IT WORKS SECTION */}
-            <section id="services" className="min-h-screen w-full flex items-center snap-start py-24 px-6 relative overflow-hidden bg-background-dark border-b border-white/10">
+            <section id="services" className="min-h-screen w-full flex items-center py-24 px-6 relative overflow-hidden bg-background-dark border-b border-white/10">
                 <motion.div
                     className="max-w-6xl mx-auto w-full"
                     initial="hidden"
@@ -423,10 +424,10 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
             </section>
 
             {/* FINAL CALL TO ACTION & FOOTER GROUPED */}
-            <section className="min-h-screen w-full flex flex-col snap-start bg-black overflow-y-auto no-scrollbar relative">
+            <section className="min-h-screen w-full flex flex-col bg-black overflow-y-auto no-scrollbar relative">
                 <div className="py-20 md:py-32 px-6 relative border-y border-primary/20 text-white/90">
                     <div className="absolute inset-0 z-0">
-                        <img src="/BARBER/image 92.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" />
+                        <img src="/BARBER/image 92.webp" className="w-full h-full object-cover opacity-40 grayscale brightness-[0.7]" alt="" loading="lazy" />
                     </div>
                     <div className="absolute inset-0 bg-black/20 z-[1]"></div>
                     <div className="absolute inset-0 bg-noise opacity-30 z-[2]"></div>
@@ -483,6 +484,50 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                     </div>
                 </footer>
             </section>
+            {/* Floating Navigation Button */}
+            <FloatingNav scrollToId={scrollToId} onBarberStart={onBarberStart} />
+        </div>
+    );
+};
+
+const FloatingNav = ({ scrollToId, onBarberStart }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    const menuItems = [
+        { label: 'Agendar Cita', action: onBarberStart, icon: 'calendar_month', highlight: true },
+        { label: 'Servicios', action: () => scrollToId('services'), icon: 'content_cut' },
+        { label: 'Estudio', action: () => scrollToId('studio'), icon: 'mic' },
+        { label: 'Club', action: () => scrollToId('club'), icon: 'stars' },
+        { label: 'Sucursales', action: () => scrollToId('branches'), icon: 'location_on' },
+    ];
+
+    return (
+        <div className="fixed bottom-8 right-8 z-[110] flex flex-col items-end gap-4">
+            {/* Menu Items */}
+            {isOpen && (
+                <div className="flex flex-col items-end gap-2 mb-2 animate-fade-in-up">
+                    {menuItems.map((item, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { item.action(); setIsOpen(false); }}
+                            className={`flex items-center gap-3 px-6 py-3 rounded-full border-2 transition-all hover:scale-105 active:scale-95 shadow-xl ${item.highlight ? 'bg-primary border-primary text-black' : 'bg-black/80 backdrop-blur-md border-white/20 text-white'}`}
+                        >
+                            <span className="font-display font-bold text-sm uppercase italic">{item.label}</span>
+                            <span className="material-symbols-outlined !text-xl">{item.icon}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Main Toggle Button */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={`size-16 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl border-4 ${isOpen ? 'bg-white border-black text-black rotate-90' : 'bg-primary border-black text-black'}`}
+            >
+                <span className="material-symbols-outlined !text-3xl font-black">
+                    {isOpen ? 'close' : 'menu'}
+                </span>
+            </button>
         </div>
     );
 };

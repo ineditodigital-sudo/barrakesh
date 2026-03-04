@@ -1,0 +1,39 @@
+﻿{
+  "status": "success",
+  "result": [
+    {
+      "projectId": "agenda-pro-nails-001-f2a1b",
+      "projectNumber": "47778874681",
+      "displayName": "Agenda Pro Nails",
+      "name": "projects/agenda-pro-nails-001-f2a1b",
+      "resources": {
+        "hostingSite": "agenda-pro-nails-001-f2a1b"
+      },
+      "state": "ACTIVE",
+      "etag": "1_091b44b2-5797-4750-9073-94e982a460f3"
+    },
+    {
+      "projectId": "rep-gym-96e22",
+      "projectNumber": "1094506780106",
+      "displayName": "REP-Gym",
+      "name": "projects/rep-gym-96e22",
+      "resources": {
+        "hostingSite": "rep-gym-96e22",
+        "realtimeDatabaseInstance": "rep-gym-96e22-default-rtdb"
+      },
+      "state": "ACTIVE",
+      "etag": "1_0906f02e-f9a7-4526-9999-f05dd785c3cc"
+    },
+    {
+      "projectId": "trents-bd6c4",
+      "projectNumber": "185261305243",
+      "displayName": "TRENTS",
+      "name": "projects/trents-bd6c4",
+      "resources": {
+        "hostingSite": "trents-bd6c4"
+      },
+      "state": "ACTIVE",
+      "etag": "1_601c6251-95ea-470b-9e17-291b6fa3c079"
+    }
+  ]
+}

@@ -5,21 +5,19 @@ import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDLDSdWuqK4BZEC1ki0PDbJbEzlnZxNDvk",
-    authDomain: "barrakesh-61859.firebaseapp.com",
-    databaseURL: "https://barrakesh-61859-default-rtdb.firebaseio.com",
-    projectId: "barrakesh-61859",
-    storageBucket: "barrakesh-61859.firebasestorage.app",
-    messagingSenderId: "863847855843",
-    appId: "1:863847855843:web:1e81e7136d3f01385337d6",
-    measurementId: "G-Z7YTRD32KJ"
+    apiKey: "AIzaSyBtdiKDgPosdYPL_aPbV7ftjPUMGECFBa8",
+    authDomain: "barrakesh-nuevo.firebaseapp.com",
+    databaseURL: "https://barrakesh-nuevo-default-rtdb.firebaseio.com",
+    projectId: "barrakesh-nuevo",
+    storageBucket: "barrakesh-nuevo.firebasestorage.app",
+    messagingSenderId: "332015145873",
+    appId: "1:332015145873:web:26f4ce1e7b078cb16c0030"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 const storage = getStorage(app);
 
-export { app, analytics, auth, database, storage };
+export { app, auth, database, storage };

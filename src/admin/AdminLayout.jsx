@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 
@@ -39,7 +41,9 @@ const AdminLayout = () => {
         { name: 'Mi Perfil', path: '/admin/profile', icon: 'account_circle', roles: ['BARBER'] },
         { name: 'Servicios', path: '/admin/services', icon: 'content_cut', roles: ['SUPER_ADMIN'] },
         { name: 'Historial', path: '/admin/appointments', icon: 'database', roles: ['SUPER_ADMIN'] },
+        { name: 'SEO & Config', path: '/admin/seo', icon: 'public', roles: ['SUPER_ADMIN'] },
     ];
+
 
     const filteredNavItems = navItems.filter(item => item.roles.includes(user.role));
 
@@ -156,8 +160,17 @@ const AdminLayout = () => {
                 </header>
 
                 <div className={`flex-1 overflow-y-auto no-scrollbar rounded-2xl p-4 lg:p-6 transition-colors duration-500 border ${isDarkMode ? 'ios-glass border-white/5' : 'bg-white/70 border-black/5'}`}>
-                    <Outlet />
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                        <Outlet />
+                    </motion.div>
                 </div>
+
             </main>
         </div>
     );

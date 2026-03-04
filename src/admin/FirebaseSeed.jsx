@@ -29,6 +29,20 @@ const FirebaseSeed = () => {
         },
         appointments: {
             "a1": { date: "2026-03-02", time: "16:30", client: "Alejandro V.", service: "Fade a Navaja", barber: "Pedro", branch: "Centro", total: "$35.00", status: "Confirmado" }
+        },
+        services: {
+            "s1": { category: "Barber Shop", name: "Fade a Navaja", price: 35, desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.", tag: "Popular" },
+            "s2": { category: "Barber Shop", name: "Corte a Tijera", price: 40, desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido." },
+            "s3": { category: "Barber Shop", name: "Corte Rapado", price: 25, desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio." },
+            "s4": { category: "Music Studio", name: "Sesión de Grabación", price: 50, desc: "Renta de cabina por hora. Incluye ingeniero básico.", tag: "Pro" },
+            "s5": { category: "Music Studio", name: "Mixing & Mastering", price: 80, desc: "Tratamiento profesional para tus tracks.", tag: "Estelar" }
+        },
+        settings: {
+            siteName: 'Barrakesh',
+            siteTitle: 'Barrakesh | Barbería & Studio',
+            siteDesc: 'Asegura tu flow en la mejor barbería y estudio de grabación.',
+            ogImage: '/LOGO-BARRAKESH-CUADRADO-TXT-BLANCO.png',
+            favicon: '/favicon.ico'
         }
     };
 
@@ -61,7 +75,14 @@ const FirebaseSeed = () => {
             setStatus('Sincronizando Citas...');
             await set(ref(database, 'appointments/'), initialData.appointments);
 
+            setStatus('Sincronizando Servicios...');
+            await set(ref(database, 'services/'), initialData.services);
+
+            setStatus('Sincronizando Configuración...');
+            await set(ref(database, 'settings/'), initialData.settings);
+
             setStatus('✅ Estructura base completada. Creando usuarios...');
+
 
             // 2. Create Users one by one
             for (const u of usersToCreate) {

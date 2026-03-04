@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useServices } from '../admin/data';
 
 const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory }) => {
-    const [services, { loading }] = useServices();
+    const [services, { loading, error }] = useServices();
     const [selected, setSelected] = useState(initialSelected);
 
     const filteredServices = preferredCategory
@@ -33,10 +33,54 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
         );
     }
 
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#111111] flex flex-col items-center justify-center p-8 text-center">
+                <div className="size-20 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
+                    <span className="material-symbols-outlined !text-4xl">
+                        {error.type === 'CONNECTION' ? 'wifi_off' : 'database_off'}
+                    </span>
+                </div>
+                <h2 className="font-display text-3xl font-black text-white uppercase mb-4">
+                    {error.type === 'CONNECTION' ? 'Error de Conexión' : 'Servicios no configurados'}
+                </h2>
+                <p className="text-white/60 font-mono text-xs uppercase tracking-widest max-w-xs mb-8">
+                    {error.type === 'NOT_FOUND'
+                        ? 'Aún no has agregado servicios a la base de datos desde el panel de administración.'
+                        : error.message}
+                </p>
+                <div className="space-y-4 w-full max-w-xs">
+                    {error.type === 'CONNECTION' ? (
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest active:scale-95 transition-all"
+                        >
+                            Reintentar Conexión
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => window.location.href = '/admin/services'}
+                            className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest active:scale-95 transition-all"
+                        >
+                            Ir a Configurar Servicios
+                        </button>
+                    )}
+                    <button
+                        onClick={onBack}
+                        className="w-full text-white/40 font-mono text-[10px] uppercase tracking-widest hover:text-white"
+                    >
+                        Regresar
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+
+
     return (
         <div className="relative min-h-screen bg-background-dark font-display selection:bg-primary selection:text-asphalt">
-            {/* Noise Texture Overlay */}
-            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+            {/* Noise Texture Overlay Removed */}
 
             {/* Main Container */}
             <div className="relative z-10 flex flex-col min-h-screen max-w-md md:max-w-6xl mx-auto bg-[#111111] shadow-2xl border-x border-[#333]">
@@ -73,7 +117,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                 </header>
 
                 {/* Service List */}
-                <main className="flex-1 p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 pb-32 overflow-y-auto no-scrollbar content-start overflow-x-hidden">
+                <main className="flex-1 p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 pb-48 md:pb-32 overflow-y-auto no-scrollbar content-start overflow-x-hidden">
                     {categories.map((cat, catIdx) => {
                         const isStudioCat = cat === "Music Studio";
                         const themeColor = isStudioCat ? "#007AFF" : "#FEE101"; // Blue for Studio
@@ -154,33 +198,37 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                 </main>
 
                 {/* Sticky Footer Summary */}
-                <div className="fixed bottom-0 left-0 w-full z-40 px-5 pb-6 pt-10 bg-gradient-to-t from-[#111111] via-[#111111] to-transparent pointer-events-none">
-                    <div className="max-w-md md:max-w-xl mx-auto pointer-events-auto">
-                        <div className="flex justify-between items-end mb-3 px-1">
+                <div className="fixed bottom-0 left-0 w-full z-40 px-5 pb-8 pt-12 bg-gradient-to-t from-[#111111] via-[#111111]/90 to-transparent pointer-events-none">
+                    <div className="max-w-md md:max-w-2xl mx-auto pointer-events-auto">
+                        <div className="flex justify-between items-end mb-4 px-1">
                             <div className="flex flex-col">
-                                <span className="text-steel font-mono text-[10px] uppercase">Total Est.</span>
-                                <span className="text-primary font-display text-3xl leading-none">${totalPrice.toFixed(2)}</span>
+                                <span className="text-steel font-mono text-[10px] uppercase tracking-widest">Total Est.</span>
+                                <span className="text-primary font-display text-4xl leading-none font-black">${totalPrice.toFixed(2)}</span>
                             </div>
-                            <span className="text-white font-mono text-xs mb-1 uppercase">
-                                {selected.length} {selected.length === 1 ? 'ÍTEM SELECCIONADO' : 'ÍTEMS SELECCIONADOS'}
-                            </span>
+                            <div className="flex flex-col items-end">
+                                <span className="text-white font-mono text-[10px] uppercase font-bold bg-white/10 px-2 py-1 mb-1">
+                                    {selected.length} {selected.length === 1 ? 'SERVICIO' : 'SERVICIOS'}
+                                </span>
+                                <span className="text-steel font-mono text-[8px] uppercase tracking-tighter">Click para continuar</span>
+                            </div>
                         </div>
 
                         <button
                             disabled={selected.length === 0}
                             onClick={() => selected.length > 0 && onSelect(selected)}
-                            className={`w-full relative group transition-all ${selected.length > 0 ? 'active:translate-y-1' : 'opacity-50 grayscale cursor-not-allowed'
+                            className={`w-full relative group transition-all duration-300 ${selected.length > 0 ? 'active:translate-y-1 hover:scale-[1.01]' : 'opacity-50 grayscale cursor-not-allowed'
                                 }`}
                         >
                             {/* Hazard Stripe Deco */}
-                            <div className="absolute bottom-0 left-0 w-full h-1 bg-hazard-stripe opacity-50"></div>
-                            <div className="relative flex items-center justify-between px-6 py-4 border-2 border-primary bg-primary overflow-hidden">
-                                <span className="text-black font-display font-black text-lg uppercase tracking-wider">Confirmar Flow 🔥</span>
-                                <span className="material-symbols-outlined text-black font-bold !text-2xl animate-pulse">arrow_forward</span>
+                            <div className="absolute bottom-0 left-0 w-full h-1.5 bg-hazard-stripe opacity-50 z-10"></div>
+                            <div className="relative flex items-center justify-between px-8 py-5 border-2 border-primary bg-primary overflow-hidden shadow-[0_10px_20px_rgba(254,225,1,0.2)]">
+                                <span className="text-black font-display font-black text-xl uppercase tracking-wider">Confirmar Flow 🔥</span>
+                                <span className="material-symbols-outlined text-black font-bold !text-3xl group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </div>
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
     );

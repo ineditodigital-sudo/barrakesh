@@ -2,7 +2,7 @@ import React from 'react';
 
 const IntentSelection = ({ onSelect }) => {
     return (
-        <div className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden">
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-y-auto no-scrollbar">
             {/* Background Decor */}
             <div className="absolute inset-0 pointer-events-none opacity-20">
                 <div className="absolute inset-0 bg-noise opacity-40"></div>
@@ -10,19 +10,20 @@ const IntentSelection = ({ onSelect }) => {
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary opacity-5 blur-[150px] rounded-full"></div>
             </div>
 
-            <div className="relative z-10 w-full max-w-4xl flex flex-col items-center">
+            <div className="relative z-10 w-full max-w-4xl flex flex-col items-center py-12 md:py-0">
                 {/* Logo Central */}
-                <div className="mb-12 animate-scale-in">
+                <div className="mb-8 md:mb-12 animate-scale-in">
                     <img
                         src="/LOGO-BARRAKESH-CUADRADO-TXT-BLANCO.png"
                         alt="BARRAKESH"
-                        className="h-32 md:h-48 w-auto object-contain"
+                        className="h-24 md:h-48 w-auto object-contain"
                     />
                 </div>
 
-                <h1 className="font-display text-4xl md:text-7xl font-black text-white uppercase text-center leading-[0.8] tracking-tighter mb-16 animate-fade-in-up">
+                <h1 className="font-display text-4xl md:text-7xl font-black text-white uppercase text-center leading-[0.8] tracking-tighter mb-10 md:mb-16 animate-fade-in-up">
                     ¿QUÉ QUIERES<br /><span className="text-primary italic-none">HACER HOY?</span>
                 </h1>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full animate-fade-in-up [animation-delay:200ms]">
                     {/* Opción A: Barbería */}

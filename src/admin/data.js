@@ -32,28 +32,47 @@ const INITIAL_BRANCHES = [
     { id: 3, name: "ALTARIA", addr: "Blvd. Zacatecas", status: "Mantenimiento", capacity: "8 sillas", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=800" },
 ];
 
+const EMPTY_ARRAY = [];
+
 export const useDataService = (key, initialData) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const dataRef = ref(database, key);
         const unsubscribe = onValue(dataRef, (snapshot) => {
             const val = snapshot.val();
             if (val) {
-                const normalized = Object.keys(val).map(id => ({
-                    ...val[id],
-                    id: id
-                }));
-                setData(normalized);
+                try {
+                    const normalized = Object.keys(val).reduce((acc, id) => {
+                        if (val[id]) {
+                            acc.push({
+                                ...(typeof val[id] === 'object' ? val[id] : { value: val[id] }),
+                                id: id
+                            });
+                        }
+                        return acc;
+                    }, []);
+                    setData(normalized);
+                    setError(null);
+                } catch (e) {
+                    console.error("Normalization error:", e);
+                    setError({ type: 'CRITICAL', message: "Error al procesar los datos del servidor." });
+                }
             } else {
-                setData(initialData || []);
+                setData(EMPTY_ARRAY);
+                setError({ type: 'NOT_FOUND', message: `No se encontraron datos en '${key}'. Por favor, verifica tu base de datos.` });
             }
+            setLoading(false);
+        }, (err) => {
+            console.error(`Firebase error on ${key}:`, err);
+            setError({ type: 'CONNECTION', message: "No se pudo conectar con el servidor. Revisa tu conexión." });
             setLoading(false);
         });
 
         return () => unsubscribe();
-    }, [key, initialData]);
+    }, [key]);
 
     const addItem = async (item) => {
         const dataRef = ref(database, key);
@@ -71,11 +90,57 @@ export const useDataService = (key, initialData) => {
         await remove(itemRef);
     };
 
-    return [data, { addItem, updateItem, deleteItem, loading }];
+    return [data, { addItem, updateItem, deleteItem, loading, error }];
 };
 
+export const useSettings = () => {
+    const [settings, setSettings] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const DEFAULT_SETTINGS = {
+        siteName: 'Barrakesh',
+        siteTitle: 'Barrakesh | Barbería & Studio',
+        siteDesc: 'Asegura tu flow en la mejor barbería y estudio de grabación. Digital Brutalism meets DIY Zine.',
+        ogImage: '/LOGO-BARRAKESH-CUADRADO-TXT-BLANCO.png',
+        favicon: '/favicon.ico'
+    };
+
+    useEffect(() => {
+        const settingsRef = ref(database, 'settings');
+        const unsubscribe = onValue(settingsRef, (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                setSettings(val);
+                setError(null);
+            } else {
+                setSettings(DEFAULT_SETTINGS);
+                setError(null); // No error, just defaults
+            }
+            setLoading(false);
+        }, (err) => {
+            console.error("Firebase settings error:", err);
+            setError({ type: 'CONNECTION', message: "Error de conexión al obtener la configuración." });
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const updateSettings = async (newSettings) => {
+        const settingsRef = ref(database, 'settings');
+        await set(settingsRef, newSettings);
+    };
+
+    return [settings, { updateSettings, loading, error }];
+};
+
+
+
+
 export const useBarbers = () => useDataService('barbers', INITIAL_BARBERS);
-export const useCustomers = () => useDataService('customers', []);
+export const useCustomers = () => useDataService('customers', EMPTY_ARRAY);
 export const useBranches = () => useDataService('branches', INITIAL_BRANCHES);
-export const useAppointments = () => useDataService('appointments', []);
+export const useAppointments = () => useDataService('appointments', EMPTY_ARRAY);
 export const useServices = () => useDataService('services', INITIAL_SERVICES);
+

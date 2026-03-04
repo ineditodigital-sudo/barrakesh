@@ -1,0 +1,10 @@
+﻿{
+  "projectId": "barrakesh-system-2026",
+  "appId": "1:1088340863566:web:186490c54fd191415f311f",
+  "storageBucket": "barrakesh-system-2026.firebasestorage.app",
+  "apiKey": "AIzaSyDSfzjl337jUlchuNDtaH3L8XOhusAhq9M",
+  "authDomain": "barrakesh-system-2026.firebaseapp.com",
+  "messagingSenderId": "1088340863566",
+  "projectNumber": "1088340863566",
+  "version": "2"
+}

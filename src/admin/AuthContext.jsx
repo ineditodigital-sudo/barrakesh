@@ -67,9 +67,31 @@ export const AuthProvider = ({ children }) => {
         navigate('/admin/login');
     };
 
+    const changePassword = async (newPassword) => {
+        try {
+            const { updatePassword } = await import('firebase/auth');
+            if (auth.currentUser) {
+                await updatePassword(auth.currentUser, newPassword);
+                return { success: true };
+            }
+            return { success: false, message: 'No hay usuario autenticado' };
+        } catch (error) {
+            console.error("Password Update Error:", error);
+            let message = 'Error al actualizar contraseña';
+            if (error.code === 'auth/requires-recent-login') {
+                message = 'Por seguridad, debes cerrar sesión y volver a entrar antes de cambiar tu contraseña.';
+            }
+            return { success: false, message };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
-            {!loading && children}
+        <AuthContext.Provider value={{ user, login, logout, changePassword, loading }}>
+            {loading ? (
+                <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+                    <div className="size-12 border-4 border-primary border-t-transparent animate-spin rounded-full"></div>
+                </div>
+            ) : children}
         </AuthContext.Provider>
     );
 };

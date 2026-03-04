@@ -16,7 +16,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
     return (
         <div className="bg-background-dark font-display min-h-screen flex flex-col overflow-hidden relative selection:bg-primary selection:text-black">
             {/* Noise Texture Overlay */}
-            <div className="fixed inset-0 pointer-events-none bg-noise z-10 opacity-40"></div>
+            <div className="fixed inset-0 pointer-events-none bg-noise z-10 opacity-[0.2]"></div>
 
             {/* Header Section */}
             <header className="flex-none px-6 pt-8 pb-4 z-10 relative">
@@ -39,16 +39,17 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
             </header>
 
             {/* Main Carousel Area / Grid on Desktop */}
-            <main className="flex-1 w-full overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory flex md:flex-row md:flex-wrap md:justify-center gap-6 md:gap-12 md:gap-y-24 px-6 md:px-16 items-center md:items-start no-scrollbar pb-12 md:pb-32 md:pt-12 relative z-0">
+            <main className="flex-1 w-full overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory flex md:flex-row md:flex-wrap md:justify-center gap-6 md:gap-12 md:gap-y-24 px-6 md:px-16 items-center md:items-start no-scrollbar pb-16 md:pb-32 md:pt-12 relative z-0">
                 {barbers.map((b, idx) => {
                     const isAway = b.status === "AWAY" || b.status === "Inactivo";
                     return (
                         <div
                             key={b.id}
-                            className={`snap-center shrink-0 w-[80vw] md:w-[280px] h-[55vh] md:h-[420px] relative group cursor-pointer animate-scale-in [animation-delay:${idx * 150}ms] ${isAway ? 'opacity-70 grayscale' : ''}`}
+                            onClick={() => !isAway && onSelect(b)}
+                            className={`snap-center shrink-0 w-[80vw] md:w-[280px] h-[60vh] md:h-[450px] relative group cursor-pointer animate-scale-in [animation-delay:${idx * 150}ms] ${isAway ? 'opacity-70 grayscale' : 'hover:translate-y-[-8px] transition-transform duration-300'}`}
                         >
                             {/* Card Container */}
-                            <div className="absolute inset-0 bg-surface rounded-sm overflow-hidden border border-neutral-800">
+                            <div className={`absolute inset-0 bg-surface rounded-sm overflow-hidden border ${isAway ? 'border-none' : 'border-neutral-800 group-hover:border-primary transition-colors duration-300'}`}>
                                 {/* Image Background */}
                                 <div
                                     className={`absolute inset-0 bg-cover bg-center img-brutal transition-transform duration-700 ${!isAway && 'group-hover:scale-105'}`}
@@ -56,11 +57,11 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                                 />
 
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent"></div>
 
                                 {/* Vertical Name */}
                                 <div className="absolute top-0 left-0 h-full w-16 md:w-20 flex items-center justify-center pointer-events-none z-10">
-                                    <h2 className={`writing-vertical text-7xl md:text-8xl font-bold uppercase tracking-tighter drop-shadow-xl whitespace-nowrap ${isAway ? 'text-outline-white opacity-50' : 'text-outline'}`}>
+                                    <h2 className={`writing-vertical text-7xl md:text-8xl font-bold uppercase tracking-tighter drop-shadow-xl whitespace-nowrap transition-colors duration-300 ${isAway ? 'text-outline-white opacity-30' : 'text-outline group-hover:text-primary group-hover:text-opacity-20'}`}>
                                         {b.name}
                                     </h2>
                                 </div>
@@ -68,8 +69,8 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                                 {/* Off Duty Stamp */}
                                 {isAway && (
                                     <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                                        <div className="border-4 border-neutral-500 text-neutral-500 px-6 py-2 -rotate-12 text-4xl font-bold uppercase tracking-widest opacity-80 backdrop-blur-sm bg-black/30">
-                                            Fuera de Servicio
+                                        <div className="border-4 border-neutral-500 text-neutral-500 px-6 py-2 -rotate-12 text-4xl font-bold uppercase tracking-widest opacity-80 backdrop-blur-sm bg-black/30 text-center">
+                                            Fuera de<br />Servicio
                                         </div>
                                     </div>
                                 )}
@@ -84,29 +85,29 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
 
                                 {/* Barber Stats */}
                                 {!isAway && (
-                                    <div className="absolute bottom-12 right-4 text-right">
+                                    <div className="absolute bottom-20 right-4 text-right">
                                         <p className="text-neutral-400 text-[10px] font-mono uppercase mb-1">Espec.</p>
-                                        <p className="text-white text-lg font-bold uppercase leading-none">{b.spec} ///</p>
+                                        <p className="text-white text-lg font-bold uppercase leading-none group-hover:text-primary transition-colors">{b.spec} ///</p>
                                     </div>
                                 )}
-                            </div>
 
-                            {/* Select Button */}
-                            <button
-                                onClick={() => !isAway && onSelect(b)}
-                                className={`absolute -bottom-6 left-0 right-0 h-14 font-bold text-lg uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-200 ${isAway ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-t border-neutral-700' :
-                                    'bg-primary text-black hover:bg-white border-2 border-transparent hover:border-primary active:scale-95'
-                                    }`}
-                            >
-                                <span>{isAway ? 'No Disponible' : 'ELEGIR ESTILO'}</span>
-                                {!isAway && <span className="material-symbols-outlined text-xl font-bold">arrow_forward</span>}
-                            </button>
+                                {/* Select Button (Inside Container) */}
+                                <div
+                                    className={`absolute bottom-0 left-0 right-0 h-16 font-bold text-lg uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 z-20 ${isAway ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed border-t border-neutral-700' :
+                                        'bg-primary text-black group-hover:bg-white group-active:scale-95'
+                                        }`}
+                                >
+                                    <span className="text-sm md:text-lg">{isAway ? 'No Disponible' : 'ELEGIR ESTILO'}</span>
+                                    {!isAway && <span className="material-symbols-outlined text-xl font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>}
+                                </div>
+                            </div>
                         </div>
                     );
                 })}
                 {/* Spacer for scroll padding */}
-                <div className="snap-center shrink-0 w-6"></div>
+                <div className="snap-center shrink-0 w-12"></div>
             </main>
+
 
 
             {/* Bottom Navigation / Stats Bar */}

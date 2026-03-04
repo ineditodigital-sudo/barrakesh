@@ -15,8 +15,26 @@ const AppointmentHistory = () => {
             serviceNames.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    const handlePrint = () => {
-        window.print();
+    const handleExportCSV = () => {
+        const headers = ["ID,Fecha,Hora,Cliente,Telefono,Barbero,Servicios,Sede,Total,Estado"];
+        const rows = filtered.map(apt => {
+            const clientName = (apt.customer?.name || apt.client || 'N/A').replace(/,/g, '');
+            const phone = (apt.customer?.phone || '').replace(/\D/g, '');
+            const barberName = (apt.barber?.name || apt.barber || 'N/A').replace(/,/g, '');
+            const services = (Array.isArray(apt.services) ? apt.services.map(s => s.name).join('; ') : apt.service || 'N/A').replace(/,/g, '');
+            const total = String(apt.total || '0').replace(/[^0-9.]/g, '');
+
+            return `${apt.id},${apt.date},${apt.time},${clientName},${phone},${barberName},${services},${apt.branch || 'N/A'},${total},${apt.status}`;
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Barrakesh_Historial_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -38,14 +56,14 @@ const AppointmentHistory = () => {
                         />
                     </div>
                     <button
-                        onClick={handlePrint}
+                        onClick={handleExportCSV}
                         className={`ios-button px-8 py-3 font-black text-[10px] tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 shadow-lg active:scale-95 ${isDarkMode
                             ? 'bg-primary text-black hover:bg-white shadow-primary/20'
                             : 'bg-black text-white hover:bg-primary hover:text-black shadow-black/30'
                             }`}
                     >
-                        <span className="material-symbols-outlined !text-lg">picture_as_pdf</span>
-                        Exportar PDF
+                        <span className="material-symbols-outlined !text-lg">download</span>
+                        Exportar CSV
                     </button>
                 </div>
             </div>

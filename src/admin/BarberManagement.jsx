@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useBarbers, useBranches, fileToBase64 } from './data';
 import { useTheme } from './ThemeContext';
+import { useToast } from './ToastContext';
 import Modal from './Modal';
 
 const BarberManagement = () => {
     const [barbers, { addItem, updateItem, deleteItem }] = useBarbers();
     const [branches] = useBranches();
     const { isDarkMode } = useTheme();
+    const { addToast } = useToast();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentBarber, setCurrentBarber] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -32,14 +35,43 @@ const BarberManagement = () => {
         setIsModalOpen(true);
     };
 
+    const sanitize = (text) => {
+        if (typeof text !== 'string') return text;
+        return text.replace(/<[^>]*>?/gm, '');
+    };
+
     const handleSave = () => {
-        const payload = { ...formData, initials: formData.name.substring(0, 2).toUpperCase() };
-        if (currentBarber) {
-            updateItem(currentBarber.id, payload);
-        } else {
-            addItem(payload);
+        const payload = {
+            ...formData,
+            name: sanitize(formData.name),
+            spec: sanitize(formData.spec),
+            initials: formData.name.substring(0, 2).toUpperCase()
+        };
+
+        try {
+            if (currentBarber) {
+                updateItem(currentBarber.id, payload);
+                addToast('✅ Registro de barbero actualizado', 'success');
+            } else {
+                addItem(payload);
+                addToast('✅ Nuevo barbero dado de alta', 'success');
+            }
+            setIsModalOpen(false);
+        } catch (e) {
+            addToast('❌ Error al guardar el registro', 'error');
         }
-        setIsModalOpen(false);
+    };
+
+    const confirmDelete = async () => {
+        if (deletingId) {
+            try {
+                await deleteItem(deletingId);
+                addToast('✅ Registro eliminado correctamente', 'success');
+                setDeletingId(null);
+            } catch (e) {
+                addToast('❌ Error al eliminar el registro', 'error');
+            }
+        }
     };
 
     const handleImageChange = async (e) => {
@@ -118,7 +150,7 @@ const BarberManagement = () => {
                                 Gestionar
                             </button>
                             <button
-                                onClick={() => { if (window.confirm('¿Eliminar barbero?')) deleteItem(barber.id); }}
+                                onClick={() => setDeletingId(barber.id)}
                                 className="size-8 rounded-lg flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                             >
                                 <span className="material-symbols-outlined !text-base">delete</span>
@@ -181,6 +213,26 @@ const BarberManagement = () => {
                             <input type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full ios-input py-2.5 px-3" />
                         </div>
 
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                            <h4 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDarkMode ? 'text-primary' : 'text-black/60'}`}>Credenciales de Acceso</h4>
+                            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <div className="flex flex-col">
+                                        <span className="text-[11px] font-bold uppercase tracking-tight">Login ID</span>
+                                        <span className="text-[10px] opacity-40 italic">{formData.name.toLowerCase().replace(/\s+/g, '')}@barrakesh.com</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => addToast(`📧 Solicitud enviada. Firebase enviará un correo de recuperación a la cuenta del barbero.`, 'info')}
+                                        className="px-3 py-1.5 bg-primary/20 text-primary border border-primary/30 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
+                                    >
+                                        Solicitar Cambio
+                                    </button>
+                                </div>
+                                <p className="text-[9px] font-bold text-white/20 italic">Acceso restringido a rol: BARBERO</p>
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
                             <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Sedes Asignadas</label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -208,6 +260,25 @@ const BarberManagement = () => {
                     >
                         {currentBarber ? 'Actualizar Registro' : 'Dar de Alta'}
                     </button>
+                </div>
+            </Modal>
+
+            {/* Deletion Confirm */}
+            <Modal isOpen={!!deletingId} onClose={() => setDeletingId(null)}>
+                <div className={`ios-card p-8 border-2 max-w-sm ${isDarkMode ? 'border-red-500/20 bg-[#0a0a0a]' : 'border-red-500/10 bg-white'}`}>
+                    <div className="flex flex-col items-center text-center">
+                        <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
+                            <span className="material-symbols-outlined !text-4xl">warning</span>
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tight mb-2">¿Eliminar Staff?</h3>
+                        <p className={`text-xs mb-8 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
+                            Esta acción borrará el registro del barbero permanentemente. No se pueden deshacer los cambios.
+                        </p>
+                        <div className="flex gap-3 w-full">
+                            <button onClick={() => setDeletingId(null)} className={`flex-1 h-12 rounded-xl font-bold uppercase text-[10px] tracking-widest border transition-all ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}>Cancelar</button>
+                            <button onClick={confirmDelete} className="flex-1 h-12 bg-red-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-red-700 shadow-lg shadow-red-500/20">Eliminar</button>
+                        </div>
+                    </div>
                 </div>
             </Modal>
         </div>

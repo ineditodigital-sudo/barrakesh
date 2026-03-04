@@ -28,7 +28,9 @@
 
   /* Glass Effects */
   .ios-glass {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 transition-all;
+    @apply bg-white/[0.02] border border-white/5 transition-all;
+    backdrop-filter: blur(8px);
+    /* Reduced from xl */
   }
 
   .light-mode .ios-glass {
@@ -115,8 +117,8 @@
   /* Modal System - Refined & Centered */
   .modal-overlay {
     @apply fixed inset-0 flex justify-center items-center overflow-y-auto overflow-x-hidden;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     z-index: 9999 !important;
     padding: 1.5rem;
     animation: fadeInOverlay 0.3s ease-out;
@@ -138,6 +140,37 @@
 
   .animate-fade-in-up {
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Marquee Optimization */
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee-reverse {
+    animation: marquee-reverse 30s linear infinite;
+    will-change: transform;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -191,4 +224,13 @@
 
 .light-mode ::-webkit-scrollbar-thumb {
   @apply bg-black/10;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

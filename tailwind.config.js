@@ -10,8 +10,8 @@ export default {
       colors: {
         "primary": "#FEE101", // Caution Tape Yellow
         "background-light": "#f8f8f5",
-        "background-dark": "#111111", // Asphalt Black
-        "surface": "#1E1E1E", // Wet Concrete
+        "background-dark": "#020202", // Near Black
+        "surface": "#050505", // Deep Dark Surface
         "text-main": "#F2F2F2", // Chalk White
         "accent-red": "#FF3333", // Spray Paint Red
       },
@@ -27,7 +27,7 @@ export default {
         "lg": "8px",
       },
       backgroundImage: {
-        'noise': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+        'noise': "url(\"https://grainy-gradients.vercel.app/noise.svg\")", // Use a static lightweight SVG instead of generating feTurbulence on the fly
         'hazard-stripe': "repeating-linear-gradient(45deg, #000, #000 10px, #FEE101 10px, #FEE101 20px)",
       }
     },

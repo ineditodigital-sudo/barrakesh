@@ -11,7 +11,7 @@ const StudioDetails = ({ onComplete, onBack, booking }) => {
 
     return (
         <div className="bg-[#050505] text-white font-mono antialiased min-h-screen flex flex-col relative overflow-hidden">
-            <div className="fixed inset-0 pointer-events-none bg-noise z-0 opacity-40"></div>
+            {/* Noise Texture Overlay Removed */}
 
             <header className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-sm border-b-2 border-[#007AFF] relative">
                 <div className="flex items-center justify-between p-4 h-16">
@@ -26,8 +26,9 @@ const StudioDetails = ({ onComplete, onBack, booking }) => {
                 </div>
             </header>
 
-            <main className="flex-1 flex flex-col max-w-2xl mx-auto w-full p-6 z-10 space-y-12">
-                <section className="animate-fade-in-up">
+            <main className="flex-1 flex flex-col max-w-2xl mx-auto w-full p-6 pb-48 z-10 space-y-12 overflow-y-auto no-scrollbar">
+                <section className="animate-fade-in-up md:mt-8">
+
                     <div className="flex items-center gap-4 mb-4">
                         <div className="size-12 bg-[#007AFF]/10 border border-[#007AFF]/20 flex items-center justify-center text-[#007AFF]">
                             <span className="material-symbols-outlined !text-3xl">mic</span>
