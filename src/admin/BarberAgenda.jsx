@@ -7,6 +7,7 @@ const BarberAgenda = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedApt, setSelectedApt] = useState(null);
     const [appointments] = useAppointments();
 
     const barberAppointments = appointments.filter(apt => {
@@ -16,6 +17,59 @@ const BarberAgenda = () => {
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">
+            {/* Modal for Details */}
+            {selectedApt && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className={`ios-card w-full max-w-sm p-8 border-2 animate-scale-in ${isDarkMode ? 'border-white/10 bg-[#0a0a0a]' : 'border-black/5 bg-white'}`}>
+                        <div className="flex justify-between items-start mb-8">
+                            <div>
+                                <h3 className="text-2xl font-black uppercase tracking-tight mb-1">Detalles de Cita</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Resumen del servicio asignado</p>
+                            </div>
+                            <button onClick={() => setSelectedApt(null)} className="size-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                                <span className="material-symbols-outlined !text-lg">close</span>
+                            </button>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-primary block mb-2">Cliente</span>
+                                <div className="text-xl font-bold uppercase mb-1">{selectedApt.customer?.name || selectedApt.client}</div>
+                                <div className="text-[11px] opacity-60">{selectedApt.customer?.phone || 'Sin teléfono'}</div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <span className="text-[9px] font-black uppercase tracking-widest opacity-40 block">Agenda de Servicios</span>
+                                <div className="space-y-2">
+                                    {(Array.isArray(selectedApt.services) ? selectedApt.services : [{ name: selectedApt.service, price: 0 }]).map((s, i) => (
+                                        <div key={i} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                                            <span className="text-[11px] font-bold uppercase tracking-tight">{s.name}</span>
+                                            <span className="text-[11px] font-mono opacity-60">${s.price}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-4 flex justify-between items-end border-t border-white/10">
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Inversión Final</span>
+                                    <span className="text-3xl font-black tracking-tighter text-primary">${selectedApt.total || selectedApt.services?.reduce((acc, s) => acc + (s.price || 0), 0) || 0}</span>
+                                </div>
+                                <a
+                                    href={`https://wa.me/${(selectedApt.customer?.phone || '').replace(/\D/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="h-12 px-6 rounded-xl bg-green-600 text-white flex items-center justify-center gap-2 hover:bg-green-700 transition-all font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                    <span className="material-symbols-outlined !text-xl">chat</span>
+                                    WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">Mi Diario de Trabajo</h2>
@@ -86,7 +140,9 @@ const BarberAgenda = () => {
                                     <span className="material-symbols-outlined !text-xl">chat</span>
                                     WhatsApp Contact
                                 </a>
-                                <button className={`h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDarkMode ? 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' : 'bg-black/5 text-black/40 hover:text-black/10'}`}>
+                                <button
+                                    onClick={() => setSelectedApt(apt)}
+                                    className={`h-11 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isDarkMode ? 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' : 'bg-black/5 text-black/40 hover:text-black/10'}`}>
                                     Detalles del Servicio
                                 </button>
                             </div>

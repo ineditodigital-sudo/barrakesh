@@ -96,7 +96,21 @@ const Confirmation = ({ booking, onReset }) => {
                                 <span className="font-mono text-[8px] tracking-[0.3em] mt-2 opacity-40">MEMBRESÍA EXCLUSIVA</span>
                             </div>
                             <div className="size-12 rounded-full border border-white/10 flex items-center justify-center">
-                                <span className="material-symbols-outlined !text-xl" style={{ color: themeColor }}>{isStudioBooking ? 'mic' : 'content_cut'}</span>
+                                {isStudioBooking ? (
+                                    <svg viewBox="0 0 24 24" fill="none" stroke={themeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6">
+                                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                                        <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+                                        <line x1="12" x2="12" y1="19" y2="22" />
+                                    </svg>
+                                ) : (
+                                    <svg viewBox="0 0 24 24" fill="none" stroke={themeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6">
+                                        <circle cx="6" cy="6" r="3" />
+                                        <circle cx="6" cy="18" r="3" />
+                                        <line x1="20" y1="4" x2="8.12" y2="15.88" />
+                                        <line x1="14.47" y1="14.48" x2="20" y2="20" />
+                                        <line x1="8.12" y1="8.12" x2="12" y2="12" />
+                                    </svg>
+                                )}
                             </div>
                         </div>
 
@@ -161,7 +175,18 @@ const Confirmation = ({ booking, onReset }) => {
                                 <span className="font-mono text-[9px] font-bold uppercase tracking-widest ">
                                     Obtener Mapa de Acceso
                                 </span>
-                                <span className="material-symbols-outlined text-sm transform -rotate-45 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">arrow_forward</span>
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="size-3 transform -rotate-45 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                                >
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
                             </button>
                         </div>
                     </div>

@@ -2,12 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { useSettings, fileToBase64 } from './data';
 import { useTheme } from './ThemeContext';
 import { useToast } from './ToastContext';
+import { useAuth } from './AuthContext';
 
 
 const SEOManagement = () => {
+    const { changePassword } = useAuth();
     const [settings, { updateSettings, loading, error }] = useSettings();
     const { isDarkMode } = useTheme();
     const toast = useToast();
+
+    const [newPass, setNewPass] = useState('');
+    const [changingPass, setChangingPass] = useState(false);
+
+    const handlePassUpdate = async () => {
+        if (newPass.length < 6) {
+            toast.addToast('La clave debe tener al menos 6 caracteres', 'info');
+            return;
+        }
+        setChangingPass(true);
+        const res = await changePassword(newPass);
+        if (res.success) {
+            toast.addToast('✅ Contraseña actualizada correctamente', 'success');
+            setNewPass('');
+        } else {
+            toast.addToast(`❌ ${res.message}`, 'error');
+        }
+        setChangingPass(false);
+    };
 
     const [formData, setFormData] = useState({
         siteName: '',
@@ -146,6 +167,40 @@ const SEOManagement = () => {
                 </div>
 
                 <div className="space-y-6">
+                    {/* Password Change for Super Admin */}
+                    <div className={`ios-card p-8 border-2 ${isDarkMode ? 'border-white/5 bg-[#0a0a0a]' : 'border-black/5 bg-white shadow-sm'}`}>
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="size-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
+                                <span className="material-symbols-outlined !text-xl">lock</span>
+                            </div>
+                            <h2 className="text-xl font-black uppercase tracking-tighter">Seguridad de Acceso</h2>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Nueva Contraseña</label>
+                                <div className="relative">
+                                    <input
+                                        type="password"
+                                        value={newPass}
+                                        onChange={(e) => setNewPass(e.target.value)}
+                                        className={`w-full h-12 px-4 rounded-xl border font-bold text-sm outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 focus:border-primary text-white' : 'bg-black/5 border-black/10 focus:border-black text-black'}`}
+                                        placeholder="Mínimo 6 caracteres"
+                                    />
+                                    <button
+                                        type="button"
+                                        disabled={changingPass || !newPass}
+                                        onClick={handlePassUpdate}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-black px-4 py-2 rounded-lg font-black text-[9px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all disabled:opacity-30"
+                                    >
+                                        {changingPass ? '...' : 'Actualizar'}
+                                    </button>
+                                </div>
+                                <p className="text-[9px] text-white/20 uppercase font-bold">Esta clave cambiará tu acceso personal inmediatamente.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* OG Image */}
                     <div className={`ios-card p-8 border-2 ${isDarkMode ? 'border-white/5 bg-[#0a0a0a]' : 'border-black/5 bg-white shadow-sm'}`}>
                         <div className="flex items-center gap-3 mb-8">

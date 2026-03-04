@@ -42,12 +42,16 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
-            // Map username to email for Barrakesh
-            // If it's "Admin", use admin@barrakesh.com
-            // Otherwise assume it's a barber name and use name@barrakesh.com
-            const email = username.toLowerCase() === 'admin'
-                ? 'admin@barrakesh.com'
-                : `${username.toLowerCase().replace(/\s+/g, '')}@barrakesh.com`;
+            const lowerUser = username.toLowerCase();
+            let email = '';
+
+            if (lowerUser === 'admin') {
+                email = 'admin@barrakesh.com';
+            } else if (lowerUser === 'developer') {
+                email = 'developer@barrakesh.com';
+            } else {
+                email = `${lowerUser.replace(/\s+/g, '')}@barrakesh.com`;
+            }
 
             await signInWithEmailAndPassword(auth, email, password);
             return { success: true };
