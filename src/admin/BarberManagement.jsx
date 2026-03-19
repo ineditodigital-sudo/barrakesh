@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useBarbers, useBranches, fileToBase64 } from './data';
+import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { useToast } from './ToastContext';
 import Modal from './Modal';
@@ -12,6 +13,13 @@ const BarberManagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentBarber, setCurrentBarber] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    
+    // Verification states
+    const { login } = useAuth();
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [verifData, setVerifData] = useState({ user: '', pass: '' });
+    const [verifError, setVerifError] = useState('');
+    const [isVerifyingLoading, setIsVerifyingLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -19,7 +27,8 @@ const BarberManagement = () => {
         status: 'Activo',
         phone: '',
         workedBranches: [],
-        image: ''
+        image: '',
+        password: 'barrakesh' // Default password
     });
 
     const handleEdit = (barber) => {
@@ -30,7 +39,8 @@ const BarberManagement = () => {
             status: barber.status,
             phone: barber.phone,
             workedBranches: barber.workedBranches || [],
-            image: barber.image || ''
+            image: barber.image || '',
+            password: barber.password || 'barrakesh'
         });
         setIsModalOpen(true);
     };
@@ -41,6 +51,22 @@ const BarberManagement = () => {
     };
 
     const handleSave = () => {
+        setIsVerifying(true);
+        setVerifError('');
+    };
+
+    const performSaveAfterVerification = async () => {
+        setIsVerifyingLoading(true);
+        setVerifError('');
+        
+        const result = await login(verifData.user, verifData.pass);
+        
+        if (!result.success) {
+            setVerifError('Credenciales de administrador incorrectas');
+            setIsVerifyingLoading(false);
+            return;
+        }
+
         const payload = {
             ...formData,
             name: sanitize(formData.name),
@@ -50,15 +76,19 @@ const BarberManagement = () => {
 
         try {
             if (currentBarber) {
-                updateItem(currentBarber.id, payload);
-                addToast('✅ Registro de barbero actualizado', 'success');
+                await updateItem(currentBarber.id, payload);
+                addToast('Registro de barbero actualizado', 'success');
             } else {
-                addItem(payload);
-                addToast('✅ Nuevo barbero dado de alta', 'success');
+                await addItem(payload);
+                addToast('Nuevo barbero dado de alta', 'success');
             }
             setIsModalOpen(false);
+            setIsVerifying(false);
+            setVerifData({ user: '', pass: '' });
         } catch (e) {
-            addToast('❌ Error al guardar el registro', 'error');
+            addToast('Error al guardar el registro', 'error');
+        } finally {
+            setIsVerifyingLoading(false);
         }
     };
 
@@ -66,10 +96,10 @@ const BarberManagement = () => {
         if (deletingId) {
             try {
                 await deleteItem(deletingId);
-                addToast('✅ Registro eliminado correctamente', 'success');
+                addToast('Registro eliminado correctamente', 'success');
                 setDeletingId(null);
             } catch (e) {
-                addToast('❌ Error al eliminar el registro', 'error');
+                addToast('Error al eliminar el registro', 'error');
             }
         }
     };
@@ -99,7 +129,7 @@ const BarberManagement = () => {
                     <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Control de especialistas, sedes y disponibilidad.</p>
                 </div>
                 <button
-                    onClick={() => { setCurrentBarber(null); setFormData({ name: '', spec: '', status: 'Activo', phone: '', workedBranches: [], image: '' }); setIsModalOpen(true); }}
+                    onClick={() => { setCurrentBarber(null); setFormData({ name: '', spec: '', status: 'Activo', phone: '', workedBranches: [], image: '', password: 'barrakesh' }); setIsModalOpen(true); }}
                     className="ios-button bg-primary text-black px-6 py-3 font-bold text-xs tracking-tight hover:bg-black hover:text-white transition-all shadow-lg w-full md:w-auto"
                 >
                     <span className="material-symbols-outlined !text-lg mr-2">person_add</span>
@@ -214,23 +244,29 @@ const BarberManagement = () => {
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-white/5">
-                            <h4 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDarkMode ? 'text-primary' : 'text-black/60'}`}>Credenciales de Acceso</h4>
-                            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex flex-col">
-                                        <span className="text-[11px] font-bold uppercase tracking-tight">Login ID</span>
-                                        <span className="text-[10px] opacity-40 italic">{formData.name.toLowerCase().replace(/\s+/g, '')}@barrakesh.com</span>
+                                <div className="space-y-4">
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[11px] font-bold uppercase tracking-tight">Login ID / Correo</span>
+                                            <span className="text-[10px] opacity-40 italic">{formData.name.toLowerCase().replace(/\s+/g, '')}@barrakesh.com</span>
+                                        </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => addToast(`📧 Solicitud enviada. Firebase enviará un correo de recuperación a la cuenta del barbero.`, 'info')}
-                                        className="px-3 py-1.5 bg-primary/20 text-primary border border-primary/30 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
-                                    >
-                                        Solicitar Cambio
-                                    </button>
+                                    
+                                    <div className="space-y-1.5">
+                                        <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Gestionar Contraseña</label>
+                                        <div className="relative">
+                                            <input 
+                                                type="text" 
+                                                value={formData.password} 
+                                                onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
+                                                className="w-full ios-input py-2.5 px-3 font-mono text-xs tracking-widest" 
+                                                placeholder="Ej: barrakesh123"
+                                            />
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined !text-lg opacity-20">key</span>
+                                        </div>
+                                        <p className="text-[9px] font-bold text-white/20 italic mt-1 font-mono uppercase tracking-tighter">/// El barbero usará esta clave para acceder a su agenda</p>
+                                    </div>
                                 </div>
-                                <p className="text-[9px] font-bold text-white/20 italic">Acceso restringido a rol: BARBERO</p>
-                            </div>
                         </div>
 
                         <div className="space-y-2">
@@ -260,6 +296,67 @@ const BarberManagement = () => {
                     >
                         {currentBarber ? 'Actualizar Registro' : 'Dar de Alta'}
                     </button>
+                </div>
+            </Modal>
+
+            {/* Verification Modal */}
+            <Modal isOpen={isVerifying} onClose={() => { setIsVerifying(false); setVerifData({ user: '', pass: '' }); setVerifError(''); }}>
+                <div className={`ios-card p-8 border-2 max-w-sm animate-scale-in ${isDarkMode ? 'border-primary/20 bg-[#0a0a0a]' : 'border-black/5 bg-white'}`}>
+                    <div className="flex flex-col items-center text-center">
+                        <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+                            <span className="material-symbols-outlined !text-4xl">verified_user</span>
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tight mb-2">Verifica tu Identidad</h3>
+                        <p className={`text-[10px] mb-8 uppercase font-mono tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
+                            Es necesario confirmar tus credenciales de Administrador para aplicar cambios en el Staff.
+                        </p>
+                        
+                        {verifError && (
+                            <div className="w-full bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-500 text-[10px] font-bold uppercase mb-6 animate-shake">
+                                {verifError}
+                            </div>
+                        )}
+
+                        <div className="w-full space-y-3 mb-8 text-left">
+                            <div className="space-y-1">
+                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1">Usuario Admin</label>
+                                <input 
+                                    type="text" 
+                                    value={verifData.user} 
+                                    onChange={e => setVerifData({ ...verifData, user: e.target.value })}
+                                    className="w-full ios-input p-4 text-xs" 
+                                    placeholder="Admin / Developer"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1">Tu Contraseña</label>
+                                <input 
+                                    type="password" 
+                                    value={verifData.pass} 
+                                    onChange={e => setVerifData({ ...verifData, pass: e.target.value })}
+                                    className="w-full ios-input p-4 text-xs" 
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 w-full">
+                            <button 
+                                onClick={() => { setIsVerifying(false); setVerifData({ user: '', pass: '' }); setVerifError(''); }} 
+                                className={`flex-1 h-12 rounded-xl font-bold uppercase text-[10px] tracking-widest border transition-all ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}>
+                                Cancelar
+                            </button>
+                            <button 
+                                onClick={performSaveAfterVerification} 
+                                disabled={isVerifyingLoading}
+                                className="flex-1 h-12 bg-primary text-black rounded-xl font-bold uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                            >
+                                {isVerifyingLoading ? (
+                                    <div className="size-4 border-2 border-black border-t-transparent animate-spin rounded-full"></div>
+                                ) : 'Confirmar'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </Modal>
 

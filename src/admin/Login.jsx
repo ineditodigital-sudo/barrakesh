@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,8 +7,14 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user, loading } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!loading && user) {
+            navigate('/admin');
+        }
+    }, [user, loading, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -101,6 +107,15 @@ const Login = () => {
                                 </>
                             )}
                         </button>
+                        <div className="pt-2 text-center">
+                            <button
+                                type="button"
+                                onClick={() => alert('Comunícate con el Administrador de Barrakesh para cambiar tu contraseña')}
+                                className="text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-primary transition-colors hover:underline"
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </button>
+                        </div>
                     </form>
                 </div>
 

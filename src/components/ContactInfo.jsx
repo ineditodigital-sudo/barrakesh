@@ -45,12 +45,15 @@ const ContactInfo = ({ onComplete, onBack, booking }) => {
             <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-fade-in-up">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <span className="font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block" style={{ color: themeColor }}>/// PASO FINAL</span>
+                     <div className="flex items-center justify-center gap-2 mb-4">
+                        <span className="bg-primary text-black text-[10px] font-black px-1.5 py-0.5 rounded-sm">04</span>
+                        <span className="text-white/40 font-mono text-[10px] uppercase tracking-widest leading-none">PASO FINAL</span>
+                    </div>
                     <h1 className="text-white text-5xl font-black uppercase tracking-tighter leading-none mb-4">
                         TUS <span style={{ color: themeColor }}>DATOS</span>
                     </h1>
                     <p className="font-mono text-xs text-white/40 uppercase tracking-widest leading-relaxed">
-                        Dinos quién eres para<br />asegurar tu {isStudioBooking ? 'sesión' : 'flow'} 🔥
+                        Dinos quién eres para<br />asegurar tu {isStudioBooking ? 'sesión' : 'flow'}
                     </p>
                 </div>
 
@@ -68,8 +71,11 @@ const ContactInfo = ({ onComplete, onBack, booking }) => {
                                 className="bg-surface border-2 border-white/10 p-4 text-white font-display text-xl uppercase tracking-tighter focus:outline-none transition-all placeholder:text-white/10"
                                 style={{ '--tw-focus-border': themeColor }}
                                 onFocus={(e) => e.target.style.borderColor = themeColor}
-                                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                onBlur={(e) => e.target.style.borderColor = (name.trim() ? 'rgba(255,255,255,0.1)' : '#ef4444')}
                             />
+                            {!name.trim() && name.length > 0 && (
+                                <span className="text-[8px] text-red-500 font-mono uppercase mt-1">El nombre es obligatorio</span>
+                            )}
                         </div>
 
                         <div className="flex flex-col group">

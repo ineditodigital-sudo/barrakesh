@@ -27,15 +27,16 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                     >
                         <span className="material-symbols-outlined !text-3xl">arrow_back</span>
                     </button>
-                    <div className="flex flex-col items-end">
-                        <span className="text-steel font-mono text-[10px] uppercase">PASO 02</span>
+                    <div className="flex items-center gap-2">
+                        <span className="bg-primary text-black text-[10px] font-black px-1.5 py-0.5 rounded-sm">02</span>
+                        <span className="text-steel font-mono text-[10px] uppercase">PASO</span>
                     </div>
                 </div>
                 <h1 className="text-5xl font-bold text-white uppercase leading-[0.85] tracking-tighter">
                     EL<br />
                     <span className="text-primary">CREW</span>
                 </h1>
-                <p className="text-neutral-400 text-xs font-mono uppercase mt-2 tracking-widest">/// Selecciona tu especialista de flow 🔥</p>
+                <p className="text-neutral-400 text-xs font-mono uppercase mt-2 tracking-widest">/// Selecciona tu especialista de flow</p>
             </header>
 
             {/* Main Carousel Area / Grid on Desktop */}
@@ -61,7 +62,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
 
                                 {/* Vertical Name */}
                                 <div className="absolute top-0 left-0 h-full w-16 md:w-20 flex items-center justify-center pointer-events-none z-10">
-                                    <h2 className={`writing-vertical text-7xl md:text-8xl font-bold uppercase tracking-tighter drop-shadow-xl whitespace-nowrap transition-colors duration-300 ${isAway ? 'text-outline-white opacity-30' : 'text-outline group-hover:text-primary group-hover:text-opacity-20'}`}>
+                                    <h2 className={`text-6xl md:text-7xl font-bold uppercase tracking-tighter drop-shadow-xl whitespace-normal break-words text-center transition-colors duration-300 ${isAway ? 'text-outline-white opacity-30' : 'text-outline group-hover:text-primary group-hover:text-opacity-20'}`} style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
                                         {b.name}
                                     </h2>
                                 </div>
@@ -97,7 +98,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
                                         'bg-primary text-black group-hover:bg-white group-active:scale-95'
                                         }`}
                                 >
-                                    <span className="text-sm md:text-lg">{isAway ? 'No Disponible' : 'ELEGIR ESTILO'}</span>
+                                    <span className="text-sm md:text-lg">{isAway ? 'No Disponible' : 'ELEGIR BARBER'}</span>
                                     {!isAway && <span className="material-symbols-outlined text-xl font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>}
                                 </div>
                             </div>

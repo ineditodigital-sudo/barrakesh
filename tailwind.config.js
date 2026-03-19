@@ -16,8 +16,8 @@ export default {
         "accent-red": "#FF3333", // Spray Paint Red
       },
       fontFamily: {
-        "display": ["Saira Stencil One", "sans-serif"],
-        "body": ["Space Grotesk", "sans-serif"],
+        "display": ["Barlow", "sans-serif"],
+        "body": ["Manrope", "sans-serif"],
         "mono": ["Space Mono", "monospace"],
       },
       borderRadius: {

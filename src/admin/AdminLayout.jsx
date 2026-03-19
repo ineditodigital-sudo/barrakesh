@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
+import { useAppointments } from './data';
 
 const AdminLayout = () => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    const [appointments] = useAppointments();
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -24,12 +29,44 @@ const AdminLayout = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Close sidebar on navigation on mobile
+    // Notification Logic
     useEffect(() => {
-        if (isMobile) setIsSidebarOpen(false);
-    }, [location.pathname, isMobile]);
+        if (!appointments || appointments.length === 0) return;
 
-    if (!user) return null;
+        // Filter relevant appointments based on role
+        if (!user) return;
+
+        const relevantApts = appointments.filter(apt => {
+            if (user.role === 'SUPER_ADMIN') return true;
+            if (user.role === 'BARBER') {
+                const barberName = apt.barber?.name || apt.barber || "";
+                return barberName.toLowerCase() === (user.name || "").toLowerCase();
+            }
+            return false;
+        }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        // Take last 5
+        const recent = relevantApts.slice(0, 5).map(apt => ({
+            id: apt.id,
+            title: 'Nueva Cita',
+            message: `${apt.customer?.name || apt.client} - ${apt.date} @ ${apt.time}`,
+            time: apt.createdAt || new Date().toISOString(),
+            isNew: !localStorage.getItem(`notif_read_${apt.id}`)
+        }));
+
+        setNotifications(recent);
+        setUnreadCount(recent.filter(n => n.isNew).length);
+    }, [appointments, user?.role, user?.name]);
+
+    const markAllRead = () => {
+        notifications.forEach(n => {
+            localStorage.setItem(`notif_read_${n.id}`, 'true');
+        });
+        setUnreadCount(0);
+        setNotifications(prev => prev.map(n => ({ ...n, isNew: false })));
+    };
+
+    if (!user) return <Navigate to="/admin/login" replace />;
 
     const navItems = [
         { name: 'Dashboard', path: '/admin', icon: 'grid_view', roles: ['SUPER_ADMIN'] },
@@ -37,7 +74,6 @@ const AdminLayout = () => {
         { name: 'Mi Horario', path: '/admin/my-agenda', icon: 'schedule', roles: ['BARBER'] },
         { name: 'Staff', path: '/admin/barbers', icon: 'badge', roles: ['SUPER_ADMIN'] },
         { name: 'Sucursales', path: '/admin/branches', icon: 'location_on', roles: ['SUPER_ADMIN'] },
-        { name: 'Clientes', path: '/admin/customers', icon: 'person_search', roles: ['SUPER_ADMIN', 'BARBER'] },
         { name: 'Mi Perfil', path: '/admin/profile', icon: 'account_circle', roles: ['BARBER'] },
         { name: 'Servicios', path: '/admin/services', icon: 'content_cut', roles: ['SUPER_ADMIN'] },
         { name: 'Historial', path: '/admin/appointments', icon: 'database', roles: ['SUPER_ADMIN'] },
@@ -126,8 +162,8 @@ const AdminLayout = () => {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative z-10 m-3 overflow-hidden">
-                <header className={`h-16 mb-3 px-4 lg:px-6 flex items-center justify-between rounded-2xl transition-colors duration-500 ${isDarkMode ? 'ios-glass border-white/5' : 'bg-white border-black/5 shadow-sm'} border`}>
+            <main className="flex-1 flex flex-col relative z-10 m-3 overflow-hidden min-w-0">
+                <header className={`h-16 mb-3 px-4 lg:px-6 flex items-center justify-between rounded-2xl transition-colors duration-500 ${isDarkMode ? 'ios-glass border-white/5' : 'bg-white border-black/5 shadow-sm'} border z-50`}>
                     <div className="flex items-center gap-3 min-w-0">
                         <button
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -153,13 +189,63 @@ const AdminLayout = () => {
                         >
                             <span className="material-symbols-outlined !text-xl">{isDarkMode ? 'light_mode' : 'dark_mode'}</span>
                         </button>
-                        <div className={`size-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-black/5 transition-colors ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}>
-                            <span className="material-symbols-outlined !text-xl">notifications</span>
+                        <div className="relative">
+                            <button
+                                onClick={() => {
+                                    setShowNotifications(!showNotifications);
+                                    if (!showNotifications) markAllRead();
+                                }}
+                                className={`size-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-black/5 transition-colors relative ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}
+                            >
+                                <span className="material-symbols-outlined !text-xl">notifications</span>
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-[#121212] animate-pulse"></span>
+                                )}
+                            </button>
+
+                            {showNotifications && (
+                                <>
+                                    <div className="fixed inset-0 z-[60]" onClick={() => setShowNotifications(false)}></div>
+                                    <div className={`absolute right-0 mt-2 w-72 rounded-2xl border p-2 z-[70] shadow-2xl animate-fade-in-up ${isDarkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-black/10'}`}>
+                                        <div className="p-3 border-b border-white/5 flex justify-between items-center">
+                                            <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Notificaciones</span>
+                                            {unreadCount > 0 && <span className="text-[8px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase">{unreadCount} nuevas</span>}
+                                        </div>
+                                        <div className="max-h-80 overflow-y-auto no-scrollbar py-2">
+                                            {notifications.length > 0 ? notifications.map((n, i) => (
+                                                <div key={i} className={`p-3 rounded-xl mb-1 transition-colors ${n.isNew ? (isDarkMode ? 'bg-primary/5' : 'bg-primary/10') : 'hover:bg-white/5'}`}>
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="text-[11px] font-black uppercase tracking-tight">{n.title}</span>
+                                                        <span className="text-[8px] opacity-40">{new Date(n.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    </div>
+                                                    <p className="text-[10px] opacity-60 leading-tight">{n.message}</p>
+                                                </div>
+                                            )) : (
+                                                <div className="p-8 text-center opacity-20">
+                                                    <span className="material-symbols-outlined !text-4xl mb-2">notifications_off</span>
+                                                    <p className="text-[10px] font-bold uppercase tracking-widest">Sin actividad reciente</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-2 border-t border-white/5">
+                                            <button 
+                                                onClick={() => {
+                                                    setShowNotifications(false);
+                                                    navigate(user.role === 'SUPER_ADMIN' ? '/admin/agenda' : '/admin/my-agenda');
+                                                }}
+                                                className="w-full py-2 rounded-lg bg-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Ver Agenda Completa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </header>
 
-                <div className={`flex-1 overflow-y-auto no-scrollbar rounded-2xl p-4 lg:p-6 transition-colors duration-500 border ${isDarkMode ? 'ios-glass border-white/5' : 'bg-white/70 border-black/5'}`}>
+                <div className={`flex-1 overflow-y-auto rounded-2xl p-4 lg:p-6 transition-colors duration-500 border min-w-0 ${isDarkMode ? 'ios-glass border-white/5' : 'bg-white/70 border-black/5'}`}>
                     <motion.div
                         key={location.pathname}
                         initial={{ opacity: 0, y: 10 }}

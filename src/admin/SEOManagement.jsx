@@ -22,10 +22,10 @@ const SEOManagement = () => {
         setChangingPass(true);
         const res = await changePassword(newPass);
         if (res.success) {
-            toast.addToast('✅ Contraseña actualizada correctamente', 'success');
+            toast.addToast('Contraseña actualizada correctamente', 'success');
             setNewPass('');
         } else {
-            toast.addToast(`❌ ${res.message}`, 'error');
+            toast.addToast(`${res.message}`, 'error');
         }
         setChangingPass(false);
     };
@@ -75,10 +75,10 @@ const SEOManagement = () => {
                 siteDesc: sanitize(formData.siteDesc)
             };
             await updateSettings(sanitizedData);
-            toast.addToast('✅ Configuración SEO actualizada correctamente.', 'success');
+            toast.addToast('Configuración SEO actualizada correctamente.', 'success');
         } catch (error) {
             console.error(error);
-            toast.addToast('❌ Error al guardar la configuración.', 'error');
+            toast.addToast('Error al guardar la configuración.', 'error');
         }
 
         setSaving(false);

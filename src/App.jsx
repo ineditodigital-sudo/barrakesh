@@ -22,7 +22,6 @@ import BarberManagement from './admin/BarberManagement';
 import GeneralAgenda from './admin/GeneralAgenda';
 import BarberAgenda from './admin/BarberAgenda';
 import BranchesManagement from './admin/BranchesManagement';
-import CustomerManagement from './admin/CustomerManagement';
 import ServicesManagement from './admin/ServicesManagement';
 import AppointmentHistory from './admin/AppointmentHistory';
 import BarberProfile from './admin/BarberProfile';
@@ -30,6 +29,7 @@ import BarberProfile from './admin/BarberProfile';
 import SEOManagement from './admin/SEOManagement';
 import ProtectedRoute from './admin/ProtectedRoute';
 import { ToastProvider, useToast } from './admin/ToastContext';
+import NotFound from './components/NotFound';
 
 
 import { useServices, useBranches, useAppointments, useSettings } from './admin/data';
@@ -167,11 +167,11 @@ const App = () => {
         status: 'Confirmed',
         total: finalBooking.services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0) * (finalBooking.studioInfo?.hours || 1)
       });
-      addToast('✅ Cita agendada correctamente. ¡Te esperamos!', 'success');
+      addToast('Cita agendada correctamente. ¡Te esperamos!', 'success');
       nextStep('CONFIRMATION');
     } catch (error) {
       console.error("Error saving appointment:", error);
-      addToast('❌ Hubo un error al agendar tu cita. Por favor intenta de nuevo.', 'error');
+      addToast('Hubo un error al agendar tu cita. Por favor intenta de nuevo.', 'error');
     }
   };
 
@@ -181,7 +181,6 @@ const App = () => {
       barber: null,
       date: null,
       time: null,
-      customer: { name: '', phone: '' },
       studioInfo: { description: '', hours: 1 }
     });
     setPreferredCategory(null);
@@ -193,10 +192,10 @@ const App = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key={view}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           {view === 'LANDING' && (
             <Landing
@@ -278,7 +277,6 @@ const App = () => {
         <Route path="my-agenda" element={<ProtectedRoute roles={['BARBER']}><BarberAgenda /></ProtectedRoute>} />
         <Route path="barbers" element={<ProtectedRoute roles={['SUPER_ADMIN']}><BarberManagement /></ProtectedRoute>} />
         <Route path="branches" element={<ProtectedRoute roles={['SUPER_ADMIN']}><BranchesManagement /></ProtectedRoute>} />
-        <Route path="customers" element={<ProtectedRoute roles={['SUPER_ADMIN', 'BARBER']}><CustomerManagement /></ProtectedRoute>} />
         <Route path="services" element={<ProtectedRoute roles={['SUPER_ADMIN']}><ServicesManagement /></ProtectedRoute>} />
         <Route path="profile" element={<ProtectedRoute roles={['BARBER']}><BarberProfile /></ProtectedRoute>} />
         <Route path="appointments" element={<ProtectedRoute roles={['SUPER_ADMIN']}><AppointmentHistory /></ProtectedRoute>} />
@@ -286,7 +284,7 @@ const App = () => {
       </Route>
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

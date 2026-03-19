@@ -14,6 +14,8 @@ const BarberProfile = () => {
 
     const [newPassword, setNewPassword] = useState('');
     const [updatingPass, setUpdatingPass] = useState(false);
+    const [showNewPass, setShowNewPass] = useState(false);
+    const [showDBPass, setShowDBPass] = useState(false);
 
     const handlePassUpdate = async () => {
         if (!newPassword || newPassword.length < 6) {
@@ -21,25 +23,44 @@ const BarberProfile = () => {
             return;
         }
         setUpdatingPass(true);
-        const result = await changePassword(newPassword);
-        if (result.success) {
-            addToast('✅ Contraseña actualizada correctamente', 'success');
-            setNewPassword('');
-        } else {
-            addToast(`❌ ${result.message}`, 'error');
+        try {
+            if (barberData.id) {
+                // 1. Update in Database (RTDB) for Admin Visibility
+                await updateItem(barberData.id, { ...barberData, password: newPassword });
+                
+                // 2. Update in Firebase Auth for Permissions
+                try {
+                    const { updatePassword } = await import('firebase/auth');
+                    const { auth } = await import('../firebase');
+                    if (auth.currentUser) {
+                        await updatePassword(auth.currentUser, newPassword);
+                    }
+                } catch (e) {
+                    console.warn("Auth password update skipped or failed (Likely not a real Auth user yet)", e);
+                }
+
+                setFormData(prev => ({ ...prev, password: newPassword }));
+                addToast('Contraseña actualizada correctamente y visible para administración.', 'success');
+                setNewPassword('');
+            }
+        } catch (err) {
+            console.error(err);
+            addToast('Error al actualizar contraseña. Verifica tu conexión.', 'error');
+        } finally {
+            setUpdatingPass(false);
         }
-        setUpdatingPass(false);
     };
 
 
-    const barberData = barbers.find(b => b.name.toLowerCase() === user.name.toLowerCase()) || {};
+    const barberData = barbers.find(b => b.id === user.barberId) || {};
 
     const [formData, setFormData] = useState({
         name: barberData.name || '',
         spec: barberData.spec || '',
         phone: barberData.phone || '',
         image: barberData.image || '',
-        workedBranches: barberData.workedBranches || []
+        workedBranches: barberData.workedBranches || [],
+        password: barberData.password || 'barrakesh'
     });
 
     useEffect(() => {
@@ -49,14 +70,18 @@ const BarberProfile = () => {
                 spec: barberData.spec,
                 phone: barberData.phone,
                 image: barberData.image,
-                workedBranches: barberData.workedBranches || []
+                workedBranches: barberData.workedBranches || [],
+                password: barberData.password || 'barrakesh'
             });
         }
     }, [barberData]);
 
     const handleSave = () => {
         if (barberData.id) {
-            updateItem(barberData.id, formData);
+            updateItem(barberData.id, {
+                ...formData,
+                initials: formData.name.substring(0, 2).toUpperCase()
+            });
             addToast('Perfil actualizado correctamente', 'success');
         }
     };
@@ -82,7 +107,7 @@ const BarberProfile = () => {
         }));
     };
 
-    const myApts = appointments.filter(a => (a.barber?.name || a.barber || "").toString().toLowerCase() === user.name.toLowerCase());
+    const myApts = appointments.filter(a => (a.barberId === user.barberId || (a.barber?.name || a.barber || "").toString().toLowerCase() === user.name.toLowerCase()));
 
     return (
         <div className="max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10">
@@ -143,10 +168,9 @@ const BarberProfile = () => {
                     <p className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Sedes que tienes habilitadas para laborar.</p>
                     <div className="grid grid-cols-1 gap-3 overflow-y-auto max-h-[300px] no-scrollbar pr-1">
                         {branches.map(b => (
-                            <button
+                            <div
                                 key={b.id}
-                                onClick={() => toggleBranch(b.id)}
-                                className={`p-4 rounded-xl border transition-all text-left flex justify-between items-center ${formData.workedBranches.includes(b.id)
+                                className={`p-4 rounded-xl border transition-all text-left flex justify-between items-center opacity-80 ${formData.workedBranches.includes(b.id)
                                     ? 'bg-primary/20 border-primary text-primary shadow-lg shadow-primary/5'
                                     : isDarkMode ? 'bg-white/5 border-white/5 text-white/20' : 'bg-black/5 border-black/5 text-black/20'
                                     }`}
@@ -156,7 +180,7 @@ const BarberProfile = () => {
                                     <span className="text-[9px] font-medium mt-2 opacity-60 italic">{b.addr}</span>
                                 </div>
                                 {formData.workedBranches.includes(b.id) && <span className="material-symbols-outlined !text-lg">verified</span>}
-                            </button>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -165,20 +189,60 @@ const BarberProfile = () => {
             <div className={`ios-card p-8 border space-y-6 ${isDarkMode ? 'bg-white/[0.02] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
                 <h3 className={`text-lg font-black tracking-tight border-b pb-4 ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>Seguridad de la Cuenta</h3>
                 <div className="space-y-4">
+                    <div className="space-y-6 border-b pb-6 border-white/5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Contraseña Actual (ID de Acceso)</label>
+                                <div className="relative">
+                                    <input
+                                        type={showDBPass ? "text" : "password"}
+                                        value={formData.password}
+                                        readOnly
+                                        className="w-full ios-input font-bold opacity-60 pr-12"
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowDBPass(!showDBPass)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100 transition-opacity"
+                                    >
+                                        <span className="material-symbols-outlined !text-xl">
+                                            {showDBPass ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-end">
+                                <p className="text-[9px] text-white/20 italic">Esta es la clave para entrar al sistema. Es visible para administración.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="space-y-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                             <div className="space-y-2 flex-1 w-full">
-                                <label className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Nueva Contraseña</label>
-                                <input
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full ios-input font-bold"
-                                    placeholder="Mínimo 6 caracteres..."
-                                />
+                                <label className={`text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Definir Nueva Contraseña</label>
+                                <div className="relative">
+                                    <input
+                                        type={showNewPass ? "text" : "password"}
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="w-full ios-input font-bold pr-12"
+                                        placeholder="Mínimo 6 caracteres..."
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowNewPass(!showNewPass)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100 transition-opacity"
+                                    >
+                                        <span className="material-symbols-outlined !text-xl">
+                                            {showNewPass ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                             <button
                                 onClick={handlePassUpdate}
+                                type="button"
                                 disabled={updatingPass}
                                 className={`px-8 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all w-full sm:w-auto ${isDarkMode ? 'bg-primary text-black hover:scale-105 active:scale-95' : 'bg-black text-white hover:bg-primary-dark shadow-lg'}`}
                             >
@@ -186,7 +250,6 @@ const BarberProfile = () => {
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
 

@@ -82,12 +82,12 @@ const AppointmentHistory = () => {
                 </div>
             </div>
 
-            <div className={`ios-card overflow-hidden border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/10 shadow-sm'}`}>
-                <div className="overflow-x-auto no-scrollbar">
-                    <table className="w-full text-left border-collapse">
+            <div className={`ios-card border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/10 shadow-sm'}`}>
+                <div className="overflow-x-auto overscroll-contain touch-pan-x pb-4 scrollbar-thin">
+                    <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className={`${isDarkMode ? 'bg-white/5' : 'bg-black/5'} print:bg-gray-100 print:border-b-2 print:border-black`}>
-                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Folio ID</th>
+                                <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black sticky left-0 z-30 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.5)] ${isDarkMode ? 'bg-[#121212] text-white/20' : 'bg-white text-black/30'}`}>Folio ID</th>
                                 <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Fecha / Hora</th>
                                 <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'}`}>Detalles Operativos</th>
                                 <th className={`px-6 py-4 text-[9px] font-black uppercase tracking-widest print:text-black ${isDarkMode ? 'text-white/20' : 'text-black/30'} hidden sm:table-cell`}>Sede</th>
@@ -98,7 +98,7 @@ const AppointmentHistory = () => {
                         <tbody className={`divide-y print:divide-gray-200 ${isDarkMode ? 'divide-white/5' : 'divide-black/10'}`}>
                             {filtered.length > 0 ? filtered.map(apt => (
                                 <tr key={apt.id} className={`hover:bg-primary/5 transition-all group cursor-pointer print:text-black print:bg-white page-break-inside-avoid ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                                    <td className="px-6 py-4">
+                                    <td className={`px-6 py-4 sticky left-0 z-20 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.5)] transition-colors ${isDarkMode ? 'bg-[#121212]' : 'bg-white'}`}>
                                         <span className={`text-[10px] font-black tracking-tighter print:text-black flex items-center gap-1.5 ${isDarkMode ? 'text-primary' : 'text-black'}`}>
                                             <span className="material-symbols-outlined !text-[10px]">drag_handle</span>
                                             {apt.id}

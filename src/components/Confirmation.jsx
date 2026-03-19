@@ -48,6 +48,7 @@ const Confirmation = ({ booking, onReset }) => {
 
     const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
+    const hasVariablePrice = services.some(s => s.priceIsVariable);
 
     return (
         <div className="bg-[#020202] min-h-screen flex flex-col font-display antialiased overflow-y-auto no-scrollbar brutalist-grid relative">
@@ -59,9 +60,9 @@ const Confirmation = ({ booking, onReset }) => {
                 <div className="whitespace-nowrap animate-marquee flex gap-8 items-center font-mono font-bold text-sm tracking-widest text-black">
                     <span>GENERANDO TICKET...</span>
                     <span>///</span>
-                    <span>{isStudioBooking ? 'STUDIO SECURED' : 'ASEGURA EL FLOW 🔥'}</span>
+                    <span>{isStudioBooking ? 'STUDIO SECURED' : 'ASEGURA EL FLOW'}</span>
                     <span>///</span>
-                    <span>LOCKED IN 🔥</span>
+                    <span>LOCKED IN</span>
                     <span>///</span>
                     <span>GENERANDO TICKET...</span>
                 </div>
@@ -72,7 +73,7 @@ const Confirmation = ({ booking, onReset }) => {
 
                 {/* Status Header */}
                 <div className="text-center mb-8 animate-fade-in-up">
-                    <h1 className="text-white text-6xl font-black uppercase tracking-tighter leading-none mb-1">LOCKED IN <span style={{ color: themeColor }}>🔥</span></h1>
+                    <h1 className="text-white text-6xl font-black uppercase tracking-tighter leading-none mb-1">LOCKED IN <span style={{ color: themeColor }}></span></h1>
                     <p className="font-mono text-[10px] tracking-[0.4em] uppercase" style={{ color: themeColor }}>{isStudioBooking ? 'ESTUDIO RESERVADO' : 'LISTO PA\'L FLOW'} /// PASO 04</p>
                 </div>
 
@@ -138,9 +139,9 @@ const Confirmation = ({ booking, onReset }) => {
                             {/* Service Row */}
                             <div className="flex flex-col gap-1.5 pt-4 border-t border-white/10">
                                 <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Servicios Selección</span>
-                                <div className="flex flex-wrap gap-2">
+                                 <div className="flex flex-wrap gap-2">
                                     {services.map((s, idx) => (
-                                        <span key={idx} className="bg-white/5 border border-white/10 px-2 py-1 text-[10px] font-mono font-bold uppercase">{s.name}</span>
+                                        <span key={idx} className="bg-white/5 border border-white/10 px-2 py-1 text-[10px] font-mono font-bold uppercase">{s.priceIsVariable ? 'Desde ' : ''}{s.name}</span>
                                     ))}
                                 </div>
                             </div>
@@ -158,7 +159,7 @@ const Confirmation = ({ booking, onReset }) => {
                                 <span className="text-4xl font-black font-display uppercase leading-none">{timeStr}</span>
                                 <span className="text-xs font-mono font-bold uppercase opacity-60">{dateStr}</span>
                             </div>
-                            <div className="flex flex-col items-end gap-1.5">
+                             <div className="flex flex-col items-end gap-1.5">
                                 <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Inversión</span>
                                 <span className="text-3xl font-black font-display tracking-tight px-2 py-0.5" style={{ backgroundColor: themeColor, color: isStudioBooking ? 'white' : 'black' }}>
                                     ${totalPrice.toFixed(2)}
@@ -173,7 +174,7 @@ const Confirmation = ({ booking, onReset }) => {
                                 className="group flex items-center gap-2 text-white/40 hover:text-white transition-colors"
                             >
                                 <span className="font-mono text-[9px] font-bold uppercase tracking-widest ">
-                                    Obtener Mapa de Acceso
+                                    Ver Ubicación
                                 </span>
                                 <svg
                                     viewBox="0 0 24 24"
@@ -201,17 +202,13 @@ const Confirmation = ({ booking, onReset }) => {
                         <span className="material-symbols-outlined !text-3xl group-hover:bounce">download</span>
                         <div className="flex flex-col items-start leading-none">
                             <span className="text-[8px] uppercase font-mono font-black opacity-40 mb-1">Clover Receipt</span>
-                            <span className="text-lg font-black font-display uppercase tracking-tight">Descargar Recibo PNG</span>
+                            <span className="text-lg font-black font-display uppercase tracking-tight">Descargar Recibo</span>
                         </div>
                     </button>
                 </div>
 
                 {/* Bottom Actions */}
                 <div className="mt-10 w-full max-w-sm flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-2 opacity-40">
-                        <span className="material-symbols-outlined text-white text-sm">qr_code_2</span>
-                        <p className="text-white font-mono text-[9px] uppercase tracking-widest">Escanea el código en recepción</p>
-                    </div>
                     <button
                         onClick={onReset}
                         className="text-white/60 font-display text-sm uppercase tracking-[0.3em] hover:text-primary transition-colors flex items-center gap-3 py-6 group"

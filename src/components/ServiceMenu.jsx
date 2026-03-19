@@ -24,6 +24,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
     };
 
     const totalPrice = selected.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
+    const hasVariablePrice = selected.some(s => s.priceIsVariable);
 
     if (loading) {
         return (
@@ -93,9 +94,12 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                         >
                             <span className="material-symbols-outlined !text-3xl">arrow_back</span>
                         </button>
-                        <div className="flex flex-col items-end">
-                            <span className="text-primary font-mono text-xs tracking-widest uppercase">ORDEN #4492</span>
-                            <span className="text-steel font-mono text-[10px] uppercase">PASO 01</span>
+                        <div className="flex flex-col items-end gap-1">
+                            <div className="flex items-center gap-2">
+                                <span className="bg-primary text-black text-[10px] font-black px-1.5 py-0.5 rounded-sm">01</span>
+                                <span className="text-steel font-mono text-[10px] uppercase">PASO</span>
+                            </div>
+                            <span className="text-primary font-mono text-[8px] tracking-widest uppercase opacity-40">ORDEN #4492</span>
                         </div>
                     </div>
                     <div className="flex items-end justify-between">
@@ -103,7 +107,13 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                             <h1 className="text-white font-display text-4xl leading-[0.9] tracking-tighter uppercase mb-1">
                                 EL ARSENAL
                             </h1>
-                            <p className="text-steel font-mono text-xs uppercase tracking-wide">Elige tu flow (Selección Múltiple)</p>
+                            <p className="text-steel font-mono text-xs uppercase tracking-wide mb-3">Elige tu flow (Selección Múltiple)</p>
+                            <div className="inline-block bg-primary/10 border border-primary px-3 py-1.5 animate-pulse">
+                                <p className="text-primary font-mono text-[9px] md:text-[10px] uppercase tracking-widest font-bold flex items-center gap-1.5">
+                                    <span className="material-symbols-outlined !text-sm">sell</span>
+                                    PRECIOS ESPECIALES PARA ESTUDIANTES Y BARRAKESH CLUB
+                                </p>
+                            </div>
                         </div>
                         <div className="text-right hidden md:block">
                             <span className="text-white/20 font-mono text-[8px] uppercase tracking-widest">Carrito de Servicios</span>
@@ -171,10 +181,13 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                                                         {s.desc}
                                                     </p>
                                                 </div>
-                                                <div className="flex flex-col items-end gap-3">
-                                                    <span className={`font-display text-2xl ${isSelected ? '' : 'text-white'}`} style={isSelected ? { color: themeColor } : {}}>
-                                                        ${s.price}
-                                                    </span>
+                                                 <div className="flex flex-col items-end gap-3">
+                                                     <span className={`font-display text-2xl ${isSelected ? '' : 'text-white'}`} style={isSelected ? { color: themeColor } : {}}>
+                                                         {s.priceIsVariable ? (
+                                                             <span className="text-[10px] block text-right font-mono uppercase tracking-tighter opacity-60">Desde</span>
+                                                         ) : null}
+                                                         ${s.price}
+                                                     </span>
                                                     <div className={`w-6 h-6 border-2 flex items-center justify-center transition-colors ${isSelected ? '' :
                                                         s.disabled ? 'border-[#333]' : 'border-[#444] group-hover:border-white'
                                                         }`}
@@ -200,7 +213,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                 {/* Sticky Footer Summary */}
                 <div className="fixed bottom-0 left-0 w-full z-40 px-5 pb-8 pt-12 bg-gradient-to-t from-[#111111] via-[#111111]/90 to-transparent pointer-events-none">
                     <div className="max-w-md md:max-w-2xl mx-auto pointer-events-auto">
-                        <div className="flex justify-between items-end mb-4 px-1">
+                         <div className="flex justify-between items-end mb-4 px-1">
                             <div className="flex flex-col">
                                 <span className="text-steel font-mono text-[10px] uppercase tracking-widest">Total Est.</span>
                                 <span className="text-primary font-display text-4xl leading-none font-black">${totalPrice.toFixed(2)}</span>
@@ -222,7 +235,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                             {/* Hazard Stripe Deco */}
                             <div className="absolute bottom-0 left-0 w-full h-1.5 bg-hazard-stripe opacity-50 z-10"></div>
                             <div className="relative flex items-center justify-between px-8 py-5 border-2 border-primary bg-primary overflow-hidden shadow-[0_10px_20px_rgba(254,225,1,0.2)]">
-                                <span className="text-black font-display font-black text-xl uppercase tracking-wider">Confirmar Flow 🔥</span>
+                                <span className="text-black font-display font-black text-xl uppercase tracking-wider">Confirmar Flow</span>
                                 <span className="material-symbols-outlined text-black font-bold !text-3xl group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </div>
                         </button>

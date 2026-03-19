@@ -18,7 +18,8 @@ const ServicesManagement = () => {
         price: '',
         desc: '',
         tag: '',
-        disabled: false
+        disabled: false,
+        priceIsVariable: false
     });
 
     const categories = ["Barber Shop", "Music Studio"];
@@ -31,7 +32,8 @@ const ServicesManagement = () => {
             price: service.price,
             desc: service.desc,
             tag: service.tag || '',
-            disabled: service.disabled || false
+            disabled: service.disabled || false,
+            priceIsVariable: service.priceIsVariable || false
         });
         setIsModalOpen(true);
     };
@@ -52,14 +54,14 @@ const ServicesManagement = () => {
         try {
             if (currentService) {
                 updateItem(currentService.id, payload);
-                addToast('✅ Servicio actualizado', 'success');
+                addToast('Servicio actualizado', 'success');
             } else {
                 addItem(payload);
-                addToast('✅ Servicio creado correctamente', 'success');
+                addToast('Servicio creado correctamente', 'success');
             }
             setIsModalOpen(false);
         } catch (e) {
-            addToast('❌ Error al guardar el servicio', 'error');
+            addToast('Error al guardar el servicio', 'error');
         }
     };
 
@@ -67,10 +69,10 @@ const ServicesManagement = () => {
         if (deletingId) {
             try {
                 await deleteItem(deletingId);
-                addToast('✅ Servicio eliminado', 'success');
+                addToast('Servicio eliminado', 'success');
                 setDeletingId(null);
             } catch (e) {
-                addToast('❌ Error al eliminar', 'error');
+                addToast('Error al eliminar', 'error');
             }
         }
     };
@@ -115,7 +117,7 @@ const ServicesManagement = () => {
 
                         <div className="flex justify-between items-end mb-2">
                             <h3 className="text-xl font-bold tracking-tighter uppercase">{service.name}</h3>
-                            <span className="text-2xl font-display text-primary">${service.price}</span>
+                            <span className="text-2xl font-display text-primary">{service.priceIsVariable ? 'Desde ' : ''}${service.price}</span>
                         </div>
 
                         <p className={`text-xs font-medium leading-relaxed mb-6 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
@@ -189,15 +191,27 @@ const ServicesManagement = () => {
                                 <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Etiqueta (Opcional)</label>
                                 <input type="text" placeholder="Popular, Nuevo, etc." value={formData.tag} onChange={(e) => setFormData({ ...formData, tag: e.target.value })} className="w-full ios-input py-2.5 px-3" />
                             </div>
-                            <div className="flex items-center gap-3 pt-6">
-                                <input
-                                    type="checkbox"
-                                    id="serv-disabled"
-                                    checked={formData.disabled}
-                                    onChange={(e) => setFormData({ ...formData, disabled: e.target.checked })}
-                                    className="size-5 rounded border-white/10 accent-primary"
-                                />
-                                <label htmlFor="serv-disabled" className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Desactivar</label>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="price-variable"
+                                        checked={formData.priceIsVariable}
+                                        onChange={(e) => setFormData({ ...formData, priceIsVariable: e.target.checked })}
+                                        className="size-5 rounded border-white/10 accent-primary"
+                                    />
+                                    <label htmlFor="price-variable" className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Precio Variable (Desde)</label>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="serv-disabled"
+                                        checked={formData.disabled}
+                                        onChange={(e) => setFormData({ ...formData, disabled: e.target.checked })}
+                                        className="size-5 rounded border-white/10 accent-primary"
+                                    />
+                                    <label htmlFor="serv-disabled" className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Desactivar</label>
+                                </div>
                             </div>
                         </div>
                     </div>

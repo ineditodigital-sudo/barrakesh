@@ -100,7 +100,7 @@ const StudioDetails = ({ onComplete, onBack, booking }) => {
                         onClick={() => onComplete(details)}
                         className={`w-full h-16 flex items-center justify-between px-8 font-black uppercase tracking-[0.2em] transition-all ${details.description ? 'bg-[#007AFF] text-white shadow-[6px_6px_0px_#003366] active:translate-y-1 active:shadow-none' : 'bg-white/5 text-white/20 border border-white/10 grayscale cursor-not-allowed'}`}
                     >
-                        <span>SIGUIENTE PASO 🔥</span>
+                        <span>SIGUIENTE PASO</span>
                         <span className="material-symbols-outlined !text-3xl font-bold">arrow_forward</span>
                     </button>
                 </div>

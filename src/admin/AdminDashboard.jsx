@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
-import { useBarbers, useAppointments, useCustomers } from './data';
+import { useBarbers, useAppointments } from './data';
 import Skeleton from './Skeleton';
 import PerformanceChart from './PerformanceChart';
 import { useToast } from './ToastContext';
@@ -17,10 +17,9 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [barbers, { loading: barbersLoading }] = useBarbers();
     const [appointments, { updateItem, deleteItem, loading: appointmentsLoading }] = useAppointments();
-    const [customers, { loading: customersLoading }] = useCustomers();
     const [selectedApt, setSelectedApt] = useState(null);
 
-    const isLoading = barbersLoading || appointmentsLoading || customersLoading;
+    const isLoading = barbersLoading || appointmentsLoading;
 
     const [showArchivePrompt, setShowArchivePrompt] = useState(false);
     const [archiving, setArchiving] = useState(false);
@@ -54,7 +53,7 @@ const AdminDashboard = () => {
     }, [user, navigate]);
 
     const performAutoCleanup = () => {
-        console.log("🧹 Iniciando limpieza automática...");
+        console.log("Iniciando limpieza automática...");
         const now = new Date();
         const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
 
@@ -65,13 +64,13 @@ const AdminDashboard = () => {
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
                 if (aptDate < sevenDaysAgo) {
-                    console.log(`🗑️ Borrando cita cancelada antigua: ${apt.id}`);
+                    console.log(`Borrando cita cancelada antigua: ${apt.id}`);
                     deleteItem(apt.id);
                 }
             }
             // 2. Delete Finalized items older than 30 days
             else if (aptDate < thirtyDaysAgo) {
-                console.log(`🗑️ Purgando cita antigua (30+ días): ${apt.id}`);
+                console.log(`Purgando cita antigua (30+ días): ${apt.id}`);
                 deleteItem(apt.id);
             }
         });
@@ -117,30 +116,66 @@ const AdminDashboard = () => {
             });
 
             if (response.ok) {
-                addToast(`✅ Registro mensual de ${monthName} guardado en servidor.`, 'success');
+                addToast(`Registro mensual de ${monthName} guardado en servidor.`, 'success');
                 localStorage.setItem('barrakesh_last_backup_month', new Date().getMonth().toString());
                 setShowArchivePrompt(false);
             }
         } catch (e) {
             console.error("Backup error:", e);
-            addToast("⚠️ El backup se descargó localmente pero falló la subida al servidor.", "error");
+            addToast("El backup se descargó localmente pero falló la subida al servidor.", "error");
         }
         setArchiving(false);
     };
 
     if (!user || user.role !== 'SUPER_ADMIN') return null;
 
-    const totalRevenue = appointments.reduce((acc, apt) => {
+    const [timeRange, setTimeRange] = useState('TODO'); // 'HOY', 'MES', 'TODO'
+
+    const filteredByRange = appointments.filter(apt => {
+        if (apt.status === 'Cancelada' || apt.status === 'Cancelled') return false;
+        if (timeRange === 'TODO') return true;
+        
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthNum = now.getMonth();
+        const todayStr = `${year}-${(monthNum + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        
+        if (timeRange === 'HOY') return apt.date === todayStr;
+        if (timeRange === 'MES') {
+            const [aptYear, aptMonth] = apt.date.split('-');
+            return parseInt(aptMonth) === (monthNum + 1) && aptYear === year.toString();
+        }
+        return true;
+    });
+
+    const totalRevenue = filteredByRange.reduce((acc, apt) => {
         const priceStr = String(apt.total || '0').replace(/[^0-9.]/g, '');
         const price = parseFloat(priceStr) || 0;
         return acc + price;
     }, 0);
 
     const stats = [
-        { label: "Ventas Totales", value: `$${totalRevenue.toLocaleString()}`, icon: "payments", trend: "+12%", color: "primary" },
-        { label: "Citas Hoy", value: appointments.length, icon: "calendar_today", trend: `+${appointments.length}`, color: "white" },
-        { label: "Clientes", value: customers.length, icon: "person_add", trend: "Activos", color: "white" },
-        { label: "Staff", value: barbers.length, icon: "monitoring", trend: "Barberos", color: "white" },
+        { 
+            label: timeRange === 'HOY' ? "Ventas Hoy" : timeRange === 'MES' ? "Ventas Mes" : "Ventas Totales", 
+            value: `$${totalRevenue.toLocaleString()}`, 
+            icon: "payments", 
+            trend: timeRange, 
+            color: "primary" 
+        },
+        { 
+            label: timeRange === 'HOY' ? "Citas Hoy" : timeRange === 'MES' ? "Citas Mes" : "Total Citas", 
+            value: filteredByRange.length, 
+            icon: "calendar_today", 
+            trend: `Global`, 
+            color: "white" 
+        },
+        { 
+            label: "Equipo", 
+            value: barbers.length, 
+            icon: "monitoring", 
+            trend: "Personal", 
+            color: "white" 
+        },
     ];
 
     // --- RECENT PERFORMANCE DATA ---
@@ -164,67 +199,167 @@ const AdminDashboard = () => {
             const doc = new jsPDF();
             const img = new Image();
             img.src = '/LOGO-BARRAKESH-HORIZONTAL-TXT-NEGRO.png';
+            
             await new Promise((resolve) => {
                 img.onload = resolve;
                 img.onerror = () => resolve();
             });
 
-            doc.setFillColor(254, 225, 1);
-            doc.rect(0, 0, 210, 40, 'F');
+            // --- HEADER DESIGN ---
+            doc.setFillColor(254, 225, 1); // Barrakesh Primary Yellow
+            doc.rect(0, 0, 210, 45, 'F');
 
             if (img.complete && img.naturalWidth !== 0) {
-                doc.addImage(img, 'PNG', 15, 8, 55, 15);
+                doc.addImage(img, 'PNG', 15, 10, 50, 15);
             } else {
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(24);
+                doc.setFontSize(22);
                 doc.setFont("helvetica", "bold");
-                doc.text("BARRAKESH", 20, 25);
+                doc.text("BARRAKESH", 15, 20);
             }
 
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(9);
+            doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
-            doc.text("SISTEMA DE GESTIÓN // REPORTE OPERATIVO", 20, 32);
+            doc.text("ADMINISTRATION // BUSINESS PERFORMANCE REPORT", 15, 32);
 
-            const today = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-            doc.setFontSize(8);
-            doc.text(`GENERADO EL: ${today.toUpperCase()}`, 150, 25);
+            const today = new Date().toLocaleDateString('es-MX', { 
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+            });
+            doc.setFontSize(7);
+            doc.setFont("helvetica", "normal");
+            doc.text(`DATE GENERATED: ${today.toUpperCase()}`, 145, 15);
+            doc.text(`AUTHORIZED BY: ${user.name.toUpperCase()} (${user.role})`, 145, 20);
 
+            // --- SECTION 1: GLOBAL SUMMARY ---
+            doc.setTextColor(0, 0, 0);
             doc.setFontSize(14);
-            doc.text("RESUMEN DE MÉTRICAS", 20, 55);
+            doc.setFont("helvetica", "bold");
+            doc.text("I. RESUMEN GLOBAL", 15, 60);
 
             autoTable(doc, {
-                startY: 60,
-                head: [['INDICADOR', 'VALOR']],
+                startY: 65,
+                head: [['MÉTRICA', 'RESULTADO']],
                 body: [
-                    ['INGRESOS ESTIMADOS', stats[0].value],
-                    ['TOTAL DE CITAS REALIZADAS', String(stats[1].value)],
-                    ['BASE DE CLIENTES', String(stats[2].value)],
-                    ['BARBEROS EN TURNO', String(stats[3].value)]
+                    ['INGRESOS TOTALES (ACUMULADO)', `$${totalRevenue.toLocaleString()}`],
+                    ['TOTAL DE CITAS EN SISTEMA', String(appointments.length)],
+                    ['STAFF ACTIVO', String(barbers.length)],
+                    ['ULTIMA ACTUALIZACIÓN', new Date().toISOString().split('T')[0]]
                 ],
                 theme: 'grid',
+                styles: { fontSize: 9, cellPadding: 3 },
                 headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] }
             });
 
-            const tableData = appointments.map(apt => [
-                (apt.customer?.name || apt.client || 'N/A').toUpperCase(),
-                (apt.barber?.name || apt.barber || 'N/A').toUpperCase(),
-                (Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service || 'N/A').toUpperCase(),
-                apt.time || 'N/A',
-                apt.total || 'N/A'
-            ]);
+            // --- DATA ANALYSIS ---
+            const barberStats = {};
+            const serviceStats = {};
+            const branchStats = {};
+            
+            appointments.forEach(apt => {
+                const priceStr = String(apt.total || '0').replace(/[^0-9.]/g, '');
+                const price = parseFloat(priceStr) || 0;
+                
+                // Barber Stats
+                const bName = apt.barber?.name || apt.barber || 'Sin Asignar';
+                if (!barberStats[bName]) barberStats[bName] = { count: 0, revenue: 0 };
+                barberStats[bName].count++;
+                barberStats[bName].revenue += price;
+                
+                // Branch Stats
+                const loc = apt.location || 'Matriz (Default)';
+                if (!branchStats[loc]) branchStats[loc] = { count: 0, revenue: 0 };
+                branchStats[loc].count++;
+                branchStats[loc].revenue += price;
+                
+                // Service Stats
+                if (Array.isArray(apt.services)) {
+                    apt.services.forEach(s => {
+                        if (!serviceStats[s.name]) serviceStats[s.name] = { count: 0, revenue: 0 };
+                        serviceStats[s.name].count++;
+                        // If multiple services, we approximate revenue per service if price exists
+                        serviceStats[s.name].revenue += parseFloat(s.price) || 0;
+                    });
+                } else if (apt.service) {
+                    if (!serviceStats[apt.service]) serviceStats[apt.service] = { count: 0, revenue: 0 };
+                    serviceStats[apt.service].count++;
+                    serviceStats[apt.service].revenue += price;
+                }
+            });
+
+            // --- SECTION 2: PERFORMANCE POR BARBERO ---
+            doc.setFontSize(14);
+            doc.text("II. RENDIMIENTO POR ESPECIALISTA", 15, doc.lastAutoTable.finalY + 20);
 
             autoTable(doc, {
-                startY: doc.lastAutoTable.finalY + 20,
-                head: [['CLIENTE', 'BARBERO', 'SERVICIO', 'HORA', 'MONTO']],
-                body: tableData,
+                startY: doc.lastAutoTable.finalY + 25,
+                head: [['BARBERO', 'CITAS', 'INGRESOS TOTALES', '% APORTACIÓN']],
+                body: Object.entries(barberStats).sort((a,b) => b[1].revenue - a[1].revenue).map(([name, data]) => [
+                    name.toUpperCase(),
+                    data.count,
+                    `$${data.revenue.toLocaleString()}`,
+                    totalRevenue > 0 ? `${((data.revenue / totalRevenue) * 100).toFixed(1)}%` : '0%'
+                ]),
                 theme: 'striped',
+                headStyles: { fillColor: [40, 40, 40] },
+                styles: { fontSize: 8 }
+            });
+
+            // --- SECTION 3: POPULARIDAD DE SERVICIOS ---
+            doc.setFontSize(14);
+            doc.text("III. ANÁLISIS DE SERVICIOS", 15, doc.lastAutoTable.finalY + 20);
+
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 25,
+                head: [['SERVICIO', 'FRECUENCIA', 'RECUPERACIÓN ESTIMADA']],
+                body: Object.entries(serviceStats).sort((a,b) => b[1].count - a[1].count).slice(0, 10).map(([name, data]) => [
+                    name.toUpperCase(),
+                    data.count,
+                    `$${data.revenue.toLocaleString()}`
+                ]),
+                theme: 'grid',
+                headStyles: { fillColor: [254, 225, 1], textColor: [0, 0, 0] },
+                styles: { fontSize: 8 }
+            });
+
+            // Check if we need new page
+            if (doc.lastAutoTable.finalY > 200) doc.addPage(); else doc.text("", 15, doc.lastAutoTable.finalY + 15);
+
+            // --- SECTION 4: HISTORIAL TRANSACCIONAL RECIENTE ---
+            doc.setFontSize(14);
+            const nextY = doc.lastAutoTable.finalY > 200 ? 25 : doc.lastAutoTable.finalY + 20;
+            doc.text("IV. REPORTE DETALLADO (ÚLTIMOS MOVIMIENTOS)", 15, nextY);
+
+            autoTable(doc, {
+                startY: nextY + 5,
+                head: [['CLIENTE', 'FECHA', 'HORA', 'BARBERO', 'TOTAL', 'ESTADO']],
+                body: appointments.slice(0, 50).map(apt => [
+                    (apt.customer?.name || apt.client || 'N/A').toUpperCase(),
+                    apt.date,
+                    apt.time,
+                    (apt.barber?.name || apt.barber || 'N/A').toUpperCase(),
+                    `$${apt.total || 0}`,
+                    (apt.status || 'N/A').toUpperCase()
+                ]),
+                theme: 'striped',
+                styles: { fontSize: 7, cellPadding: 2 },
                 headStyles: { fillColor: [20, 20, 20] }
             });
 
-            doc.save(`Barrakesh_Reporte_${new Date().getTime()}.pdf`);
+            // --- FOOTER ---
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(`Barrakesh Professional Management System - Página ${i} de ${pageCount}`, 15, 285);
+            }
+
+            doc.save(`Reporte_Barrakesh_${new Date().toISOString().split('T')[0]}.pdf`);
+            addToast('Reporte PDF generado correctamente', 'success');
         } catch (error) {
             console.error("PDF Error:", error);
+            addToast('Error al generar el reporte PDF', 'error');
         }
     };
 
@@ -366,8 +501,18 @@ const AdminDashboard = () => {
                         <span className="material-symbols-outlined !text-base">download</span> CSV
                     </button>
                     <div className={`flex p-1 rounded-xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-black/5 border-black/5'}`}>
-                        <button className={`px-4 py-1.5 rounded-lg text-[10px] font-bold ${isDarkMode ? 'bg-white/10 text-white' : 'bg-white shadow-sm text-black'}`}>Hoy</button>
-                        <button className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-colors ${isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black'}`}>Mes</button>
+                        <button 
+                            onClick={() => setTimeRange('HOY')}
+                            className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all ${timeRange === 'HOY' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-white shadow-sm text-black') : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}
+                        >Hoy</button>
+                        <button 
+                            onClick={() => setTimeRange('MES')}
+                            className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all ${timeRange === 'MES' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-white shadow-sm text-black') : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}
+                        >Mes</button>
+                        <button 
+                            onClick={() => setTimeRange('TODO')}
+                            className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all ${timeRange === 'TODO' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-white shadow-sm text-black') : (isDarkMode ? 'text-white/40 hover:text-white' : 'text-black/40 hover:text-black')}`}
+                        >Todo</button>
                     </div>
                 </div>
             </div>

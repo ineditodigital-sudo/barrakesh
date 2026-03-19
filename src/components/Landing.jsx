@@ -48,13 +48,13 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
     };
 
     return (
-        <div className="bg-background-dark text-text-main font-body antialiased selection:bg-primary selection:text-black">
+        <div className="bg-background-dark text-text-main font-body antialiased selection:bg-primary selection:text-black opacity-0 animate-fade-in">
             {/* Status Ticker - Fixed at top edge */}
             <div className="fixed top-0 left-0 right-0 z-[100] bg-primary text-black font-mono text-[10px] md:text-sm uppercase py-2 md:py-1 md:px-6 overflow-hidden border-b-2 border-black">
                 <div className="whitespace-nowrap animate-marquee font-bold tracking-[0.2em] flex items-center">
-                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
-                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
-                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 9PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 8:00 PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 8:00 PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
+                    <span className="mx-4 whitespace-nowrap">/// ABIERTO HASTA LAS 8:00 PM /// BIENVENIDOS SIN CITA /// BARRAKESH_SYSTEMS_v2.0 ///</span>
                 </div>
             </div>
 
@@ -102,10 +102,10 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         loop
                         muted
                         playsInline
-                        preload="metadata"
+                        preload="auto"
                         poster="/hero.png"
-                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-[0.5] opacity-90"
-                        style={{ willChange: 'transform' }}
+                        className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-[0.5] opacity-100"
+                        style={{ willChange: 'transform, opacity' }}
                     >
                         <source src="/Video Barrakesh Web.mp4" type="video/mp4" />
                         Tu navegador no soporta videos.
@@ -134,7 +134,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                 NUEVO LOOK.<br />MISMO <span className="text-primary italic-none">FLOW.</span>
                             </h2>
                             <p className="font-mono text-[10px] md:text-xs text-white/40 uppercase mt-6 tracking-[0.3em] md:border-l-2 border-primary md:pl-4 inline-block">
-                                Donde el estilo no se improvisa.<br />Se vive. 🔥
+                                “Verte bien, sentirte mejor”
                             </p>
                         </div>
                     </div>
@@ -147,7 +147,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         >
                             <div className="absolute inset-0 bg-hazard-stripe opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                             <span className="relative z-10 flex items-center gap-2 font-bold group-hover:tracking-[0.15em] transition-all">
-                                Agenda tu cita 😎
+                                Agenda tu cita
                                 <span className="material-symbols-outlined text-2xl md:text-4xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
                             </span>
                         </button>
@@ -170,22 +170,6 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                     viewport={{ once: true, amount: 0.2 }}
                     variants={sectionVariants}
                 >
-                    {/* NUMERIALA (STATS) */}
-                    <div className="py-12 px-6 bg-[#0a0a0a] border-y border-white/5 overflow-hidden">
-                        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                            {[
-                                { val: "4.9/5", label: "Rating Real" },
-                                { val: "10k+", label: "Fieles al Club" },
-                                { val: "4", label: "Estaciones" },
-                                { val: "15+", label: "Años rompiéndola" }
-                            ].map((stat, i) => (
-                                <div key={i} className="text-center group border-l border-white/5 pl-4 hover:border-primary transition-colors">
-                                    <div className="font-display text-4xl md:text-6xl font-black text-primary leading-none mb-2 tracking-tighter group-active:scale-95 transition-transform">{stat.val}</div>
-                                    <div className="font-mono text-[10px] md:text-xs text-white/40 uppercase tracking-[0.2em]">{stat.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
                     {/* IDENTITY */}
                     <div className="py-20 px-6 overflow-hidden text-white/90">
@@ -194,7 +178,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                 Aquí se arma el <span className="text-primary italic">estilo.</span>
                             </h2>
                             <p className="font-mono text-lg md:text-xl text-white/60 leading-relaxed uppercase">
-                                Barrakesh es más que una barbería. 💈 Es un punto de encuentro, es música, es cultura urbana y es imagen con actitud. Cáele y queda fino. 🔥
+                                Barrakesh es más que una barbería. Es un punto de encuentro, es música, es cultura urbana y es imagen con actitud. Cáele y queda fino.
                             </p>
                         </div>
                     </div>
@@ -223,7 +207,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         </div>
                     </div>
                     <div className="flex-1 order-1 md:order-2">
-                        <span className="text-[#00ccff] font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// El Laboratorio</span>
+                        <span className="text-[#00ccff] font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// MUSIC STUDIO</span>
                         <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter mb-8">
                             Barrakesh<br /><span className="text-[#00ccff] italic">Studio.</span>
                         </h2>
@@ -234,49 +218,12 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                             onClick={onStudioStart}
                             className="bg-[#00ccff] text-black px-10 py-5 font-display font-black text-xl uppercase tracking-widest hover:translate-y-[-4px] transition-all shadow-[6px_6px_0px_#003344] active:shadow-none active:translate-y-0"
                         >
-                            Reservar Estudio 🎙️
+                            Reservar Estudio
                         </button>
                     </div>
                 </motion.div>
             </section>
 
-            {/* HOW IT WORKS SECTION */}
-            <section id="services" className="min-h-screen w-full flex items-center py-24 px-6 relative overflow-hidden bg-background-dark border-b border-white/10">
-                <motion.div
-                    className="max-w-6xl mx-auto w-full"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                >
-                    <div className="mb-20">
-                        <span className="text-primary font-mono text-xs tracking-[0.5em] uppercase block mb-4">/// Armamos tu Flow</span>
-                        <h2 className="font-display text-5xl md:text-8xl font-black text-white uppercase leading-[0.8] tracking-tighter italic">
-                            Cada detalle<br /><span className="text-primary not-italic">cuenta.</span>
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-surface/30">
-                        {[
-                            { step: "01", title: "Corte Superior", desc: "Cada corte habla. Precisión y técnica para que quedes al 100.", icon: "content_cut", img: "/BARBER/image 91.webp" },
-                            { step: "02", title: "Barba con Actitud", desc: "Afeitado clásico y delineado fino. Actitud en cada trazado.", icon: "face", img: "/BARBER/image 92.webp" },
-                            { step: "03", title: "Experiencia Club", desc: "DJ sets, eventos y comunidad exclusiva. Esto es Barrakesh.", icon: "music_note", img: "/BARBER/image 93.webp" }
-                        ].map((item, i) => (
-                            <div key={i} className="relative p-12 border-b md:border-b-0 md:border-r border-white/10 hover:bg-primary/5 transition-colors group overflow-hidden">
-                                <img src={item.img} className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-10 transition-opacity grayscale" alt="" />
-                                <div className="relative z-10">
-                                    <div className="font-mono text-primary text-sm mb-8 flex justify-between items-center text-white/20 group-hover:text-primary transition-colors">
-                                        <span>#{item.step}</span>
-                                        <span className="material-symbols-outlined !text-4xl opacity-20 group-hover:opacity-100 transition-opacity">{item.icon}</span>
-                                    </div>
-                                    <h3 className="font-display text-3xl font-bold text-white uppercase mb-4 tracking-tight">{item.title}</h3>
-                                    <p className="text-white/40 font-mono text-sm leading-relaxed">{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            </section>
 
             {/* BARRAKESH CLUB SECTION */}
             <section id="club" className="min-h-screen w-full flex items-center snap-start py-24 px-6 bg-primary text-black relative overflow-hidden">
@@ -290,13 +237,13 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                 >
                     <div className="flex-1">
                         <h2 className="font-display text-6xl md:text-8xl font-black uppercase leading-[0.8] tracking-tighter mb-6">
-                            BARRAKESH<br />CLUB 🔥
+                            BARRAKESH<br />CLUB
                         </h2>
                         <p className="font-mono text-lg font-bold uppercase mb-8">
                             No todos entran. Solo clientes. Accede a precios especiales, promociones exclusivas y eventos privados.
                         </p>
                         <button
-                            onClick={() => window.open('https://wa.me/524495452271?text=Hola!%20Me%20interesa%20unirme%20al%20club%20Barrakesh%20🔥', '_blank')}
+                            onClick={() => window.open('https://chat.whatsapp.com/IWC0VP7Cwj712uoTQHsRjk?mode=gi_t', '_blank')}
                             className="bg-black text-primary px-8 py-4 font-display font-black text-xl uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_#333]"
                         >
                             ¿Listo para ser parte?
@@ -335,7 +282,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                             onClick={onJoinStart}
                             className="bg-white text-black font-display font-black text-2xl px-16 py-6 uppercase tracking-widest hover:bg-primary shadow-[6px_6px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-y-1 transition-all"
                         >
-                            Aplicar Ahora ⚡
+                            Aplicar Ahora
                         </button>
                     </div>
                 </motion.div>
@@ -353,7 +300,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                         </div>
                         <div className="text-left hidden md:block">
                             <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed">
-                                Distribuidos por la jungla de asfalto.<br />Cáele a la estación más cercana. 💈
+                                Distribuidos por la jungla de asfalto.<br />Cáele a la estación más cercana.
                             </p>
                         </div>
                     </div>
@@ -382,7 +329,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                         <span className="material-symbols-outlined !text-4xl text-primary">location_on</span>
                                     </div>
                                     <div className="flex justify-between items-start mb-2 md:mb-4">
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 uppercase ${branch.status === 'Operativo' ? 'bg-primary text-black' : 'bg-red-500 text-white'}`}>
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 uppercase ${branch.status === 'Operativo' ? 'bg-primary text-black' : 'bg-yellow-500 text-black'}`}>
                                             {branch.status === 'Operativo' ? 'Estado: Abierto' : 'Estado: ' + branch.status}
                                         </span>
                                     </div>
@@ -408,14 +355,34 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                             <span className="text-white/20 uppercase tracking-widest">Ciudad</span>
                                             <span className="text-white/60">{branch.city}</span>
                                         </div>
+                                        {branch.hours && (
+                                            <div className="flex justify-between text-[10px] font-mono mt-1 text-right">
+                                                <span className="text-white/20 uppercase tracking-widest">Horario</span>
+                                                <span className="text-white/60 ml-2">{branch.hours}</span>
+                                            </div>
+                                        )}
+                                        {branch.note && (
+                                            <div className="text-[10px] font-mono mt-2 text-primary border-l-2 border-primary pl-2 mb-1">
+                                                {branch.note}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <button
-                                        onClick={onBarberStart}
-                                        className="mt-4 md:mt-6 w-full py-2 md:py-3 bg-white/5 text-white/60 font-mono text-[8px] md:text-[10px] uppercase tracking-widest border border-white/10 hover:bg-primary hover:text-black hover:border-primary transition-all active:scale-95"
-                                    >
-                                        Reservar Aquí
-                                    </button>
+                                    {branch.status === 'Operativo' ? (
+                                        <button
+                                            onClick={onBarberStart}
+                                            className="mt-4 md:mt-6 w-full py-2 md:py-3 bg-white/5 text-white/60 font-mono text-[8px] md:text-[10px] uppercase tracking-widest border border-white/10 hover:bg-primary hover:text-black hover:border-primary transition-all active:scale-95"
+                                        >
+                                            Reservar Aquí
+                                        </button>
+                                    ) : (
+                                        <button
+                                            disabled
+                                            className="mt-4 md:mt-6 w-full py-2 md:py-3 bg-transparent text-white/20 font-mono text-[8px] md:text-[10px] uppercase tracking-widest border border-white/10 cursor-not-allowed"
+                                        >
+                                            Próximamente
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -439,7 +406,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                             onClick={onBarberStart}
                             className="bg-primary text-black font-display text-2xl md:text-4xl px-12 py-6 uppercase font-black hover:tracking-widest transition-all duration-300 active:scale-95 shadow-[8px_8px_0px_rgba(255,255,255,0.1)]"
                         >
-                            📲 Agenda tu cita ahora
+                            Agenda tu cita ahora
                         </button>
                     </div>
                 </div>
@@ -471,7 +438,6 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                                     <h4 className="font-mono text-primary text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4 md:mb-8">Navegación</h4>
                                     <ul className="space-y-2 md:space-y-4 font-display text-lg md:text-2xl font-bold uppercase text-white/60">
                                         <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('hero')}>Inicio</li>
-                                        <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('services')}>Servicios</li>
                                         <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('studio')}>Renta de Estudio</li>
                                         <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('join')}>Sé Parte de Barrakesh</li>
                                         <li className="hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToId('club')}>Club Barrakesh</li>
@@ -495,7 +461,6 @@ const FloatingNav = ({ scrollToId, onBarberStart }) => {
 
     const menuItems = [
         { label: 'Agendar Cita', action: onBarberStart, icon: 'calendar_month', highlight: true },
-        { label: 'Servicios', action: () => scrollToId('services'), icon: 'content_cut' },
         { label: 'Estudio', action: () => scrollToId('studio'), icon: 'mic' },
         { label: 'Club', action: () => scrollToId('club'), icon: 'stars' },
         { label: 'Sucursales', action: () => scrollToId('branches'), icon: 'location_on' },

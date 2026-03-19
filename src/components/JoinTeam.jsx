@@ -20,7 +20,7 @@ const JoinTeam = ({ onBack }) => {
                 <header className="mb-16">
                     <span className="text-white font-mono text-[10px] tracking-[0.6em] uppercase mb-4 block animate-pulse">/// RECLUTAMIENTO /// BARRAKESH CREW</span>
                     <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-[0.8] mb-8 italic">
-                        ÚNETE AL<br /><span className="text-white not-italic">CREW. 🔥</span>
+                        ÚNETE AL<br /><span className="text-white not-italic">CREW.</span>
                     </h1>
                     <p className="font-mono text-xs md:text-sm text-white/40 uppercase tracking-[0.2em] leading-relaxed max-w-xl mx-auto">
                         Buscamos especialistas con actitud, técnica de precisión y ganas de redefinir la cultura urbana. No es solo un trabajo, es una declaración.

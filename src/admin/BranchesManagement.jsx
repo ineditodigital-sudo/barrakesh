@@ -15,7 +15,10 @@ const BranchesManagement = () => {
         city: 'Aguascalientes',
         status: 'Operativo',
         capacity: '0 sillas',
-        image: ''
+        image: '',
+        activeDays: [1, 2, 3, 4, 5, 6],
+        openTime: '11:00',
+        closeTime: '20:00'
     });
 
     const handleEdit = (branch) => {
@@ -49,7 +52,7 @@ const BranchesManagement = () => {
                     <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Gestión de sedes físicas e inmobiliario.</p>
                 </div>
                 <button
-                    onClick={() => { setCurrentBranch(null); setFormData({ name: '', addr: '', city: 'Aguascalientes', status: 'Operativo', capacity: '2 sillas', image: '' }); setIsModalOpen(true); }}
+                    onClick={() => { setCurrentBranch(null); setFormData({ name: '', addr: '', city: 'Aguascalientes', status: 'Operativo', capacity: '2 sillas', image: '', activeDays: [1, 2, 3, 4, 5, 6], openTime: '11:00', closeTime: '20:00' }); setIsModalOpen(true); }}
                     className="ios-button bg-primary text-black px-6 py-3 font-bold text-xs tracking-tight hover:bg-black hover:text-white transition-all shadow-lg w-full md:w-auto"
                 >
                     <span className="material-symbols-outlined !text-lg mr-2">add_location</span>
@@ -150,6 +153,7 @@ const BranchesManagement = () => {
                                     <option>Operativo</option>
                                     <option>Mantenimiento</option>
                                     <option>Cerrado</option>
+                                    <option>Próxima Apertura</option>
                                 </select>
                             </div>
                         </div>
@@ -167,6 +171,41 @@ const BranchesManagement = () => {
                             <div className="space-y-1.5">
                                 <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Ciudad</label>
                                 <input type="text" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className="w-full ios-input py-2 px-3" />
+                            </div>
+                        </div>
+
+                        {/* Schedule Controls */}
+                        <div className="space-y-3 p-4 bg-white/5 border border-white/5 rounded-xl">
+                            <div>
+                                <label className={`text-[10px] font-bold uppercase tracking-widest mb-2 block ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Días de Atención</label>
+                                <div className="flex gap-2">
+                                    {[{ id: 1, l: 'L' }, { id: 2, l: 'M' }, { id: 3, l: 'M' }, { id: 4, l: 'J' }, { id: 5, l: 'V' }, { id: 6, l: 'S' }, { id: 0, l: 'D' }].map(day => {
+                                        const isActive = formData.activeDays?.includes(day.id);
+                                        return (
+                                            <button
+                                                key={day.id}
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    activeDays: isActive ? prev.activeDays.filter(d => d !== day.id) : [...(prev.activeDays || []), day.id]
+                                                }))}
+                                                className={`size-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${isActive ? 'bg-primary text-black' : isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/10 text-black hover:bg-black/20'}`}
+                                            >
+                                                {day.l}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mt-3">
+                                <div className="space-y-1.5">
+                                    <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Apertura</label>
+                                    <input type="time" value={formData.openTime || '11:00'} onChange={(e) => setFormData({ ...formData, openTime: e.target.value })} className="w-full ios-input py-2 px-3" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Cierre</label>
+                                    <input type="time" value={formData.closeTime || '20:00'} onChange={(e) => setFormData({ ...formData, closeTime: e.target.value })} className="w-full ios-input py-2 px-3" />
+                                </div>
                             </div>
                         </div>
                     </div>

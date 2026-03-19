@@ -12,24 +12,28 @@ export const fileToBase64 = (file) => {
 };
 
 const INITIAL_BARBERS = [
-    { id: 1, name: "Pedro", spec: "Master Barber /// Fade Expert", status: "Activo", phone: "449 123 4567", initials: "PD", workedBranches: [1, 2], image: "https://images.unsplash.com/photo-1503460293676-4d2be411cca0?auto=format&fit=crop&q=80&w=400" },
-    { id: 2, name: "Carlos", spec: "Senior /// Classic Cuts", status: "Activo", phone: "449 234 5678", initials: "CR", workedBranches: [1], image: "https://images.unsplash.com/photo-1520338661039-414804804437?auto=format&fit=crop&q=80&w=400" },
-    { id: 3, name: "Fabian", spec: "Creative Stylist", status: "Inactivo", phone: "449 345 6789", initials: "FB", workedBranches: [3], image: "https://images.unsplash.com/photo-1533689476487-034f57831a58?auto=format&fit=crop&q=80&w=400" },
-    { id: 4, name: "Jose Luis", spec: "Artist /// Beard Sculpting", status: "Activo", phone: "449 456 7890", initials: "JL", workedBranches: [2, 3], image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400" },
+    { id: 'b1', name: "Torny", spec: "Master Barber", status: "Activo", phone: "", initials: "TR", workedBranches: [1], image: "https://images.unsplash.com/photo-1503460293676-4d2be411cca0?auto=format&fit=crop&q=80&w=400" },
+    { id: 'b2', name: "Ricardo", spec: "Master Barber", status: "Activo", phone: "", initials: "RC", workedBranches: [1], image: "https://images.unsplash.com/photo-1520338661039-414804804437?auto=format&fit=crop&q=80&w=400" }
 ];
 
 const INITIAL_SERVICES = [
-    { id: 's1', category: "Barber Shop", name: "Fade a Navaja", price: 35, desc: "Cero o foil shaver. Degradado de precisión. Acabado a navaja.", tag: "Popular" },
-    { id: 's2', category: "Barber Shop", name: "Corte a Tijera", price: 40, desc: "Solo tijera. Textured crop o clásico. Lavado y peinado incluido." },
-    { id: 's3', category: "Barber Shop", name: "Corte Rapado", price: 25, desc: "Un solo nivel en toda la cabeza. Delineado incluido. Rápido y limpio." },
-    { id: 's4', category: "Music Studio", name: "Sesión de Grabación", price: 50, desc: "Renta de cabina por hora. Incluye ingeniero básico.", tag: "Pro" },
-    { id: 's5', category: "Music Studio", name: "Mixing & Mastering", price: 80, desc: "Tratamiento profesional para tus tracks.", tag: "Estelar" },
+    { id: 's1', category: "Barber Shop", name: "Paquete Pro", price: 250, desc: "Cabello + Barba", tag: "Pack" },
+    { id: 's2', category: "Barber Shop", name: "Paquete Élite", price: 300, desc: "Cabello + Barba + Ceja", tag: "Estelar" },
+    { id: 's3', category: "Barber Shop", name: "Corte de cabello", price: 180, desc: "Corte clásico o moderno." },
+    { id: 's4', category: "Barber Shop", name: "Corte de barba", price: 100, desc: "Afeitado clásico y delineado." },
+    { id: 's5', category: "Barber Shop", name: "Diseño de ceja", price: 80, desc: "Delineado con navaja." },
+    { id: 's6', category: "Barber Shop", name: "Diseño de grecas", price: 80, desc: "Líneas o figuras personalizadas." },
+    { id: 's7', category: "Barber Shop", name: "Corte infantil", price: 150, desc: "Hasta 12 años." },
+    { id: 's8', category: "Music Studio", name: "Grabación (2 horas)", price: 450, desc: "Renta de cabina por 2 horas.", tag: "Pro" },
+    { id: 's9', category: "Music Studio", name: "Instrumentales personalizadas", price: 450, desc: "Beat único a tu medida." },
+    { id: 's10', category: "Music Studio", name: "Mezcla", price: 350, desc: "Balance y ecualización de tus tracks." },
+    { id: 's11', category: "Music Studio", name: "Mastering", price: 350, desc: "Volumen comercial y calidad listos." },
+    { id: 's12', category: "Music Studio", name: "Video", price: 1000, desc: "Producción de video musical o sesión." }
 ];
 
 const INITIAL_BRANCHES = [
-    { id: 1, name: "CENTRO", addr: "Madero 234", status: "Operativo", capacity: "6 sillas", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1599351431247-f10bc93d0187?auto=format&fit=crop&q=80&w=800" },
-    { id: 2, name: "PULGAS PANDAS", addr: "Univ. 1001", status: "Operativo", capacity: "4 sillas", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=800" },
-    { id: 3, name: "ALTARIA", addr: "Blvd. Zacatecas", status: "Mantenimiento", capacity: "8 sillas", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=800" },
+    { id: 1, name: "MATRIZ", addr: "C. Parras 72-local 4, Bosques del Prado Oriente, 20159 Aguascalientes, Ags.", status: "Operativo", capacity: "Matriz + Music Studio", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1599351431247-f10bc93d0187?auto=format&fit=crop&q=80&w=800", hours: "Lunes a Sábado de 11:00 am a 8:00 pm", note: "En esta ubicación se encuentra nuestro Barrakesh Music Studio", activeDays: [1, 2, 3, 4, 5, 6], openTime: "11:00", closeTime: "20:00" },
+    { id: 2, name: "PLAZA SANTA FE", addr: "Dentro del gimnasio LVDVS (Av. Universidad 811, Bosques del Prado Sur, 20130 Aguascalientes, Ags.)", status: "Próxima Apertura", capacity: "Próximamente", city: "Aguascalientes", image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=800", activeDays: [1, 2, 3, 4, 5, 6], openTime: "11:00", closeTime: "20:00" },
 ];
 
 const EMPTY_ARRAY = [];

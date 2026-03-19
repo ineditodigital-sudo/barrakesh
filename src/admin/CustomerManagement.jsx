@@ -17,8 +17,7 @@ const CustomerManagement = () => {
         phone: '',
         email: '',
         loyalty: 'Standard',
-        lastVisit: 'N/A',
-        totalSpent: '$0.00'
+        lastVisit: 'N/A'
     });
 
     const handleAddCustomer = async () => {
@@ -28,18 +27,17 @@ const CustomerManagement = () => {
         }
         try {
             await addItem(newCustomer);
-            addToast('✅ Cliente agregado correctamente', 'success');
+            addToast('Miembro agregado correctamente', 'success');
             setIsAddModalOpen(false);
             setNewCustomer({
                 name: '',
                 phone: '',
                 email: '',
                 loyalty: 'Standard',
-                lastVisit: 'N/A',
-                totalSpent: '$0.00'
+                lastVisit: 'N/A'
             });
         } catch (error) {
-            addToast('❌ Error al agregar el cliente', 'error');
+            addToast('Error al agregar el miembro', 'error');
         }
     };
 
@@ -52,11 +50,11 @@ const CustomerManagement = () => {
         if (!deletingId) return;
         try {
             await deleteItem(deletingId);
-            addToast('✅ Cliente eliminado correctamente', 'success');
+            addToast('Miembro eliminado correctamente', 'success');
             setDeletingId(null);
         } catch (error) {
             console.error(error);
-            addToast('❌ Error al eliminar el cliente', 'error');
+            addToast('Error al eliminar el miembro', 'error');
         }
     };
 
@@ -69,8 +67,8 @@ const CustomerManagement = () => {
         <div className="space-y-6 animate-fade-in-up pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Base de Clientes</h2>
-                    <p className={`${isDarkMode ? 'text-white/40' : 'text-black/40'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Gestión de lealtad y perfiles de usuario.</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Club Barrakesh</h2>
+                    <p className={`${isDarkMode ? 'text-white/40' : 'text-black/40'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Gestión de miembros y perfiles de usuario.</p>
                 </div>
                 <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
                     <div className="relative group w-full md:w-64">
@@ -88,7 +86,7 @@ const CustomerManagement = () => {
                         className="ios-button bg-primary text-black px-6 py-2.5 font-bold text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-lg w-full md:w-auto h-full"
                     >
                         <span className="material-symbols-outlined !text-lg mr-2">person_add</span>
-                        Nuevo Cliente
+                        Nuevo Miembro
                     </button>
                 </div>
             </div>
@@ -102,7 +100,6 @@ const CustomerManagement = () => {
                                 <th className={`px-6 py-4 text-[9px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'} hidden sm:table-cell`}>Contacto</th>
                                 <th className={`px-6 py-4 text-[9px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'} hidden md:table-cell`}>Visita</th>
                                 <th className={`px-6 py-4 text-[9px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Lealtad</th>
-                                <th className={`px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-right ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>Inversión</th>
                                 <th className="px-6 py-4"></th>
                             </tr>
                         </thead>
@@ -130,13 +127,12 @@ const CustomerManagement = () => {
                                                 'bg-white/10 text-white/30 border-white/5'
                                             }`}>{customer.loyalty}</span>
                                     </td>
-                                    <td className={`px-6 py-4 text-right text-base font-bold tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>{customer.totalSpent}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteClick(customer.id, customer.name); }}
                                                 className={`size-8 rounded-lg flex items-center justify-center transition-all ${isDarkMode ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : 'bg-red-500/5 text-red-500 hover:bg-red-100'}`}
-                                                title="Eliminar Cliente"
+                                                title="Eliminar Miembro"
                                             >
                                                 <span className="material-symbols-outlined !text-lg text-accent-red">delete</span>
                                             </button>
@@ -153,7 +149,7 @@ const CustomerManagement = () => {
             <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
                 <div className={`ios-card p-6 w-full max-w-md animate-scale-in ${isDarkMode ? 'bg-[#0a0a0a]' : 'bg-white'}`}>
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold uppercase tracking-tight">Nuevo Perfil de Cliente</h3>
+                        <h3 className="text-xl font-bold uppercase tracking-tight">Nuevo Miembro del Club</h3>
                         <button onClick={() => setIsAddModalOpen(false)} className="size-8 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors">
                             <span className="material-symbols-outlined">close</span>
                         </button>
@@ -209,7 +205,7 @@ const CustomerManagement = () => {
                             onClick={handleAddCustomer}
                             className="w-full h-12 bg-primary text-black font-black uppercase tracking-widest rounded-xl text-[10px] mt-4 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20"
                         >
-                            Dar de Alta Cliente
+                            Dar de Alta Miembro
                         </button>
                     </div>
                 </div>
@@ -222,9 +218,9 @@ const CustomerManagement = () => {
                         <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-6">
                             <span className="material-symbols-outlined !text-4xl">warning</span>
                         </div>
-                        <h3 className="text-xl font-black uppercase tracking-tight mb-2">¿Eliminar Cliente?</h3>
+                        <h3 className="text-xl font-black uppercase tracking-tight mb-2">¿Eliminar Miembro?</h3>
                         <p className={`text-xs mb-8 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
-                            Estás por eliminar a <span className="text-primary font-bold">{deletingName}</span>.
+                            Estás por eliminar a <span className="text-primary font-bold">{deletingName}</span> del Club.
                             Esta acción es permanente.
                         </p>
                         <div className="flex gap-3 w-full">
