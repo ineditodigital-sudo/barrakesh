@@ -118,27 +118,27 @@ const Confirmation = ({ booking, onReset }) => {
                         <div className="w-full space-y-8">
                             {/* Client Row */}
                             <div className="flex flex-col gap-1.5">
-                                <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Cliente</span>
+                                <span className="text-[9px] font-mono text-white/50 uppercase tracking-[0.2em]">Cliente</span>
                                 <span className="text-2xl font-black font-display uppercase tracking-tight">{booking?.customer?.name || 'ESTIMADO CLIENTE'}</span>
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">
                                 {/* Location Row */}
                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Sede</span>
+                                    <span className="text-[9px] font-mono text-white/50 uppercase tracking-[0.2em]">Sede</span>
                                     <span className="text-sm font-bold font-mono uppercase text-white leading-none">{booking?.location || 'BK CENTRO'}</span>
-                                    <span className="text-[10px] font-mono text-white/40 uppercase truncate">{selectedBranch?.addr || 'VER MAPA'}</span>
+                                    <span className="text-[10px] font-mono text-white/60 uppercase truncate">{selectedBranch?.addr || 'VER MAPA'}</span>
                                 </div>
                                 {/* Barber/Studio Row */}
                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">{isStudioBooking ? 'Tipo' : 'Barbero'}</span>
+                                    <span className="text-[9px] font-mono text-white/50 uppercase tracking-[0.2em]">{isStudioBooking ? 'Tipo' : 'Barbero'}</span>
                                     <span className="text-sm font-bold font-mono uppercase" style={{ color: themeColor }}>{isStudioBooking ? 'STUDIO RENTAL' : barber.name}</span>
                                 </div>
                             </div>
 
                             {/* Service Row */}
                             <div className="flex flex-col gap-1.5 pt-4 border-t border-white/10">
-                                <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Servicios Selección</span>
+                                <span className="text-[9px] font-mono text-white/50 uppercase tracking-[0.2em]">Servicios Selección</span>
                                  <div className="flex flex-wrap gap-2">
                                     {services.map((s, idx) => (
                                         <span key={idx} className="bg-white/5 border border-white/10 px-2 py-1 text-[10px] font-mono font-bold uppercase">{s.priceIsVariable ? 'Desde ' : ''}{s.name}</span>
@@ -155,9 +155,9 @@ const Confirmation = ({ booking, onReset }) => {
                     <div className="p-8">
                         <div className="flex justify-between items-end mb-8">
                             <div className="flex flex-col gap-1.5">
-                                <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Horario Confirmado</span>
+                                <span className="text-[9px] font-mono text-white/50 uppercase tracking-[0.2em]">Horario Confirmado</span>
                                 <span className="text-4xl font-black font-display uppercase leading-none">{timeStr}</span>
-                                <span className="text-xs font-mono font-bold uppercase opacity-60">{dateStr}</span>
+                                <span className="text-xs font-mono font-bold uppercase opacity-80">{dateStr}</span>
                             </div>
                              <div className="flex flex-col items-end gap-1.5">
                                 <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Inversión</span>

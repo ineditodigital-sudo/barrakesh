@@ -30,10 +30,18 @@ const AdminDashboard = () => {
             return;
         }
 
+        // Helper to format Date object into YYYY-MM-DD string in local time
+        const formatLocalDate = (date) => {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+
         // --- AUTO CLEANUP SYSTEM ---
         const lastCleanup = localStorage.getItem('barrakesh_last_cleanup');
         const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
+        const todayStr = formatLocalDate(now);
 
         if (lastCleanup !== todayStr) {
             performAutoCleanup();
@@ -178,13 +186,19 @@ const AdminDashboard = () => {
         },
     ];
 
-    // --- RECENT PERFORMANCE DATA ---
     const getWeeklyData = () => {
         const days = ["D", "L", "M", "X", "J", "V", "S"];
+        const formatLocalDate = (date) => {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const dStr = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${dStr}`;
+        };
+
         return Array.from({ length: 7 }, (_, i) => {
             const d = new Date();
             d.setDate(d.getDate() - (6 - i));
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = formatLocalDate(d);
             const count = appointments.filter(a => a.date === dateStr).length;
             return {
                 label: days[d.getDay()],
@@ -244,7 +258,10 @@ const AdminDashboard = () => {
                     ['INGRESOS TOTALES (ACUMULADO)', `$${totalRevenue.toLocaleString()}`],
                     ['TOTAL DE CITAS EN SISTEMA', String(appointments.length)],
                     ['STAFF ACTIVO', String(barbers.length)],
-                    ['ULTIMA ACTUALIZACIÓN', new Date().toISOString().split('T')[0]]
+                    ['ULTIMA ACTUALIZACIÓN', (() => {
+                        const d = new Date();
+                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    })()]
                 ],
                 theme: 'grid',
                 styles: { fontSize: 9, cellPadding: 3 },
@@ -355,7 +372,10 @@ const AdminDashboard = () => {
                 doc.text(`Barrakesh Professional Management System - Página ${i} de ${pageCount}`, 15, 285);
             }
 
-            doc.save(`Reporte_Barrakesh_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`Reporte_Barrakesh_${(() => {
+                const d = new Date();
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            })()}.pdf`);
             addToast('Reporte PDF generado correctamente', 'success');
         } catch (error) {
             console.error("PDF Error:", error);
@@ -375,7 +395,10 @@ const AdminDashboard = () => {
             Total: apt.total,
             Estado: apt.status
         }));
-        exportToCSV(exportData, `Barrakesh_Historial_${new Date().toISOString().split('T')[0]}`);
+        exportToCSV(exportData, `Barrakesh_Historial_${(() => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        })()}`);
     };
 
     const handleCancelApt = async (apt) => {

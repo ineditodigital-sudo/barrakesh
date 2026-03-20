@@ -99,7 +99,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                                 <span className="bg-primary text-black text-[10px] font-black px-1.5 py-0.5 rounded-sm">01</span>
                                 <span className="text-steel font-mono text-[10px] uppercase">PASO</span>
                             </div>
-                            <span className="text-primary font-mono text-[8px] tracking-widest uppercase opacity-40">ORDEN #4492</span>
+                            <span className="text-primary font-mono text-[8px] tracking-widest uppercase opacity-70">ORDEN #4492</span>
                         </div>
                     </div>
                     <div className="flex items-end justify-between">
@@ -116,7 +116,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                             </div>
                         </div>
                         <div className="text-right hidden md:block">
-                            <span className="text-white/20 font-mono text-[8px] uppercase tracking-widest">Carrito de Servicios</span>
+                            <span className="text-white/40 font-mono text-[8px] uppercase tracking-widest">Carrito de Servicios</span>
                             <div className="flex gap-1 mt-1">
                                 {selected.map(s => (
                                     <div key={s.id} className="size-2 bg-primary"></div>
@@ -175,8 +175,8 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className={`font-mono text-xs leading-relaxed max-w-[200px] ${isSelected ? 'text-steel' :
-                                                        s.disabled ? 'text-[#444]' : 'text-steel'
+                                                    <p className={`font-mono text-[10px] leading-relaxed max-w-[200px] ${isSelected ? 'text-white' :
+                                                        s.disabled ? 'text-white/20' : 'text-zinc-400'
                                                         }`}>
                                                         {s.desc}
                                                     </p>
@@ -215,14 +215,14 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                     <div className="max-w-md md:max-w-2xl mx-auto pointer-events-auto">
                          <div className="flex justify-between items-end mb-4 px-1">
                             <div className="flex flex-col">
-                                <span className="text-steel font-mono text-[10px] uppercase tracking-widest">Total Est.</span>
+                                <span className="text-zinc-400 font-mono text-[10px] uppercase tracking-widest">Total Est.</span>
                                 <span className="text-primary font-display text-4xl leading-none font-black">${totalPrice.toFixed(2)}</span>
                             </div>
                             <div className="flex flex-col items-end">
                                 <span className="text-white font-mono text-[10px] uppercase font-bold bg-white/10 px-2 py-1 mb-1">
                                     {selected.length} {selected.length === 1 ? 'SERVICIO' : 'SERVICIOS'}
                                 </span>
-                                <span className="text-steel font-mono text-[8px] uppercase tracking-tighter">Click para continuar</span>
+                                <span className="text-zinc-400 font-mono text-[8px] uppercase tracking-tighter">Click para continuar</span>
                             </div>
                         </div>
 

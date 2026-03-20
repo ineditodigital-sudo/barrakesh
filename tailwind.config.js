@@ -14,6 +14,7 @@ export default {
         "surface": "#050505", // Deep Dark Surface
         "text-main": "#F2F2F2", // Chalk White
         "accent-red": "#FF3333", // Spray Paint Red
+        "steel": "#A3A3A3", // Medium Gray for better contrast on black
       },
       fontFamily: {
         "display": ["Barlow", "sans-serif"],

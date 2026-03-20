@@ -9,11 +9,18 @@ const generateDates = () => {
     for (let i = 0; i < 7; i++) {
         const d = new Date();
         d.setDate(d.getDate() + i);
+        
+        // Format YYYY-MM-DD in local time
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const dayNum = String(d.getDate()).padStart(2, '0');
+        const fullDate = `${y}-${m}-${dayNum}`;
+
         days.push({
             day: monthNames[d.getMonth()],
-            num: d.getDate().toString().padStart(2, '0'),
+            num: dayNum,
             label: i === 0 ? "Hoy" : dayNames[d.getDay()],
-            fullDate: d.toISOString().split('T')[0]
+            fullDate: fullDate
         });
     }
     return days;
@@ -169,7 +176,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                         <h1 className="font-display font-bold text-2xl tracking-tighter uppercase text-white">ASEGURA EL FLOW</h1>
                         <div className="flex items-center gap-2 mt-1">
                             <span className="bg-primary text-black text-[9px] font-black px-1.5 py-0.5 rounded-sm">03</span>
-                            <span className="text-steel font-mono text-[9px] uppercase tracking-widest">PASO</span>
+                            <span className="text-zinc-400 font-mono text-[9px] uppercase tracking-widest">PASO</span>
                         </div>
                     </div>
                     <div className="size-10"></div>
@@ -202,9 +209,9 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                             className={`p-4 border transition-all text-left group ${isSelected ? 'text-black' : 'bg-surface border-white/10 text-white hover:border-white/30'}`}
                                             style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                         >
-                                            <div className={`font-mono text-[8px] uppercase tracking-widest mb-1 ${isSelected ? 'text-black/60' : 'text-white/40'}`}>Sucursal</div>
+                                            <div className={`font-mono text-[8px] uppercase tracking-widest mb-1 ${isSelected ? 'text-black/60' : 'text-zinc-400'}`}>Sucursal</div>
                                             <div className="font-display text-xl font-bold uppercase leading-none mb-1">{b.name}</div>
-                                            <div className={`font-mono text-[8px] uppercase ${isSelected ? 'text-black/60' : 'text-white/20'}`}>{b.addr}</div>
+                                            <div className={`font-mono text-[8px] uppercase ${isSelected ? 'text-black/60' : 'text-white/30'}`}>{b.addr}</div>
                                         </button>
                                     );
                                 })
@@ -232,9 +239,9 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                         className={`snap-start shrink-0 w-20 h-24 flex flex-col items-center justify-center transition-all ${isSelected ? 'text-black relative' : 'bg-transparent text-white border border-white/20'}`}
                                         style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
                                     >
-                                        <span className={`text-[10px] uppercase tracking-wider mb-1 ${isSelected ? 'font-bold' : 'font-mono opacity-60'}`}>{d.day}</span>
+                                        <span className={`text-[10px] uppercase tracking-wider mb-1 ${isSelected ? 'font-bold' : 'font-mono text-zinc-400'}`}>{d.day}</span>
                                         <span className="font-display text-4xl font-bold leading-none">{d.num}</span>
-                                        <span className={`text-[10px] uppercase mt-1 ${isSelected ? 'font-bold' : 'font-mono opacity-60'}`}>{d.label}</span>
+                                        <span className={`text-[10px] uppercase mt-1 ${isSelected ? 'font-bold' : 'font-mono text-zinc-400'}`}>{d.label}</span>
                                         {isSelected && <div className="absolute -bottom-1 -right-1 size-3 bg-black"></div>}
                                     </button>
                                 );
@@ -259,7 +266,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                         <div className="grid grid-cols-3 gap-2 md:gap-3">
                             {timeBlocks.map((block, bIdx) => (
                                 <React.Fragment key={bIdx}>
-                                    <div className="col-span-3 text-[10px] text-white/40 font-mono uppercase tracking-widest mt-6 first:mt-2 mb-1 pl-1">{block.label}</div>
+                                    <div className="col-span-3 text-[10px] text-zinc-400 font-mono uppercase tracking-widest mt-6 first:mt-2 mb-1 pl-1">{block.label}</div>
                                     {block.slots.map((slot, sIdx) => {
                                         const isSelected = selectedTime === slot.time;
                                         return (

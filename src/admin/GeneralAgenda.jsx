@@ -3,20 +3,35 @@ import { useBarbers, useAppointments } from './data';
 import { useTheme } from './ThemeContext';
 
 const GeneralAgenda = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    // Helper to parse YYYY-MM-DD string into a local Date object at midnight
+    const parseLocalDate = (str) => {
+        const [y, m, d] = str.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    };
+
+    // Helper to format Date object into YYYY-MM-DD string
+    const formatLocalDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
+
+    // Use current local date instead of UTC
+    const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
     const [barbers] = useBarbers();
     const [appointments, { updateItem }] = useAppointments();
     const { isDarkMode } = useTheme();
     const [selectedApt, setSelectedApt] = useState(null);
-    const [viewMode, setViewMode] = useState('DAILY'); // DAILY or MONTHLY
+    const [viewMode, setViewMode] = useState('DIARIO'); // DIARIO or MENSUAL
 
 
     // Generate 7 days around selectedDate (3 before, 3 after)
     const weekOfDays = [...Array(7)].map((_, i) => {
-        const d = new Date(selectedDate);
+        const d = parseLocalDate(selectedDate);
         d.setDate(d.getDate() - 3 + i);
         return {
-            date: d.toISOString().split('T')[0],
+            date: formatLocalDate(d),
             dayName: d.toLocaleDateString('es-ES', { weekday: 'short' }),
             dayNum: d.getDate()
         };
@@ -145,13 +160,13 @@ const GeneralAgenda = () => {
                     <div className="flex gap-2 shrink-0">
                         <div className={`flex items-center gap-1 p-1 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
                             <button 
-                                onClick={() => setViewMode('DAILY')}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'DAILY' ? 'bg-primary text-black' : 'opacity-40 hover:opacity-100'}`}
-                            >Daily</button>
+                                onClick={() => setViewMode('DIARIO')}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'DIARIO' ? 'bg-primary text-black' : 'opacity-40 hover:opacity-100'}`}
+                            >Diario</button>
                             <button 
-                                onClick={() => setViewMode('MONTHLY')}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'MONTHLY' ? 'bg-[#007AFF] text-white' : 'opacity-40 hover:opacity-100'}`}
-                            >Monthly</button>
+                                onClick={() => setViewMode('MENSUAL')}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'MENSUAL' ? 'bg-[#007AFF] text-white' : 'opacity-40 hover:opacity-100'}`}
+                            >Mensual</button>
                         </div>
                         <div className={`flex items-center gap-2 p-2 px-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
                              <span className="material-symbols-outlined !text-lg text-primary">calendar_month</span>
@@ -166,9 +181,9 @@ const GeneralAgenda = () => {
                 </div>
             </div>
 
-            {viewMode === 'DAILY' ? (
+            {viewMode === 'DIARIO' ? (
                 <div className={`ios-card border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-                    <div className="overflow-x-auto pb-4 overscroll-contain touch-pan-x scrollbar-thin">
+                    <div className="overflow-x-auto pb-4 scrollbar-thin">
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className={isDarkMode ? 'bg-white/5' : 'bg-black/5'}>
@@ -226,10 +241,12 @@ const GeneralAgenda = () => {
                                         </td>
 
                                         {barbers.map(barber => {
-                                            const apt = appointments.find(a =>
-                                                (a.barber?.id === barber.id || a.barber?.name === barber.name || a.barber === barber.name) &&
-                                                a.time === time && a.date === selectedDate
-                                            );
+                                            const apt = appointments.find(a => {
+                                                const aptBarberName = a.barber?.name || a.barber || "";
+                                                const matchesBarber = aptBarberName.toLowerCase() === (barber.name || "").toLowerCase();
+                                                const aptTime = a.time?.split(' ')[0]; // Handle "10:00 AM" or "10:00"
+                                                return matchesBarber && aptTime === time && a.date === selectedDate;
+                                            });
                                             return (
                                                 <td key={barber.id} className={`p-2 relative border-r last:border-r-0 min-h-[80px] ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
                                                     {apt && apt.status !== 'Cancelada' ? (
@@ -243,8 +260,8 @@ const GeneralAgenda = () => {
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <div className={`h-12 w-full rounded-xl border-2 border-dashed transition-all flex items-center justify-center group/btn cursor-pointer ${isDarkMode ? 'border-white/5 hover:border-primary/20 hover:bg-primary/5' : 'border-black/5 hover:border-primary/40'}`}>
-                                                            <span className={`material-symbols-outlined !text-lg transition-colors ${isDarkMode ? 'text-white/5 group-hover/btn:text-primary/30' : 'text-black/5 group-hover/btn:text-primary/40'}`}>add</span>
+                                                        <div className={`h-12 w-full rounded-xl border-2 border-dashed transition-all flex items-center justify-center ${isDarkMode ? 'border-white/5 bg-white/[0.02]' : 'border-black/5 bg-black/[0.02]'}`}>
+                                                            <span className={`text-[8px] font-bold uppercase tracking-widest opacity-20 transition-opacity`}>Libre</span>
                                                         </div>
                                                     )}
                                                 </td>
@@ -258,13 +275,13 @@ const GeneralAgenda = () => {
                 </div>
             ) : (
                 <div className={`ios-card p-4 border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-                    <div className="overflow-x-auto overscroll-contain touch-pan-x pb-4">
+                    <div className="overflow-x-auto pb-4">
                         <div className="grid grid-cols-7 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden min-w-[700px]">
                         {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
                             <div key={d} className={`p-4 text-center text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'bg-[#1a1a1a] text-white/40' : 'bg-gray-50 text-black/40'}`}>{d}</div>
                         ))}
                         {(() => {
-                            const now = new Date(selectedDate);
+                            const now = parseLocalDate(selectedDate);
                             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
                             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
                             const days = [];
@@ -275,7 +292,7 @@ const GeneralAgenda = () => {
                             }
                             
                             for (let d = 1; d <= endOfMonth.getDate(); d++) {
-                                const fullDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+                                const fullDate = formatLocalDate(new Date(now.getFullYear(), now.getMonth(), d));
                                 const isSelected = selectedDate === fullDate;
                                 const dayApts = appointments.filter(a => a.date === fullDate && a.status !== 'Cancelada');
                                 const studioCount = dayApts.filter(a => a.services?.some(s => s.category === 'Music Studio')).length;
@@ -284,7 +301,7 @@ const GeneralAgenda = () => {
                                 days.push(
                                     <div 
                                         key={d} 
-                                        onClick={() => { setSelectedDate(fullDate); setViewMode('DAILY'); }}
+                                        onClick={() => { setSelectedDate(fullDate); setViewMode('DIARIO'); }}
                                         className={`min-h-[100px] p-2 flex flex-col cursor-pointer transition-all ${isDarkMode ? 'bg-[#121212] hover:bg-white/5' : 'bg-white hover:bg-black/5'} ${isSelected ? 'ring-2 ring-primary ring-inset z-10' : ''}`}
                                     >
                                         <span className={`text-[11px] font-bold ${isSelected ? 'text-primary' : 'opacity-40'}`}>{d}</span>

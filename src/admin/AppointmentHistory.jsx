@@ -31,7 +31,10 @@ const AppointmentHistory = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Barrakesh_Historial_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("download", `Barrakesh_Historial_${(() => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        })()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -83,7 +86,7 @@ const AppointmentHistory = () => {
             </div>
 
             <div className={`ios-card border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/10 shadow-sm'}`}>
-                <div className="overflow-x-auto overscroll-contain touch-pan-x pb-4 scrollbar-thin">
+                <div className="overflow-x-auto pb-4 scrollbar-thin">
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className={`${isDarkMode ? 'bg-white/5' : 'bg-black/5'} print:bg-gray-100 print:border-b-2 print:border-black`}>
