@@ -97,6 +97,24 @@ try {
                 $branchId = $row['id'] ?? null;
             }
 
+            // --- FAILSAFE: Check for overlaps ---
+            // If barber is specified, check his agenda. If not (Studio), check branch availability at that time.
+            if ($barberId) {
+                $check = $pdo->prepare("SELECT COUNT(*) FROM appointments WHERE barber_id = ? AND appointment_date = ? AND appointment_time = ? AND status NOT IN ('Cancelada', 'Cancelado')");
+                $check->execute([$barberId, $data['date'], $data['time']]);
+            } else {
+                // Studio case: check if any studio booking exists at this branch and time
+                $check = $pdo->prepare("SELECT COUNT(*) FROM appointments WHERE branch_id = ? AND barber_id IS NULL AND appointment_date = ? AND appointment_time = ? AND status NOT IN ('Cancelada', 'Cancelado')");
+                $check->execute([$branchId, $data['date'], $data['time']]);
+            }
+            
+            if ($check->fetchColumn() > 0) {
+                http_response_code(400);
+                echo json_encode(["error" => "Lo sentimos, este horario acaba de ser reservado. Por favor elige otro."]);
+                break;
+            }
+            // ------------------------------------
+
             $stmt = $pdo->prepare("INSERT INTO appointments (branch_id, barber_id, customer_name, customer_phone, appointment_date, appointment_time, services_json, studio_info_json, total, status) VALUES (:branch_id, :barber_id, :customer_name, :customer_phone, :appointment_date, :appointment_time, :services_json, :studio_info_json, :total, :status)");
             $stmt->execute([
                 ':branch_id'        => $branchId,

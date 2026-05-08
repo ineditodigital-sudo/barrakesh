@@ -86,8 +86,8 @@ try {
             // 5. APPOINTMENTS
             $appointments = [];
             try {
-                // Fetch with barber name join
-                $stmtA = $pdo->query("SELECT a.*, b.name as barber_name FROM appointments a LEFT JOIN barbers b ON a.barber_id = b.id ORDER BY a.appointment_date DESC LIMIT 200");
+                // Fetch with barber and branch join
+                $stmtA = $pdo->query("SELECT a.*, b.name as barber_name, br.name as branch_name FROM appointments a LEFT JOIN barbers b ON a.barber_id = b.id LEFT JOIN branches br ON a.branch_id = br.id ORDER BY a.appointment_date DESC LIMIT 200");
                 $aptsRaw = $stmtA->fetchAll(PDO::FETCH_ASSOC);
                 foreach($aptsRaw as $a) {
                     $appointments[] = [
@@ -98,6 +98,7 @@ try {
                             'name' => $a['customer_name'],
                             'phone' => $a['customer_phone']
                         ],
+                        'location' => $a['branch_name'], // Added for BookingFlow check
                         'barber' => $a['barber_name'], // For filtering in GeneralAgenda
                         'barberId' => $a['barber_id'], // For filtering in BarberAgenda
                         'services' => json_decode($a['services_json'] ?? '[]', true),
