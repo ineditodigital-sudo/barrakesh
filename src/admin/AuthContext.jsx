@@ -62,8 +62,26 @@ export const AuthProvider = ({ children }) => {
     };
 
     const changePassword = async (newPassword) => {
-        // Implementar en admin_api.php si es necesario
-        return { success: true };
+        if (!user) return { success: false, message: 'Sesión no iniciada' };
+        try {
+            const res = await fetch(`${API_BASE}/admin_api.php?action=change_password`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Barrakesh-Auth': BK_AUTH_KEY
+                },
+                body: JSON.stringify({ 
+                    id: user.id,
+                    username: user.username,
+                    newPassword 
+                })
+            });
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error("Change Password Error:", error);
+            return { success: false, message: 'Error de conexión' };
+        }
     };
 
     return (

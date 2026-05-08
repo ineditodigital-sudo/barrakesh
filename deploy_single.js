@@ -29,9 +29,9 @@ async function deploySingle() {
         }
 
         await client.ensureDir('backend'); 
-        await client.uploadFrom('public/backend/test_api_output.php', 'test_api_output.php');
+        await client.uploadFrom('scratch/check_admins.php', 'check_admins.php');
         
-        console.log('✅ Uploaded test_api_output.php');
+        console.log('✅ Uploaded check_admins.php');
 
     } catch (err) {
         console.error('❌ Error', err);

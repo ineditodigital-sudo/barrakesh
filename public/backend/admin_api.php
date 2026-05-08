@@ -243,6 +243,41 @@ try {
             echo json_encode(["success" => true]);
             break;
 
+        case 'change_password':
+            $newPass = $data['newPassword'] ?? null;
+            $username = $data['username'] ?? null;
+            if (!$newPass || !$username) {
+                echo json_encode(["success" => false, "message" => "Faltan datos"]);
+                break;
+            }
+            $stmt = $pdo->prepare("UPDATE admins SET password_hash = ? WHERE username = ?");
+            $stmt->execute([$newPass, $username]);
+            $rows = $stmt->rowCount();
+            if ($rows === 0) {
+                $stmt = $pdo->prepare("UPDATE barbers SET password = ? WHERE (username = ? OR name = ?)");
+                $stmt->execute([$newPass, $username, $username]);
+                $rows = $stmt->rowCount();
+            }
+            echo json_encode(["success" => $rows > 0]);
+            break;
+
+        case 'get_admins':
+            $stmt = $pdo->query("SELECT id, username, role FROM admins");
+            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+            break;
+
+        case 'update_admin_account':
+            $targetId = $data['id'] ?? null;
+            $newPass = $data['newPassword'] ?? null;
+            if (!$targetId || !$newPass) {
+                echo json_encode(["success" => false, "message" => "Faltan datos"]);
+                break;
+            }
+            $stmt = $pdo->prepare("UPDATE admins SET password_hash = ? WHERE id = ?");
+            $stmt->execute([$newPass, $targetId]);
+            echo json_encode(["success" => $stmt->rowCount() > 0]);
+            break;
+
         default:
             echo json_encode(["error" => "Acción no reconocida: " . $action]);
             break;
