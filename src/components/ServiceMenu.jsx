@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { useServices } from '../admin/data';
 
-const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory }) => {
+const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory, selectedBranch }) => {
     const [services, { loading, error }] = useServices();
     const [selected, setSelected] = useState(initialSelected);
 
-    const filteredServices = preferredCategory
-        ? services.filter(s => s.category === preferredCategory)
-        : services;
+    let filteredServices = services;
+    if (preferredCategory) {
+        filteredServices = filteredServices.filter(s => s.category === preferredCategory);
+    }
+    if (selectedBranch) {
+        filteredServices = filteredServices.filter(s => 
+            !s.availableBranches || 
+            s.availableBranches.length === 0 || 
+            s.availableBranches.includes(selectedBranch.id)
+        );
+    }
 
     const categories = [...new Set(filteredServices.map(s => s.category))];
 
@@ -23,7 +31,14 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
         });
     };
 
-    const totalPrice = selected.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
+    const getServicePrice = (s) => {
+        if (selectedBranch && s.branchPrices && s.branchPrices[selectedBranch.id]) {
+            return parseFloat(s.branchPrices[selectedBranch.id]);
+        }
+        return parseFloat(s.price || 0);
+    };
+
+    const totalPrice = selected.reduce((acc, s) => acc + getServicePrice(s), 0);
     const hasVariablePrice = selected.some(s => s.priceIsVariable);
 
     if (loading) {
@@ -186,7 +201,7 @@ const ServiceMenu = ({ onSelect, onBack, initialSelected = [], preferredCategory
                                                          {s.priceIsVariable ? (
                                                              <span className="text-[10px] block text-right font-mono uppercase tracking-tighter opacity-60">Desde</span>
                                                          ) : null}
-                                                         ${s.price}
+                                                         ${getServicePrice(s)}
                                                      </span>
                                                     <div className={`w-6 h-6 border-2 flex items-center justify-center transition-colors ${isSelected ? '' :
                                                         s.disabled ? 'border-[#333]' : 'border-[#444] group-hover:border-white'

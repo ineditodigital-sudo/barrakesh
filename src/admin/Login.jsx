@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login, user, loading } = useAuth();
@@ -76,15 +77,26 @@ const Login = () => {
 
                         <div className="space-y-2">
                             <label className="text-white/60 text-[11px] font-bold uppercase tracking-widest ml-1">Contraseña</label>
-                            <input
-                                required
-                                disabled={isLoading}
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full ios-input bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
-                                placeholder="••••••••"
-                            />
+                            <div className="relative">
+                                <input
+                                    required
+                                    disabled={isLoading}
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full ios-input bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 pr-12"
+                                    placeholder="••••••••"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-primary transition-colors focus:outline-none"
+                                >
+                                    <span className="material-symbols-outlined !text-xl">
+                                        {showPassword ? 'visibility_off' : 'visibility'}
+                                    </span>
+                                </button>
+                            </div>
                         </div>
 
                         <button
@@ -122,7 +134,7 @@ const Login = () => {
                 <div className="mt-12 flex justify-center items-center gap-6">
                     <div className="h-[1px] w-8 bg-white/10"></div>
                     <p className="text-white/20 font-medium text-[10px] uppercase tracking-[0.4em]">
-                        v3.0.0 /// BACKEND: FIREBASE
+                        v3.1.2 /// SECURE CORE
                     </p>
                     <div className="h-[1px] w-8 bg-white/10"></div>
                 </div>

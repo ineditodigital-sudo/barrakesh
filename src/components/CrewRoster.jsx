@@ -1,7 +1,7 @@
 import React from 'react';
 import { useBarbers, useAppointments } from '../admin/data';
 
-const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
+const CrewRoster = ({ onSelect, onBack, selectedBarber, selectedBranch }) => {
     const [barbers, { loading: barbersLoading }] = useBarbers();
     const [appointments, { loading: appointmentsLoading }] = useAppointments();
 
@@ -12,6 +12,10 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
             </div>
         );
     }
+
+    const filteredBarbers = selectedBranch 
+        ? barbers.filter(b => b.workedBranches?.includes(selectedBranch.id))
+        : barbers;
 
     return (
         <div className="bg-background-dark font-display min-h-screen flex flex-col overflow-hidden relative selection:bg-primary selection:text-black">
@@ -41,7 +45,7 @@ const CrewRoster = ({ onSelect, onBack, selectedBarber }) => {
 
             {/* Main Carousel Area / Grid on Desktop */}
             <main className="flex-1 w-full overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory flex md:flex-row md:flex-wrap md:justify-center gap-6 md:gap-12 md:gap-y-24 px-6 md:px-16 items-center md:items-start no-scrollbar pb-16 md:pb-32 md:pt-12 relative z-0">
-                {barbers.map((b, idx) => {
+                {filteredBarbers.map((b, idx) => {
                     const isAway = b.status === "AWAY" || b.status === "Inactivo";
                     return (
                         <div

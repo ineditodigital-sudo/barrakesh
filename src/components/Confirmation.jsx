@@ -1,10 +1,11 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { useBranches } from '../admin/data';
 import * as htmlToImage from 'html-to-image';
 
 const Confirmation = ({ booking, onReset }) => {
     const ticketRef = useRef(null);
     const [branches] = useBranches();
+    const [isDownloading, setIsDownloading] = useState(false);
     const isStudioBooking = booking?.services?.some(s => s.category === 'Music Studio');
     const themeColor = isStudioBooking ? "#007AFF" : "#FEE101";
 
@@ -24,6 +25,7 @@ const Confirmation = ({ booking, onReset }) => {
 
     const downloadReceipt = useCallback(() => {
         if (ticketRef.current === null) return;
+        setIsDownloading(true);
 
         // Ensure we capture with high quality and correct styles
         htmlToImage.toPng(ticketRef.current, {
@@ -43,6 +45,9 @@ const Confirmation = ({ booking, onReset }) => {
             })
             .catch((err) => {
                 console.error('Error al generar el recibo:', err);
+            })
+            .finally(() => {
+                setIsDownloading(false);
             });
     }, [ticketRef, booking]);
 
@@ -218,6 +223,23 @@ const Confirmation = ({ booking, onReset }) => {
                     </button>
                 </div>
             </main>
+
+            {/* Global Loader Overlay */}
+            {isDownloading && (
+                <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center animate-fade-in">
+                    <div className="relative">
+                        <div className="size-32 border-4 border-white/5 rounded-full"></div>
+                        <div className="absolute inset-0 size-32 border-4 border-t-primary rounded-full animate-spin"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-4xl text-white animate-pulse">download</span>
+                        </div>
+                    </div>
+                    <div className="mt-8 text-center">
+                        <h3 className="text-white font-display text-2xl font-black uppercase tracking-tighter mb-2">Procesando Recibo</h3>
+                        <p className="text-white/40 font-mono text-[10px] uppercase tracking-[0.3em]">Capturando flow en alta resolución...</p>
+                    </div>
+                </div>
+            )}
 
             {/* Background Decor */}
             <div className="fixed bottom-0 right-0 w-96 h-96 opacity-10 blur-[120px] rounded-full pointer-events-none" style={{ backgroundColor: themeColor }}></div>

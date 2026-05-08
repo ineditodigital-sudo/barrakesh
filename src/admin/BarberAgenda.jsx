@@ -38,10 +38,22 @@ const BarberAgenda = () => {
         };
     });
 
-    const barberAppointments = appointments.filter(apt => {
-        const aptBarberName = apt.barber?.name || apt.barber || "";
-        return aptBarberName.toLowerCase() === user.name.toLowerCase() && apt.date === selectedDate;
-    });
+    const matchesMe = (apt) => {
+        if (!apt || !user || !apt.barber) return false;
+        if (apt.status === 'Cancelada' || apt.status === 'Cancelado') return false;
+        
+        const aptBarberId = String(apt.barberId || apt.barber?.id || "");
+        const myBarberId = String(user.barberId || "");
+        
+        // Match by ID primarily
+        if (aptBarberId && myBarberId && aptBarberId === myBarberId) return true;
+        
+        // Normalization fallback
+        const normalize = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, '');
+        return normalize(apt.barber?.name || apt.barber) === normalize(user?.name);
+    };
+
+    const barberAppointments = appointments.filter(apt => matchesMe(apt) && apt.date === selectedDate);
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">
@@ -110,10 +122,7 @@ const BarberAgenda = () => {
                     <div className={`flex gap-2 overflow-x-auto pb-2 flex-1 scrollbar-thin`}>
                         {weekOfDays.map((day) => {
                             const isActive = selectedDate === day.date;
-                            const dailyAppointments = appointments.filter(apt => {
-                                const aptBarberName = apt.barber?.name || apt.barber || "";
-                                return aptBarberName.toLowerCase() === user.name.toLowerCase() && apt.date === day.date && apt.status !== 'Cancelada';
-                            });
+                            const dailyAppointments = appointments.filter(a => matchesMe(a) && a.date === day.date);
                             const aptCount = dailyAppointments.length;
 
                             return (
@@ -255,10 +264,7 @@ const BarberAgenda = () => {
                             for (let d = 1; d <= endOfMonth.getDate(); d++) {
                                 const fullDate = formatLocalDate(new Date(now.getFullYear(), now.getMonth(), d));
                                 const isSelected = selectedDate === fullDate;
-                                const myApts = appointments.filter(a => {
-                                    const aptBarberName = a.barber?.name || a.barber || "";
-                                    return aptBarberName.toLowerCase() === user.name.toLowerCase() && a.date === fullDate && a.status !== 'Cancelada';
-                                });
+                                const myApts = appointments.filter(a => matchesMe(a) && a.date === fullDate);
                                 const aptCount = myApts.length;
 
                                 days.push(

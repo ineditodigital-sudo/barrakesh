@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "node deploy.js"
   },
   "dependencies": {
-    "firebase": "^12.10.0",
     "framer-motion": "^12.34.4",
     "html-to-image": "^1.11.13",
     "jspdf": "^4.2.0",
@@ -26,6 +26,8 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.27",
+    "basic-ftp": "^6.0.1",
+    "dotenv": "^17.4.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

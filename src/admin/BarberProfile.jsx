@@ -25,20 +25,9 @@ const BarberProfile = () => {
         setUpdatingPass(true);
         try {
             if (barberData.id) {
-                // 1. Update in Database (RTDB) for Admin Visibility
+                // 1. Update in Database (MySQL) for Admin Visibility and Auth
                 await updateItem(barberData.id, { ...barberData, password: newPassword });
                 
-                // 2. Update in Firebase Auth for Permissions
-                try {
-                    const { updatePassword } = await import('firebase/auth');
-                    const { auth } = await import('../firebase');
-                    if (auth.currentUser) {
-                        await updatePassword(auth.currentUser, newPassword);
-                    }
-                } catch (e) {
-                    console.warn("Auth password update skipped or failed (Likely not a real Auth user yet)", e);
-                }
-
                 setFormData(prev => ({ ...prev, password: newPassword }));
                 addToast('Contraseña actualizada correctamente y visible para administración.', 'success');
                 setNewPassword('');
@@ -107,7 +96,14 @@ const BarberProfile = () => {
         }));
     };
 
-    const myApts = appointments.filter(a => (a.barberId === user.barberId || (a.barber?.name || a.barber || "").toString().toLowerCase() === user.name.toLowerCase()));
+    const normalize = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, '');
+    const myApts = appointments.filter(a => {
+        if (a.status === 'Cancelada' || a.status === 'Cancelado') return false;
+        const aptBarberId = String(a.barberId || a.barber?.id || "");
+        const myBarberId = String(user.barberId || "");
+        if (aptBarberId && myBarberId && aptBarberId === myBarberId) return true;
+        return normalize(a.barber?.name || a.barber) === normalize(user.name);
+    });
 
     return (
         <div className="max-w-5xl mx-auto space-y-8 animate-fade-in-up pb-10">

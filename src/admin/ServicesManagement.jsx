@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useServices } from './data';
+import { useServices, useBranches } from './data';
 import { useTheme } from './ThemeContext';
 import { useToast } from './ToastContext';
 import Modal from './Modal';
 
 const ServicesManagement = () => {
     const [services, { addItem, updateItem, deleteItem }] = useServices();
+    const [branches] = useBranches();
     const { isDarkMode } = useTheme();
     const { addToast } = useToast();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,7 +20,9 @@ const ServicesManagement = () => {
         desc: '',
         tag: '',
         disabled: false,
-        priceIsVariable: false
+        priceIsVariable: false,
+        branchPrices: {},
+        availableBranches: []
     });
 
     const categories = ["Barber Shop", "Music Studio"];
@@ -33,7 +36,9 @@ const ServicesManagement = () => {
             desc: service.desc,
             tag: service.tag || '',
             disabled: service.disabled || false,
-            priceIsVariable: service.priceIsVariable || false
+            priceIsVariable: service.priceIsVariable || false,
+            branchPrices: service.branchPrices || {},
+            availableBranches: service.availableBranches || []
         });
         setIsModalOpen(true);
     };
@@ -85,7 +90,7 @@ const ServicesManagement = () => {
                     <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Define el arsenal de Barrakesh y ajusta precios.</p>
                 </div>
                 <button
-                    onClick={() => { setCurrentService(null); setFormData({ name: '', category: 'Barber Shop', price: '', desc: '', tag: '', disabled: false }); setIsModalOpen(true); }}
+                    onClick={() => { setCurrentService(null); setFormData({ name: '', category: 'Barber Shop', price: '', desc: '', tag: '', disabled: false, availableBranches: [] }); setIsModalOpen(true); }}
                     className="ios-button bg-primary text-black px-6 py-3 font-bold text-xs tracking-tight hover:bg-black hover:text-white transition-all shadow-lg w-full md:w-auto"
                 >
                     <span className="material-symbols-outlined !text-lg mr-2">add</span>
@@ -214,6 +219,66 @@ const ServicesManagement = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Sucursales Disponibles */}
+                        <div className="pt-4 border-t border-white/5 space-y-3">
+                            <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Disponible en Sucursales</label>
+                            <div className="flex flex-wrap gap-2">
+                                {branches.map(branch => {
+                                    const isSelected = formData.availableBranches?.includes(branch.id);
+                                    return (
+                                        <button
+                                            key={branch.id}
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({
+                                                ...prev,
+                                                availableBranches: isSelected 
+                                                    ? prev.availableBranches.filter(id => id !== branch.id)
+                                                    : [...(prev.availableBranches || []), branch.id]
+                                            }))}
+                                            className={`px-3 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${isSelected 
+                                                ? 'bg-primary border-primary text-black' 
+                                                : isDarkMode ? 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10' : 'bg-black/5 border-black/10 text-black/40 hover:bg-black/10'}`}
+                                        >
+                                            {branch.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Precios por Sucursal */}
+                        <div className="pt-4 border-t border-white/5 space-y-3">
+                            <label className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>Precios Específicos (Opcional)</label>
+                            <p className="text-[9px] opacity-40 uppercase">Si se deja vacío, se usará el precio general.</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {branches.filter(b => formData.availableBranches?.includes(b.id)).map(branch => (
+                                    <div key={branch.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                                        <div className="flex-1">
+                                            <p className="text-[10px] font-bold uppercase">{branch.name}</p>
+                                            <p className="text-[8px] opacity-40 uppercase truncate">{branch.city}</p>
+                                        </div>
+                                        <div className="w-24">
+                                            <input
+                                                type="number"
+                                                placeholder={`$${formData.price || 0}`}
+                                                value={formData.branchPrices?.[branch.id] || ''}
+                                                onChange={(e) => {
+                                                    const newPrices = { ...(formData.branchPrices || {}) };
+                                                    if (e.target.value) {
+                                                        newPrices[branch.id] = parseFloat(e.target.value);
+                                                    } else {
+                                                        delete newPrices[branch.id];
+                                                    }
+                                                    setFormData({ ...formData, branchPrices: newPrices });
+                                                }}
+                                                className="w-full ios-input py-1.5 px-2 text-xs text-right"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     <button
@@ -222,6 +287,7 @@ const ServicesManagement = () => {
                     >
                         {currentService ? 'Guardar Cambios' : 'Agregar Servicio'}
                     </button>
+
                 </div>
             </Modal>
 

@@ -35,7 +35,8 @@ const SEOManagement = () => {
         siteTitle: '',
         siteDesc: '',
         ogImage: '',
-        favicon: ''
+        favicon: '',
+        maintenance_mode: false
     });
     const [saving, setSaving] = useState(false);
 
@@ -162,6 +163,28 @@ const SEOManagement = () => {
                                 placeholder="Escribe una descripción atractiva para los buscadores..."
                             />
                             <p className="text-[9px] text-white/20 uppercase font-bold text-right">{formData.siteDesc?.length || 0} / 160 caracteres</p>
+                        </div>
+
+                        {/* MAINTENANCE MODE TOGGLE */}
+                        <div className={`p-4 rounded-2xl border-2 transition-all ${formData.maintenance_mode ? 'bg-primary/10 border-primary' : 'bg-white/5 border-white/5'}`}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`size-10 rounded-xl flex items-center justify-center ${formData.maintenance_mode ? 'bg-primary text-black' : 'bg-white/5 text-white/20'}`}>
+                                        <span className="material-symbols-outlined !text-xl">{formData.maintenance_mode ? 'engineering' : 'public'}</span>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-[11px] font-black uppercase tracking-tight">Modo Mantenimiento</h3>
+                                        <p className="text-[9px] opacity-40 uppercase font-bold">Activa el banner de "En Construcción"</p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, maintenance_mode: !prev.maintenance_mode }))}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.maintenance_mode ? 'bg-primary' : 'bg-white/10'}`}
+                                >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.maintenance_mode ? 'translate-x-6' : 'translate-x-1'}`} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

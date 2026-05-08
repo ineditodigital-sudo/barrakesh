@@ -37,7 +37,7 @@ const AdminLayout = () => {
         if (!user) return;
 
         const relevantApts = appointments.filter(apt => {
-            if (user.role === 'SUPER_ADMIN') return true;
+            if (['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'].includes(user.role)) return true;
             if (user.role === 'BARBER') {
                 const barberName = apt.barber?.name || apt.barber || "";
                 return barberName.toLowerCase() === (user.name || "").toLowerCase();
@@ -69,17 +69,16 @@ const AdminLayout = () => {
     if (!user) return <Navigate to="/admin/login" replace />;
 
     const navItems = [
-        { name: 'Dashboard', path: '/admin', icon: 'grid_view', roles: ['SUPER_ADMIN'] },
-        { name: 'Agenda Global', path: '/admin/agenda', icon: 'calendar_today', roles: ['SUPER_ADMIN'] },
+        { name: 'Dashboard', path: '/admin', icon: 'grid_view', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
+        { name: 'Agenda Global', path: '/admin/agenda', icon: 'calendar_today', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
         { name: 'Mi Horario', path: '/admin/my-agenda', icon: 'schedule', roles: ['BARBER'] },
-        { name: 'Staff', path: '/admin/barbers', icon: 'badge', roles: ['SUPER_ADMIN'] },
-        { name: 'Sucursales', path: '/admin/branches', icon: 'location_on', roles: ['SUPER_ADMIN'] },
+        { name: 'Staff', path: '/admin/barbers', icon: 'badge', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
+        { name: 'Sucursales', path: '/admin/branches', icon: 'location_on', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
         { name: 'Mi Perfil', path: '/admin/profile', icon: 'account_circle', roles: ['BARBER'] },
-        { name: 'Servicios', path: '/admin/services', icon: 'content_cut', roles: ['SUPER_ADMIN'] },
-        { name: 'Historial', path: '/admin/appointments', icon: 'database', roles: ['SUPER_ADMIN'] },
-        { name: 'SEO & Config', path: '/admin/seo', icon: 'public', roles: ['SUPER_ADMIN'] },
+        { name: 'Servicios', path: '/admin/services', icon: 'content_cut', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
+        { name: 'Historial', path: '/admin/appointments', icon: 'database', roles: ['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'] },
+        { name: 'SEO & Config', path: '/admin/seo', icon: 'public', roles: ['SUPER_ADMIN', 'DEVELOPER'] },
     ];
-
 
     const filteredNavItems = navItems.filter(item => item.roles.includes(user.role));
 
@@ -139,13 +138,13 @@ const AdminLayout = () => {
                     <div className={`mt-auto p-2 pt-4 border-t ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
                         <div className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-white/5' : 'bg-black/5'} mb-3 ${isSidebarOpen ? '' : 'justify-center'}`}>
                             <div className="size-8 min-w-8 rounded-lg bg-gradient-to-tr from-primary/20 to-primary/80 flex items-center justify-center text-black overflow-hidden font-bold">
-                                {user.name.charAt(0)}
+                                {user?.name?.charAt(0) || 'U'}
                             </div>
                             {isSidebarOpen && (
                                 <div className="flex flex-col min-w-0">
-                                    <span className="text-[11px] font-bold leading-none truncate">{user.name}</span>
+                                    <span className="text-[11px] font-bold leading-none truncate">{user?.name || 'Usuario'}</span>
                                     <span className={`text-[9px] mt-1 uppercase tracking-widest ${isDarkMode ? 'text-white/50' : 'text-black/60'}`}>
-                                        {user.role.replace('_', ' ')}
+                                        {(user?.role || 'ADMIN').replace('_', ' ')}
                                     </span>
                                 </div>
                             )}
@@ -173,7 +172,7 @@ const AdminLayout = () => {
                         </button>
                         <div className={`h-5 w-[1px] ${isDarkMode ? 'bg-white/10' : 'bg-black/10'} hidden sm:block`}></div>
                         <h2 className="text-sm font-bold tracking-tight truncate">
-                            {user.role === 'SUPER_ADMIN' ? 'Control de Sistema' : 'Mi Panel de Trabajo'}
+                            {['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'].includes(user.role) ? 'Control de Sistema' : 'Mi Panel de Trabajo'}
                         </h2>
                     </div>
 
@@ -231,7 +230,7 @@ const AdminLayout = () => {
                                             <button 
                                                 onClick={() => {
                                                     setShowNotifications(false);
-                                                    navigate(user.role === 'SUPER_ADMIN' ? '/admin/agenda' : '/admin/my-agenda');
+                                                    navigate(['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'].includes(user.role) ? '/admin/agenda' : '/admin/my-agenda');
                                                 }}
                                                 className="w-full py-2 rounded-lg bg-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest transition-all"
                                             >

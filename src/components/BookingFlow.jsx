@@ -50,7 +50,7 @@ const generateTimeSlots = (openTime = "11:00", closeTime = "20:00") => {
 const BookingFlow = ({ onComplete, onBack, booking }) => {
     const [branches, { loading: branchesLoading }] = useBranches();
     const [appointments, { loading: appointmentsLoading }] = useAppointments();
-    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [selectedLocation, setSelectedLocation] = useState(booking.branch || null);
     const [selectedDate, setSelectedDate] = useState(dynamicDates[0]);
     const [selectedTime, setSelectedTime] = useState(null);
 
@@ -61,7 +61,14 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
     const services = booking.services || [];
     const barber = booking.barber || { name: "KASH" };
 
-    const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
+    const getServicePrice = (s) => {
+        if (selectedLocation && s.branchPrices && s.branchPrices[selectedLocation.id]) {
+            return parseFloat(s.branchPrices[selectedLocation.id]);
+        }
+        return parseFloat(s.price || 0);
+    };
+
+    const basePrice = services.reduce((acc, s) => acc + getServicePrice(s), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
     const hasVariablePrice = services.some(s => s.priceIsVariable);
 
@@ -192,31 +199,42 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                 {/* Left Side: Selection */}
                 <div className="flex-1 flex flex-col md:overflow-y-auto md:max-h-[calc(100vh-160px)] no-scrollbar overflow-x-hidden md:pr-4">
 
-                    {/* Location Selection */}
+                    {/* Location Selection - Confirmation of what was picked before */}
                     <section className="animate-fade-in-up md:mt-4">
                         <div className="flex items-center gap-3 px-4 mb-4">
                              <span className="bg-primary text-black text-xs font-black px-2 py-1 rounded-sm">1</span>
-                             <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Sucursal</h2>
+                             <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">{booking.branch ? 'Sucursal' : 'Seleccionar Sucursal'}</h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4">
-                            {validBranches.length > 0 ? (
-                                validBranches.map((b) => {
-                                    const isSelected = selectedLocation?.id === b.id;
-                                    return (
+                        <div className="px-4 pb-4">
+                            {selectedLocation ? (
+                                <div 
+                                    className="p-4 border transition-all text-left bg-[#1a1a1a] border-primary text-white"
+                                    style={{ borderColor: themeColor }}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="font-mono text-[8px] uppercase tracking-widest mb-1 opacity-40">UBICACIÓN CONFIRMADA</div>
+                                            <div className="font-display text-2xl font-black uppercase leading-none mb-1" style={{ color: themeColor }}>{selectedLocation.name}</div>
+                                            <div className="font-mono text-[8px] uppercase opacity-30">{selectedLocation.addr}</div>
+                                        </div>
+                                        <div className="size-10 border border-white/10 flex items-center justify-center rounded-full">
+                                            <span className="material-symbols-outlined !text-xl" style={{ color: themeColor }}>check_circle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {validBranches.map((b) => (
                                         <button
                                             key={b.id}
                                             onClick={() => setSelectedLocation(b)}
-                                            className={`p-4 border transition-all text-left group ${isSelected ? 'text-black' : 'bg-surface border-white/10 text-white hover:border-white/30'}`}
-                                            style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
+                                            className="p-4 border border-white/10 bg-surface text-white text-left hover:border-primary transition-all"
                                         >
-                                            <div className={`font-mono text-[8px] uppercase tracking-widest mb-1 ${isSelected ? 'text-black/60' : 'text-zinc-400'}`}>Sucursal</div>
-                                            <div className="font-display text-xl font-bold uppercase leading-none mb-1">{b.name}</div>
-                                            <div className={`font-mono text-[8px] uppercase ${isSelected ? 'text-black/60' : 'text-white/30'}`}>{b.addr}</div>
+                                            <div className="font-display text-xl font-bold uppercase">{b.name}</div>
+                                            <div className="font-mono text-[8px] uppercase opacity-40">{b.addr}</div>
                                         </button>
-                                    );
-                                })
-                            ) : (
-                                <div className="col-span-1 border border-white/10 border-dashed text-white/50 text-[10px] uppercase p-4 text-center">EL BARBERO `{barber?.name}` NO TIENE SUCURSAL ASIGNADA</div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </section>
@@ -224,7 +242,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     <section className="mt-8 animate-fade-in-up [animation-delay:100ms]">
                         <div className="px-4 mb-4 flex justify-between items-end">
                             <div className="flex items-center gap-3">
-                                <span className="bg-primary text-black text-xs font-black px-2 py-1 rounded-sm">2</span>
+                                <span className="bg-primary text-black text-xs font-black px-2 py-1 rounded-sm">{booking.branch ? '1' : '2'}</span>
                                 <h2 className="font-display text-4xl font-bold uppercase text-white leading-none">Seleccionar Fecha</h2>
                             </div>
                             <span className="text-[10px] font-mono animate-pulse uppercase" style={{ color: themeColor }}>ACTUALIZACIONES EN VIVO</span>
@@ -260,7 +278,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     {/* Time Grid */}
                     <section className="px-4 flex-1 animate-fade-in-up [animation-delay:300ms]">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="bg-primary text-black text-xs font-black px-2 py-1 rounded-sm">3</span>
+                            <span className="bg-primary text-black text-xs font-black px-2 py-1 rounded-sm">{booking.branch ? '2' : '3'}</span>
                             <h2 className="font-display text-3xl md:text-4xl font-bold uppercase text-white">Disponibilidad</h2>
                         </div>
                         <div className="grid grid-cols-3 gap-2 md:gap-3">
@@ -319,11 +337,11 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                 <span className="text-white/60 text-xs font-mono uppercase">Sucursal</span>
                                 <span className="font-bold uppercase" style={{ color: themeColor }}>{selectedLocation?.name || '---'}</span>
                             </div>
-                            <div className="flex flex-col border-b border-dashed border-white/20 pb-2">
+                             <div className="flex flex-col border-b border-dashed border-white/20 pb-2">
                                 <span className="text-white/60 text-xs font-mono uppercase mb-1">Servicios</span>
                                  <div className="flex flex-col items-end">
                                      {services.map((s, i) => (
-                                         <span key={i} className="text-white text-[10px] font-bold uppercase">{s.priceIsVariable ? 'Desde ' : ''}{s.name}</span>
+                                         <span key={i} className="text-white text-[10px] font-bold uppercase">{s.priceIsVariable ? 'Desde ' : ''}{s.name} (${getServicePrice(s)})</span>
                                      ))}
                                  </div>
                             </div>
@@ -358,7 +376,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                             <button
                                 onClick={() => {
                                     if (!selectedLocation || !selectedTime) return;
-                                    onComplete({ location: selectedLocation.name, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime });
+                                    onComplete({ branch: selectedLocation, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime });
                                 }}
                                 className={`w-full h-16 flex items-center justify-between px-8 font-bold uppercase tracking-widest transition-all group ${selectedTime && selectedLocation ? 'text-black hover:bg-white shadow-[6px_6px_0px_#000000] hover:shadow-none hover:translate-x-1 hover:translate-y-1' : 'bg-white/5 text-white/20'}`}
                                 style={selectedTime && selectedLocation ? { backgroundColor: themeColor } : {}}
@@ -396,7 +414,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                     <button
                         onClick={() => {
                             if (!selectedLocation || !selectedTime) return;
-                            onComplete({ location: selectedLocation.name, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime });
+                            onComplete({ branch: selectedLocation, date: selectedDate.fullDate, dateLabel: `${selectedDate.num} ${selectedDate.day}`, time: selectedTime });
                         }}
                         className={`w-full h-14 mt-1 flex items-center justify-between px-6 font-bold uppercase tracking-wider transition-all active:scale-[0.98] ${selectedTime && selectedLocation ? 'text-black shadow-lg shadow-primary/20 bg-primary' : 'bg-white/5 text-white/20'}`}
                     >

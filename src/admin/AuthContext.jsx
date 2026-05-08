@@ -1,14 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, database } from '../firebase';
-import {
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-} from 'firebase/auth';
-import { ref, get } from 'firebase/database';
 
 const AuthContext = createContext(null);
+const API_BASE = '/backend';
+const BK_AUTH_KEY = 'BK_SECURE_9921_X';
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -16,178 +11,59 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Init state from localStorage for immediate render
-        const initUser = () => {
-            try {
-                const storedUser = localStorage.getItem('barrakesh_user');
-                if (storedUser && storedUser !== 'undefined') {
-                    const parsed = JSON.parse(storedUser);
+        try {
+            const storedUser = localStorage.getItem('barrakesh_user');
+            if (storedUser && storedUser !== 'undefined') {
+                const parsed = JSON.parse(storedUser);
+                if (parsed && typeof parsed === 'object' && parsed.role) {
                     setUser(parsed);
-                }
-            } catch (e) {
-                console.warn("Auth: Local storage corrupted", e);
-                localStorage.removeItem('barrakesh_user');
-            }
-        };
-        initUser();
-
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            try {
-                if (firebaseUser) {
-                    const userRef = ref(database, `users/${firebaseUser.uid}`);
-                    const snapshot = await get(userRef);
-                    
-                    let userData = null;
-                    if (snapshot.exists()) {
-                        userData = {
-                            uid: firebaseUser.uid,
-                            email: firebaseUser.email,
-                            ...snapshot.val()
-                        };
-                    } else {
-                        // Priority to localStorage if this is a barber bypass session
-                        const stored = localStorage.getItem('barrakesh_user');
-                        if (stored) {
-                            userData = JSON.parse(stored);
-                        } else {
-                            // Default to a basic profile if we have a Firebase user but no RTDB node yet
-                            userData = {
-                                uid: firebaseUser.uid,
-                                email: firebaseUser.email,
-                                role: 'BARBER',
-                                name: firebaseUser.email?.split('@')[0] || 'User'
-                            };
-                        }
-                    }
-                    
-                    if (userData) {
-                        setUser(userData);
-                        localStorage.setItem('barrakesh_user', JSON.stringify(userData));
-                    }
                 } else {
-                    const stored = localStorage.getItem('barrakesh_user');
-                    if (!stored) {
-                        setUser(null);
-                    }
-                    // Else: keeps the emulated barber user if present
+                    localStorage.removeItem('barrakesh_user');
                 }
-            } catch (error) {
-                console.error("Auth: sync error", error);
-            } finally {
-                setLoading(false);
             }
-        });
-
-        // Fail-safe to avoid permanent black screen
-        const timeout = setTimeout(() => {
+        } catch (e) {
+            console.error("Auth initialization error:", e);
+            localStorage.removeItem('barrakesh_user');
+        } finally {
             setLoading(false);
-        }, 3000);
-
-        return () => {
-            unsubscribe();
-            clearTimeout(timeout);
-        };
+        }
     }, []);
 
     const login = async (username, password) => {
         try {
-            const lowerUser = username.toLowerCase();
-            let email = '';
-
-            // Handle barber bypass first
-            if (lowerUser !== 'admin' && lowerUser !== 'developer') {
-                try {
-                    const barbersRef = ref(database, 'barbers');
-                    const snapshot = await get(barbersRef);
-                    const barbersData = snapshot.val();
-                    
-                    if (barbersData) {
-                        const matchedBarber = Object.entries(barbersData).find(([_, b]) => {
-                            if (!b || !b.name) return false;
-                            const normalizedName = b.name.toString().toLowerCase().replace(/\s+/g, '');
-                            return normalizedName === lowerUser;
-                        });
-                        
-                        if (matchedBarber) {
-                            const [id, barber] = matchedBarber;
-                            if (barber.password === password || (!barber.password && password === 'barrakesh')) {
-                                const barberData = {
-                                    uid: `barber_${id}`,
-                                    email: `${lowerUser}@barrakesh.com`,
-                                    name: barber.name,
-                                    role: 'BARBER',
-                                    barberId: id
-                                };
-                                // Login to Firebase for session management but use emulated data
-                                try {
-                                    await signInWithEmailAndPassword(auth, barberData.email, password);
-                                } catch (e) {
-                                    const { createUserWithEmailAndPassword } = await import('firebase/auth');
-                                    await createUserWithEmailAndPassword(auth, barberData.email, password).catch(()=>{});
-                                }
-                                setUser(barberData);
-                                localStorage.setItem('barrakesh_user', JSON.stringify(barberData));
-                                return { success: true };
-                            }
-                        }
-                    }
-                } catch (e) { console.warn("Barber bypass error:", e); }
-            }
-
-            // Normal Admin/Final flow
-            if (lowerUser === 'admin') email = 'admin@barrakesh.com';
-            else if (lowerUser === 'developer') email = 'developer@barrakesh.com';
-            else email = `${lowerUser.replace(/\s+/g, '')}@barrakesh.com`;
-
-            const cred = await signInWithEmailAndPassword(auth, email, password);
-            const userRef = ref(database, `users/${cred.user.uid}`);
-            const snapshot = await get(userRef);
+            const res = await fetch(`${API_BASE}/auth.php?action=login`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Barrakesh-Auth': BK_AUTH_KEY
+                },
+                body: JSON.stringify({ username, password })
+            });
             
-            const userData = snapshot.exists() ? {
-                uid: cred.user.uid,
-                email: cred.user.email,
-                ...snapshot.val()
-            } : {
-                uid: cred.user.uid,
-                email: cred.user.email,
-                role: 'BARBER',
-                name: lowerUser
-            };
-
-            setUser(userData);
-            localStorage.setItem('barrakesh_user', JSON.stringify(userData));
-            return { success: true };
+            const data = await res.json();
+            
+            if (data.success) {
+                setUser(data.user);
+                localStorage.setItem('barrakesh_user', JSON.stringify(data.user));
+                return { success: true };
+            } else {
+                return { success: false, message: data.message || 'Error de autenticación' };
+            }
         } catch (error) {
             console.error("Login Error:", error);
-            let message = 'Credenciales inválidas';
-            if (error.code === 'auth/network-request-failed') message = 'Problemas de red';
-            return { success: false, message };
+            return { success: false, message: 'Error de conexión con el servidor' };
         }
     };
 
-    const logout = async () => {
-        await signOut(auth);
+    const logout = () => {
         localStorage.removeItem('barrakesh_user');
         setUser(null);
         navigate('/admin/login');
     };
 
     const changePassword = async (newPassword) => {
-        try {
-            const { updatePassword } = await import('firebase/auth');
-            if (auth.currentUser) {
-                await updatePassword(auth.currentUser, newPassword);
-                return { success: true };
-            }
-            return { success: false, message: 'No hay usuario autenticado' };
-        } catch (error) {
-            console.error("Password Update Error:", error);
-            let message = 'Error al actualizar contraseña';
-            if (error.code === 'auth/requires-recent-login') {
-                message = 'Por seguridad, debes cerrar sesión y volver a entrar antes de cambiar tu contraseña.';
-            }
-            return { success: false, message };
-        }
+        // Implementar en admin_api.php si es necesario
+        return { success: true };
     };
 
     return (
