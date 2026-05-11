@@ -14,44 +14,6 @@ const SEOManagement = () => {
     const [newPass, setNewPass] = useState('');
     const [changingPass, setChangingPass] = useState(false);
 
-    // ADMINS MANAGEMENT (Only for Developers)
-    const [systemAdmins, setSystemAdmins] = useState([]);
-    const [adminPassData, setAdminPassData] = useState({ id: null, pass: '' });
-
-    useEffect(() => {
-        if (user?.role === 'DEVELOPER') {
-            fetch('/backend/admin_api.php?action=get_admins', {
-                headers: { 'X-Barrakesh-Auth': 'BK_SECURE_9921_X' }
-            })
-            .then(res => res.json())
-            .then(data => setSystemAdmins(data))
-            .catch(err => console.error(err));
-        }
-    }, [user]);
-
-    const handleSystemAdminPassUpdate = async (adminId) => {
-        if (!adminPassData.pass || adminPassData.pass.length < 4) {
-            toast.addToast('La clave debe ser más larga', 'info');
-            return;
-        }
-        try {
-            const res = await fetch('/backend/admin_api.php?action=update_admin_account', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-Barrakesh-Auth': 'BK_SECURE_9921_X'
-                },
-                body: JSON.stringify({ id: adminId, newPassword: adminPassData.pass })
-            });
-            const data = await res.json();
-            if (data.success) {
-                toast.addToast('Clave de administrador actualizada', 'success');
-                setAdminPassData({ id: null, pass: '' });
-            }
-        } catch (e) { toast.addToast('Error al actualizar', 'error'); }
-    };
-    // ---------------------------------
-
     const handlePassUpdate = async () => {
         if (newPass.length < 6) {
             toast.addToast('La clave debe tener al menos 6 caracteres', 'info');
@@ -260,47 +222,6 @@ const SEOManagement = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* SYSTEM ADMINS MANAGEMENT (DEVELOPER ONLY) */}
-                    {user?.role === 'DEVELOPER' && systemAdmins.length > 0 && (
-                        <div className={`ios-card p-8 border-2 ${isDarkMode ? 'border-primary/20 bg-[#0a0a0a]' : 'border-black/5 bg-white shadow-sm'}`}>
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                                    <span className="material-symbols-outlined !text-xl">manage_accounts</span>
-                                </div>
-                                <h2 className="text-xl font-black uppercase tracking-tighter">Cuentas de Administrador</h2>
-                            </div>
-
-                            <div className="space-y-4">
-                                {systemAdmins.map(adm => (
-                                    <div key={adm.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-3">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs font-black uppercase tracking-widest text-primary">{adm.username}</span>
-                                            <span className="text-[9px] font-bold text-white/20 uppercase">{adm.role}</span>
-                                        </div>
-                                        
-                                        <div className="flex gap-2">
-                                            <input 
-                                                type="password"
-                                                placeholder="Nueva clave"
-                                                className={`flex-1 h-9 px-3 rounded-lg border font-bold text-[10px] outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 focus:border-primary text-white' : 'bg-black/5 border-black/10 focus:border-black text-black'}`}
-                                                onChange={(e) => setAdminPassData({ id: adm.id, pass: e.target.value })}
-                                                value={adminPassData.id === adm.id ? adminPassData.pass : ''}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => handleSystemAdminPassUpdate(adm.id)}
-                                                className="bg-white/10 text-white px-4 rounded-lg font-black text-[9px] uppercase hover:bg-primary hover:text-black transition-all"
-                                            >
-                                                Cambiar
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <p className="text-[9px] text-white/20 uppercase font-bold mt-4">Esta sección solo es visible para desarrolladores.</p>
-                        </div>
-                    )}
 
                     {/* OG Image */}
                     <div className={`ios-card p-8 border-2 ${isDarkMode ? 'border-white/5 bg-[#0a0a0a]' : 'border-black/5 bg-white shadow-sm'}`}>

@@ -6,24 +6,32 @@ import { useTheme } from './ThemeContext';
 const BarberAgenda = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    const [renderError, setRenderError] = useState(null);
+
     // Helper to parse YYYY-MM-DD string into a local Date object at midnight
     const parseLocalDate = (str) => {
-        const [y, m, d] = str.split('-').map(Number);
-        return new Date(y, m - 1, d);
+        try {
+            if (!str || typeof str !== 'string') return new Date();
+            const [y, m, d] = str.split('-').map(Number);
+            if (isNaN(y) || isNaN(m) || isNaN(d)) return new Date();
+            return new Date(y, m - 1, d);
+        } catch (e) { return new Date(); }
     };
 
     // Helper to format Date object into YYYY-MM-DD string
     const formatLocalDate = (date) => {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        try {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        } catch (e) { return "2026-05-11"; }
     };
 
     // Use current local date instead of UTC
-    const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
+    const [selectedDate, setSelectedDate] = useState(() => formatLocalDate(new Date()));
     const [selectedApt, setSelectedApt] = useState(null);
-    const [appointments] = useAppointments();
+    const [appointments, { loading }] = useAppointments();
     const [viewMode, setViewMode] = useState('DIARIO'); // DIARIO or MENSUAL
 
 
@@ -39,21 +47,45 @@ const BarberAgenda = () => {
     });
 
     const matchesMe = (apt) => {
-        if (!apt || !user || !apt.barber) return false;
-        if (apt.status === 'Cancelada' || apt.status === 'Cancelado') return false;
-        
-        const aptBarberId = String(apt.barberId || apt.barber?.id || "");
-        const myBarberId = String(user.barberId || "");
-        
-        // Match by ID primarily
-        if (aptBarberId && myBarberId && aptBarberId === myBarberId) return true;
-        
-        // Normalization fallback
-        const normalize = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, '');
-        return normalize(apt.barber?.name || apt.barber) === normalize(user?.name);
+        try {
+            if (!apt || !user) return false;
+            if (apt.status === 'Cancelada' || apt.status === 'Cancelado') return false;
+            
+            // 1. Match by ID primarily
+            const aptBarberId = String(apt.barberId || apt.barber?.id || apt.barber_id || "").trim();
+            const myBarberId = String(user.barberId || user.id || "").trim();
+            
+            if (aptBarberId && myBarberId && aptBarberId === myBarberId) return true;
+            
+            // 2. Normalization fallback (Deep accents handling)
+            const normalize = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, '');
+            
+            const barberNameInApt = normalize(apt.barber?.name || apt.barber || apt.barber_name || "");
+            const myName = normalize(user.name || user.username || "");
+            
+            return barberNameInApt !== "" && myName !== "" && barberNameInApt === myName;
+        } catch (err) {
+            console.error("Match error:", err);
+            return false;
+        }
     };
 
-    const barberAppointments = appointments.filter(apt => matchesMe(apt) && apt.date === selectedDate);
+    if (loading && (!appointments || appointments.length === 0)) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 opacity-40">
+                <div className="size-10 border-2 border-primary border-t-transparent animate-spin rounded-full mb-4"></div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Sincronizando Agenda...</p>
+            </div>
+        );
+    }
+
+    const barberAppointments = (Array.isArray(appointments) ? appointments : []).filter(apt => {
+        try {
+            return matchesMe(apt) && apt.date === selectedDate;
+        } catch (e) { return false; }
+    });
+
+    if (renderError) return <div className="p-10 bg-red-500/10 text-red-500 rounded-2xl border border-red-500/20 font-bold uppercase text-xs tracking-widest text-center">Error en Agenda: {renderError}</div>;
 
     return (
         <div className="space-y-6 animate-fade-in-up pb-10">

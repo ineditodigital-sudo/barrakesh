@@ -15,11 +15,49 @@ const BarberManagement = () => {
     const [deletingId, setDeletingId] = useState(null);
     
     // Verification states
-    const { login } = useAuth();
+    const { user, login } = useAuth();
     const [isVerifying, setIsVerifying] = useState(false);
     const [verifData, setVerifData] = useState({ user: '', pass: '' });
     const [verifError, setVerifError] = useState('');
     const [isVerifyingLoading, setIsVerifyingLoading] = useState(false);
+
+    // ADMINS MANAGEMENT (Only for Developers)
+    const [systemAdmins, setSystemAdmins] = useState([]);
+    const [adminPassData, setAdminPassData] = useState({ id: null, pass: '' });
+
+    React.useEffect(() => {
+        if (user?.role === 'DEVELOPER') {
+            fetch('/backend/admin_api.php?action=get_admins', {
+                headers: { 'X-Barrakesh-Auth': 'BK_SECURE_9921_X' }
+            })
+            .then(res => res.json())
+            .then(data => setSystemAdmins(data))
+            .catch(err => console.error(err));
+        }
+    }, [user]);
+
+    const handleSystemAdminPassUpdate = async (adminId) => {
+        if (!adminPassData.pass || adminPassData.pass.length < 4) {
+            addToast('La clave debe ser más larga', 'info');
+            return;
+        }
+        try {
+            const res = await fetch('/backend/admin_api.php?action=update_admin_account', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Barrakesh-Auth': 'BK_SECURE_9921_X'
+                },
+                body: JSON.stringify({ id: adminId, newPassword: adminPassData.pass })
+            });
+            const data = await res.json();
+            if (data.success) {
+                addToast('Clave de administrador actualizada', 'success');
+                setAdminPassData({ id: null, pass: '' });
+            }
+        } catch (e) { addToast('Error al actualizar', 'error'); }
+    };
+    // ---------------------------------
 
     const [formData, setFormData] = useState({
         name: '',
@@ -378,6 +416,53 @@ const BarberManagement = () => {
                     </div>
                 </div>
             </Modal>
+
+            {/* SYSTEM ADMINS MANAGEMENT (DEVELOPER ONLY) */}
+            {user?.role === 'DEVELOPER' && systemAdmins.length > 0 && (
+                <div className="mt-12 animate-fade-in-up">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                            <span className="material-symbols-outlined !text-xl">manage_accounts</span>
+                        </div>
+                        <h2 className={`text-xl font-black uppercase tracking-tighter ${isDarkMode ? 'text-white' : 'text-black'}`}>Administradores del Sistema</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {systemAdmins.map(adm => (
+                            <div key={adm.id} className={`p-6 rounded-2xl border-2 transition-all ${isDarkMode ? 'bg-[#0a0a0a] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-xs font-black uppercase tracking-widest text-primary">{adm.username}</span>
+                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${isDarkMode ? 'bg-white/5 text-white/40' : 'bg-black/5 text-black/40'}`}>
+                                        {adm.role}
+                                    </span>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    <div className="relative">
+                                        <input 
+                                            type="password"
+                                            placeholder="Nueva contraseña"
+                                            className={`w-full h-10 px-4 rounded-xl border font-bold text-xs outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 focus:border-primary text-white' : 'bg-black/5 border-black/10 focus:border-black text-black'}`}
+                                            onChange={(e) => setAdminPassData({ id: adm.id, pass: e.target.value })}
+                                            value={adminPassData.id === adm.id ? adminPassData.pass : ''}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleSystemAdminPassUpdate(adm.id)}
+                                            className="absolute right-1 top-1/2 -translate-y-1/2 bg-primary text-black px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-[10px] text-white/20 uppercase font-bold mt-6 tracking-widest">
+                        * Esta sección es de uso exclusivo para desarrolladores y no es visible para el cliente.
+                    </p>
+                </div>
+            )}
         </div>
     );
 };

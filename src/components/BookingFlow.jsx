@@ -34,15 +34,18 @@ const generateTimeSlots = (openTime = "11:00", closeTime = "20:00") => {
 
     const slots = [];
     for (let h = openH; h < closeH; h++) {
-        const time = `${h.toString().padStart(2, '0')}:00`;
-        const label = h < 12 ? "Mañana" : h < 17 ? "Tarde" : "Noche";
-        
-        let block = slots.find(b => b.label === label);
-        if (!block) {
-            block = { label, slots: [] };
-            slots.push(block);
+        for (let m of [0, 30]) {
+            if (h === closeH && m > 0) break;
+            const time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            const label = h < 12 ? "Mañana" : h < 17 ? "Tarde" : "Noche";
+            
+            let block = slots.find(b => b.label === label);
+            if (!block) {
+                block = { label, slots: [] };
+                slots.push(block);
+            }
+            block.slots.push({ time, booked: false });
         }
-        block.slots.push({ time, booked: false });
     }
     return slots;
 };
@@ -126,27 +129,45 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
         }
 
         const barberName = barber?.name || "KASH";
+        const [targetH, targetM] = time.split(':').map(Number);
+        const targetTimeVal = targetH * 60 + targetM;
 
-        // Check if the current slot is taken
-        const isTaken = (t) => appointments.some(apt =>
-            apt.date === selectedDate.fullDate &&
-            apt.time === t &&
-            apt.location === selectedLocation.name &&
-            (apt.barber?.name === barberName || apt.barber === barberName) &&
-            apt.status !== 'Cancelado'
-        );
+        // Check if the current slot is covered by any existing appointment's duration
+        const isTaken = (tVal) => appointments.some(apt => {
+            if (apt.date !== selectedDate.fullDate) return false;
+            if (apt.location !== selectedLocation.name) return false;
+            if (['Cancelado', 'Cancelada'].includes(apt.status)) return false;
+            
+            // Match barber (or Studio if barberName is KASH and apt.barber is null)
+            const aptBarberName = apt.barber?.name || apt.barber || apt.barber_name || "KASH";
+            if (aptBarberName !== barberName) return false;
 
-        if (isTaken(time)) return true;
-
-        // For Studio: Check consecutive hours
-        if (isStudioBooking && hoursRequested > 1) {
-            const [h, m] = time.split(':').map(Number);
-            for (let i = 1; i < hoursRequested; i++) {
-                const nextH = h + i;
-                const nextTime = `${nextH.toString().padStart(2, '0')}:00`;
-                if (isTaken(nextTime)) return true;
-                if (nextH >= 20) return true;
+            const [aptH, aptM] = apt.time.split(':').map(Number);
+            const aptStart = aptH * 60 + aptM;
+            
+            // Calculate duration
+            let aptDuration = 60; // Default
+            if (apt.studioInfo?.hours) {
+                aptDuration = parseInt(apt.studioInfo.hours) * 60;
+            } else if (Array.isArray(apt.services)) {
+                aptDuration = apt.services.reduce((acc, s) => acc + (parseInt(s.duration) || 0), 0);
+                if (aptDuration === 0) aptDuration = 60; // Fallback
             }
+
+            const aptEnd = aptStart + aptDuration;
+            
+            // If the target slot (tVal) falls within [aptStart, aptEnd)
+            return tVal >= aptStart && tVal < aptEnd;
+        });
+
+        if (isTaken(targetTimeVal)) return true;
+
+        // For Studio/Long services: Check if the *entire* requested block is free
+        const totalRequestedDuration = hoursRequested * 60; 
+        const actualRequestedDuration = isStudioBooking ? totalRequestedDuration : services.reduce((acc, s) => acc + (parseInt(s.duration) || 30), 0);
+
+        for (let offset = 0; offset < actualRequestedDuration; offset += 30) {
+            if (isTaken(targetTimeVal + offset)) return true;
         }
 
         return false;

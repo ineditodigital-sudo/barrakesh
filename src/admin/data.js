@@ -50,7 +50,7 @@ export const useDataService = (key) => {
     }, [key]);
 
     const addItem = async (item) => {
-        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : (key === 'appointments' ? 'appointment' : 'service'));
+        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : (key === 'appointments' ? 'appointment' : (key === 'customers' ? 'customer' : 'service')));
         const action = `add_${singular}`;
         
         const res = await fetch(`${API_BASE}/admin_api.php?action=${action}&auth=${BK_AUTH_KEY}`, {
@@ -61,14 +61,15 @@ export const useDataService = (key) => {
         
         if (!res.ok) {
             const errJson = await res.json();
-            alert(`Error al guardar: ${errJson.mensaje || errJson.error}`);
-            return;
+            const errMsg = errJson.mensaje || errJson.error || 'Error desconocido';
+            alert(`Error al guardar: ${errMsg}`);
+            throw new Error(errMsg);
         }
         fetchData();
     };
 
     const updateItem = async (id, updated) => {
-        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : 'service');
+        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : (key === 'appointments' ? 'appointment' : (key === 'customers' ? 'customer' : 'service')));
         const action = `update_${singular}`;
         
         const res = await fetch(`${API_BASE}/admin_api.php?action=${action}&auth=${BK_AUTH_KEY}`, {
@@ -86,7 +87,7 @@ export const useDataService = (key) => {
     };
 
     const deleteItem = async (id) => {
-        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : 'service');
+        const singular = key === 'branches' ? 'branch' : (key === 'barbers' ? 'barber' : (key === 'appointments' ? 'appointment' : (key === 'customers' ? 'customer' : 'service')));
         const action = `delete_${singular}`;
         
         const res = await fetch(`${API_BASE}/admin_api.php?action=${action}&id=${id}&auth=${BK_AUTH_KEY}`, {

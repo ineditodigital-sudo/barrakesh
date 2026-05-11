@@ -20,7 +20,7 @@ const GeneralAgenda = () => {
     // Use current local date instead of UTC
     const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
     const [barbers] = useBarbers();
-    const [appointments, { updateItem }] = useAppointments();
+    const [appointments, { updateItem, refresh }] = useAppointments();
     const { isDarkMode } = useTheme();
     const [selectedApt, setSelectedApt] = useState(null);
     const [viewMode, setViewMode] = useState('DIARIO'); // DIARIO or MENSUAL
@@ -37,7 +37,10 @@ const GeneralAgenda = () => {
         };
     });
 
-    const timeSlots = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+    const timeSlots = [
+        "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", 
+        "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"
+    ];
 
     const handleCancelApt = async (apt) => {
         if (window.confirm('¿Estás seguro de cancelar esta cita?')) {
@@ -120,9 +123,23 @@ const GeneralAgenda = () => {
 
             <div className="flex flex-col gap-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Agenda Global</h2>
-                        <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Control maestro de citas y disponibilidad.</p>
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => refresh()} 
+                            className={`p-2 rounded-xl border flex items-center gap-2 hover:bg-primary/10 transition-all ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}
+                            title="Recargar Agenda"
+                        >
+                            <span className="material-symbols-outlined !text-lg">refresh</span>
+                        </button>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-2xl font-bold tracking-tight">Agenda Global</h2>
+                                <div className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[8px] font-black text-primary uppercase">
+                                    {appointments.filter(a => a.date === selectedDate && a.status !== 'Cancelada').length} CITAS HOY
+                                </div>
+                            </div>
+                            <p className={`${isDarkMode ? 'text-white/40' : 'text-black/60'} text-xs font-medium mt-0.5 uppercase tracking-widest`}>Control maestro de citas y disponibilidad.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -182,7 +199,8 @@ const GeneralAgenda = () => {
             </div>
 
             {viewMode === 'DIARIO' ? (
-                <div className={`ios-card border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
+                <>
+                    <div className={`ios-card border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
                     <div className="overflow-x-auto pb-4 scrollbar-thin">
                         <table className="w-full border-collapse">
                             <thead>
@@ -202,9 +220,10 @@ const GeneralAgenda = () => {
                                         <th key={barber.id} className="p-4 min-w-[170px]">
                                             <div className="flex flex-col items-center">
                                                 <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px] mb-1.5 overflow-hidden border border-primary/20">
-                                                    {barber.image ? <img src={barber.image} className="w-full h-full object-cover" /> : barber.initials}
+                                                    {barber.image ? <img src={barber.image} className="w-full h-full object-cover" /> : (barber.initials || barber.name?.substring(0,2).toUpperCase())}
                                                 </div>
                                                 <span className="text-xs font-bold tracking-tight">{barber.name}</span>
+                                                <span className="text-[8px] opacity-20 font-black">ID: {barber.id}</span>
                                             </div>
                                         </th>
                                     ))}
@@ -240,28 +259,59 @@ const GeneralAgenda = () => {
                                             })()}
                                         </td>
 
-                                        {barbers.map(barber => {
+                                        {[...barbers].sort((a,b) => (a.name||"").localeCompare(b.name||"")).map(barber => {
                                             const apt = appointments.find(a => {
-                                                const aptBarberName = a.barber?.name || a.barber || "";
-                                                const matchesBarber = aptBarberName.toLowerCase() === (barber.name || "").toLowerCase();
-                                                const aptTime = a.time?.split(' ')[0]; // Handle "10:00 AM" or "10:00"
-                                                return matchesBarber && aptTime === time && a.date === selectedDate;
+                                                if (a.status === 'Cancelada') return false;
+                                                
+                                                // DATE & TIME CHECK
+                                                const aptDate = String(a.date || "").trim();
+                                                const selDate = String(selectedDate || "").trim();
+                                                if (aptDate !== selDate) return false;
+
+                                                const aptTime = String(a.time || "").trim().split(' ')[0].substring(0, 5);
+                                                const slotTime = String(time).trim().substring(0, 5);
+                                                if (aptTime !== slotTime) return false;
+
+                                                // BARBER MATCHING (Ultra Flexible)
+                                                const bid = String(barber.id || "").trim();
+                                                const aid = String(a.barber?.id || a.barber_id || "").trim();
+                                                
+                                                if (bid && aid && bid === aid) return true;
+
+                                                const bn = String(barber.name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                                                const an = String(a.barber?.name || a.barber || a.barber_name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                                                
+                                                if (bn && an && bn === an) return true;
+
+                                                return false;
                                             });
+
                                             return (
                                                 <td key={barber.id} className={`p-2 relative border-r last:border-r-0 min-h-[80px] ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
-                                                    {apt && apt.status !== 'Cancelada' ? (
-                                                        <div onClick={() => setSelectedApt(apt)} className={`p-3 rounded-xl h-full flex flex-col justify-center transition-all hover:scale-[1.02] cursor-pointer shadow-md ${apt.status === 'Confirmed' || apt.status === 'Confirmado'
-                                                            ? 'bg-primary text-black'
-                                                            : isDarkMode ? 'bg-white/5 border border-white/10 text-white' : 'bg-black/5 border border-black/10 text-black'
-                                                            }`}>
-                                                            <span className="text-[10px] font-extrabold uppercase truncate">{apt.customer?.name || apt.client || 'Sin Nombre'}</span>
-                                                            <span className={`text-[8px] font-bold uppercase tracking-tight mt-0.5 ${(apt.status === 'Confirmed' || apt.status === 'Confirmado') ? 'text-black/60' : isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
-                                                                {Array.isArray(apt.services) ? apt.services.map(s => s.name).join(', ') : apt.service}
+                                                    {apt ? (
+                                                        <div 
+                                                            onClick={() => setSelectedApt(apt)}
+                                                            className={`p-3 rounded-xl h-full flex flex-col justify-center cursor-pointer hover:scale-[1.02] transition-transform shadow-md border ${
+                                                                apt.status === 'Completed' ? 'bg-green-500/20 border-green-500/50 text-green-500' :
+                                                                apt.status === 'Confirmed' ? 'bg-primary border-primary/20 text-white' :
+                                                                'bg-orange-500 border-orange-500/20 text-white'
+                                                            }`}
+                                                        >
+                                                            <span className="text-[10px] font-extrabold uppercase truncate leading-tight">
+                                                                {apt.customer?.name || apt.client}
                                                             </span>
+                                                            <div className="flex items-center gap-1 mt-0.5">
+                                                                <span className="text-[8px] font-bold opacity-80 uppercase truncate">
+                                                                    {Array.isArray(apt.services) ? apt.services[0]?.name : apt.service}
+                                                                </span>
+                                                            </div>
+                                                            <div className="text-[7px] font-black opacity-60 uppercase mt-1 tracking-tighter">
+                                                                {apt.location || apt.branch || 'Sucursal desconocida'}
+                                                            </div>
                                                         </div>
                                                     ) : (
-                                                        <div className={`h-12 w-full rounded-xl border-2 border-dashed transition-all flex items-center justify-center ${isDarkMode ? 'border-white/5 bg-white/[0.02]' : 'border-black/5 bg-black/[0.02]'}`}>
-                                                            <span className={`text-[8px] font-bold uppercase tracking-widest opacity-20 transition-opacity`}>Libre</span>
+                                                        <div className="flex items-center justify-center h-full opacity-5 group-hover:opacity-10 transition-opacity">
+                                                            <span className="text-[10px] font-black tracking-widest uppercase">Libre</span>
                                                         </div>
                                                     )}
                                                 </td>
@@ -272,7 +322,47 @@ const GeneralAgenda = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                    </div>
+
+                    {/* Resumen Diario Mejorado */}
+                    <div className="mt-8 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-black uppercase tracking-widest opacity-40">Resumen del día ({selectedDate})</h3>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold opacity-30">{appointments.filter(a => a.date === selectedDate && a.status !== 'Cancelada').length} Citas activas</span>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {appointments
+                                .filter(a => a.date === selectedDate && a.status !== 'Cancelada')
+                                .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
+                                .map((a, i) => (
+                                    <div 
+                                        key={a.id || i}
+                                        onClick={() => setSelectedApt(a)}
+                                        className={`ios-card p-4 border flex items-center gap-4 cursor-pointer hover:bg-primary/5 transition-colors ${isDarkMode ? 'bg-white/[0.02] border-white/5' : 'bg-white border-black/5'}`}
+                                    >
+                                        <div className="size-12 rounded-xl bg-primary/10 flex flex-col items-center justify-center text-primary border border-primary/20 shrink-0">
+                                            <span className="text-xs font-black">{a.time}</span>
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="text-sm font-bold truncate">{a.customer?.name || a.client}</div>
+                                            <div className="text-[10px] opacity-40 uppercase font-bold truncate">
+                                                {a.barber?.name || a.barber || a.barber_name || 'Estudio Musical'} • {a.location || a.branch}
+                                            </div>
+                                        </div>
+                                        <div className={`size-2 rounded-full ${a.status === 'Confirmed' ? 'bg-primary' : 'bg-green-500'}`} />
+                                    </div>
+                                ))}
+                            {appointments.filter(a => a.date === selectedDate && a.status !== 'Cancelada').length === 0 && (
+                                <div className="col-span-full py-12 text-center opacity-20 font-bold uppercase tracking-widest text-sm">
+                                    No hay citas para este día
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </>
             ) : (
                 <div className={`ios-card p-4 border ${isDarkMode ? 'bg-white/[0.01] border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
                     <div className="overflow-x-auto pb-4">

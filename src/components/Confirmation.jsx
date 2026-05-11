@@ -14,7 +14,7 @@ const Confirmation = ({ booking, onReset }) => {
     const dateStr = booking?.dateLabel || booking?.date || "03 MAR";
     const timeStr = booking?.time || "14:00";
 
-    const selectedBranch = branches.find(b => b.name === booking?.location);
+    const selectedBranch = booking?.branch || branches.find(b => b.name === booking?.location);
     const googleMapsUrl = selectedBranch
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Barrakesh ' + selectedBranch.name + ' ' + selectedBranch.addr)}`
         : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Barrakesh Aguascalientes')}`;
@@ -51,7 +51,14 @@ const Confirmation = ({ booking, onReset }) => {
             });
     }, [ticketRef, booking]);
 
-    const basePrice = services.reduce((acc, s) => acc + parseFloat(s.price || 0), 0);
+    const getServicePrice = (s) => {
+        if (selectedBranch && s.branchPrices && s.branchPrices[selectedBranch.id]) {
+            return parseFloat(s.branchPrices[selectedBranch.id]);
+        }
+        return parseFloat(s.price || 0);
+    };
+
+    const basePrice = services.reduce((acc, s) => acc + getServicePrice(s), 0);
     const totalPrice = isStudioBooking ? basePrice * (booking.studioInfo?.hours || 1) : basePrice;
     const hasVariablePrice = services.some(s => s.priceIsVariable);
 

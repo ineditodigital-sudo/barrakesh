@@ -10,7 +10,7 @@ const BarberProfile = () => {
     const { addToast } = useToast();
     const [barbers, { updateItem }] = useBarbers();
     const [branches] = useBranches();
-    const [appointments] = useAppointments();
+    const [appointments, { loading }] = useAppointments();
 
     const [newPassword, setNewPassword] = useState('');
     const [updatingPass, setUpdatingPass] = useState(false);
@@ -96,13 +96,16 @@ const BarberProfile = () => {
         }));
     };
 
-    const normalize = (s) => String(s || "").toLowerCase().trim().replace(/\s+/g, '');
-    const myApts = appointments.filter(a => {
+    const normalize = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().replace(/\s+/g, '');
+    const myApts = (Array.isArray(appointments) ? appointments : []).filter(a => {
         if (a.status === 'Cancelada' || a.status === 'Cancelado') return false;
-        const aptBarberId = String(a.barberId || a.barber?.id || "");
-        const myBarberId = String(user.barberId || "");
+        const aptBarberId = String(a.barberId || a.barber?.id || a.barber_id || "").trim();
+        const myBarberId = String(user.barberId || user.id || "").trim();
         if (aptBarberId && myBarberId && aptBarberId === myBarberId) return true;
-        return normalize(a.barber?.name || a.barber) === normalize(user.name);
+        
+        const barberNameInApt = normalize(a.barber?.name || a.barber || a.barber_name || "");
+        const myName = normalize(user.name || user.username || "");
+        return barberNameInApt !== "" && myName !== "" && barberNameInApt === myName;
     });
 
     return (

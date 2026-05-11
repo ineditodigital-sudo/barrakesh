@@ -31,32 +31,43 @@ const AdminLayout = () => {
 
     // Notification Logic
     useEffect(() => {
-        if (!appointments || appointments.length === 0) return;
+        try {
+            if (!appointments || !Array.isArray(appointments) || appointments.length === 0 || !user) return;
 
-        // Filter relevant appointments based on role
-        if (!user) return;
+            const normalize = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            const myName = normalize(user.name || user.username || "");
 
-        const relevantApts = appointments.filter(apt => {
-            if (['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'].includes(user.role)) return true;
-            if (user.role === 'BARBER') {
-                const barberName = apt.barber?.name || apt.barber || "";
-                return barberName.toLowerCase() === (user.name || "").toLowerCase();
-            }
-            return false;
-        }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            const relevantApts = appointments.filter(apt => {
+                if (['SUPER_ADMIN', 'ADMIN', 'DEVELOPER'].includes(user.role)) return true;
+                if (user.role === 'BARBER') {
+                    const aptBarberName = normalize(apt.barber?.name || apt.barber || apt.barber_name || "");
+                    const aptBarberId = String(apt.barber_id || apt.barber?.id || "").trim();
+                    const myId = String(user.barberId || user.id || "").trim();
+                    
+                    if (aptBarberId && myId && aptBarberId === myId) return true;
+                    return aptBarberName !== "" && myName !== "" && aptBarberName === myName;
+                }
+                return false;
+            }).sort((a, b) => {
+                const dateA = new Date(a.createdAt || a.date || 0);
+                const dateB = new Date(b.createdAt || b.date || 0);
+                return dateB - dateA;
+            });
 
-        // Take last 5
-        const recent = relevantApts.slice(0, 5).map(apt => ({
-            id: apt.id,
-            title: 'Nueva Cita',
-            message: `${apt.customer?.name || apt.client} - ${apt.date} @ ${apt.time}`,
-            time: apt.createdAt || new Date().toISOString(),
-            isNew: !localStorage.getItem(`notif_read_${apt.id}`)
-        }));
+            const recent = relevantApts.slice(0, 5).map(apt => ({
+                id: apt.id || Math.random(),
+                title: 'Nueva Cita',
+                message: `${apt.customer?.name || apt.client || 'Cliente'} - ${apt.date} @ ${apt.time}`,
+                time: apt.createdAt || new Date().toISOString(),
+                isNew: !localStorage.getItem(`notif_read_${apt.id}`)
+            }));
 
-        setNotifications(recent);
-        setUnreadCount(recent.filter(n => n.isNew).length);
-    }, [appointments, user?.role, user?.name]);
+            setNotifications(recent);
+            setUnreadCount(recent.filter(n => n.isNew).length);
+        } catch (err) {
+            console.error("Notification processing error:", err);
+        }
+    }, [appointments, user]);
 
     const markAllRead = () => {
         notifications.forEach(n => {

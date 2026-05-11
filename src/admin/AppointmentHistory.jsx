@@ -10,8 +10,9 @@ const AppointmentHistory = () => {
     const filtered = appointments.filter(apt => {
         const clientName = apt.customer?.name || apt.client || "";
         const serviceNames = Array.isArray(apt.services) ? apt.services.map(s => s.name).join(' ') : apt.service || "";
+        const aptId = String(apt.id || "");
         return clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            apt.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            aptId.toLowerCase().includes(searchTerm.toLowerCase()) ||
             serviceNames.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
@@ -121,7 +122,7 @@ const AppointmentHistory = () => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td className={`px-6 py-4 text-[10px] font-black uppercase hidden sm:table-cell ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-black`}>{apt.branch}</td>
+                                    <td className={`px-6 py-4 text-[10px] font-black uppercase hidden sm:table-cell ${isDarkMode ? 'text-white/40' : 'text-black/60'} print:text-black`}>{apt.branch || apt.location || 'N/A'}</td>
                                     <td className={`px-6 py-4 text-right text-base font-black tracking-tighter print:text-black ${isDarkMode ? 'text-white' : 'text-black'}`}>{apt.total}</td>
                                     <td className="px-6 py-4">
                                         <span className={`text-[8px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-widest border print:border-black print:text-black ${apt.status === 'Confirmado' ? 'bg-primary/20 text-primary border-primary/20' :

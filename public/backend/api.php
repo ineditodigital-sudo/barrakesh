@@ -76,14 +76,33 @@ try {
                         'price' => floatval($srv['price']),
                         'duration' => intval($srv['duration']),
                         'category' => $srv['category'],
-                        'desc' => $srv['description'],
+                        'desc' => $srv['description'] ?? '',
+                        'tag' => $srv['tag'] ?? '',
+                        'disabled' => ($srv['disabled'] ?? 0) == 1,
+                        'priceIsVariable' => ($srv['price_is_variable'] ?? 0) == 1,
                         'branchPrices' => json_decode($srv['branch_prices'] ?? '{}', true),
                         'availableBranches' => ($srv['available_branches'] ?? '') !== '' ? array_map('intval', explode(',', $srv['available_branches'])) : []
                     ];
                 }
             } catch (Exception $e) { $errors['services'] = $e->getMessage(); }
 
-            // 5. APPOINTMENTS
+            // 5. CUSTOMERS (New!)
+            $customers = [];
+            try {
+                // Ensure table exists
+                $pdo->exec("CREATE TABLE IF NOT EXISTS customers (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(100),
+                    phone VARCHAR(20),
+                    email VARCHAR(100),
+                    loyalty VARCHAR(20) DEFAULT 'Standard',
+                    last_visit VARCHAR(20) DEFAULT 'N/A',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )");
+                $customers = $pdo->query("SELECT id, name, phone, email, loyalty, last_visit as lastVisit, created_at FROM customers ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) { $errors['customers'] = $e->getMessage(); }
+
+            // 6. APPOINTMENTS
             $appointments = [];
             try {
                 // Fetch with barber and branch join
@@ -94,28 +113,33 @@ try {
                         'id' => $a['id'],
                         'date' => $a['appointment_date'],
                         'time' => substr($a['appointment_time'], 0, 5),
-                        'customer' => [
-                            'name' => $a['customer_name'],
-                            'phone' => $a['customer_phone']
-                        ],
-                        'location' => $a['branch_name'], // Added for BookingFlow check
-                        'barber' => $a['barber_name'], // For filtering in GeneralAgenda
-                        'barberId' => $a['barber_id'], // For filtering in BarberAgenda
-                        'services' => json_decode($a['services_json'] ?? '[]', true),
-                        'studioInfo' => json_decode($a['studio_info_json'] ?? '[]', true),
                         'total' => $a['total'],
-                        'status' => $a['status']
+                        'status' => $a['status'],
+                        'customer' => [
+                            'name' => $a['customer_name'] ?? '',
+                            'phone' => $a['customer_phone'] ?? ''
+                        ],
+                        'location' => $a['branch_name'], // For BookingFlow compatibility
+                        'barber' => [
+                            'id' => $a['barber_id'],
+                            'name' => $a['barber_name']
+                        ],
+                        'barber_name' => $a['barber_name'], // For simpler checks
+                        'branch' => $a['branch_name'],
+                        'services' => json_decode($a['services_json'] ?? '[]', true),
+                        'studioInfo' => json_decode($a['studio_info_json'] ?? 'null', true)
                     ];
                 }
             } catch (Exception $e) { $errors['appointments'] = $e->getMessage(); }
 
             echo json_encode([
-                "settings" => $settings,
-                "barbers" => $barbers,
-                "branches" => $branches,
-                "services" => $services,
-                "appointments" => $appointments,
-                "debug_errors" => $errors
+                'settings' => $settings,
+                'barbers' => $barbers,
+                'branches' => $branches,
+                'services' => $services,
+                'customers' => $customers,
+                'appointments' => $appointments,
+                'errors' => $errors
             ]);
             break;
 
