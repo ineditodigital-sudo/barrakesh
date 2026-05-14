@@ -148,7 +148,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                             <div className="absolute inset-0 bg-hazard-stripe opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                             <span className="relative z-10 flex items-center gap-2 font-bold group-hover:tracking-[0.15em] transition-all">
                                 Agenda tu cita
-                                <span className="material-symbols-outlined text-2xl md:text-4xl font-bold group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                                <span className="material-symbols-outlined text-2xl md:text-4xl font-bold group-hover:translate-x-2 transition-transform" translate="no">arrow_forward</span>
                             </span>
                         </button>
                     </div>
@@ -326,7 +326,7 @@ const Landing = ({ onBarberStart, onStudioStart, onJoinStart }) => {
                             {branches.map((branch, i) => (
                                 <div key={i} className="bg-surface/50 border border-white/5 p-4 md:p-6 hover:border-primary transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-20 transition-opacity">
-                                        <span className="material-symbols-outlined !text-4xl text-primary">location_on</span>
+                                        <span className="material-symbols-outlined !text-4xl text-primary" translate="no">location_on</span>
                                     </div>
                                     <div className="flex justify-between items-start mb-2 md:mb-4">
                                         <span className={`text-[10px] font-bold px-2 py-0.5 uppercase ${branch.status === 'Operativo' ? 'bg-primary text-black' : 'bg-yellow-500 text-black'}`}>
@@ -478,7 +478,7 @@ const FloatingNav = ({ scrollToId, onBarberStart }) => {
                             className={`flex items-center gap-3 px-6 py-3 rounded-full border-2 transition-all hover:scale-105 active:scale-95 shadow-xl ${item.highlight ? 'bg-primary border-primary text-black' : 'bg-black/80 backdrop-blur-md border-white/20 text-white'}`}
                         >
                             <span className="font-display font-bold text-sm uppercase italic">{item.label}</span>
-                            <span className="material-symbols-outlined !text-xl">{item.icon}</span>
+                            <span className="material-symbols-outlined !text-xl" translate="no">{item.icon}</span>
                         </button>
                     ))}
                 </div>

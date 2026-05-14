@@ -26,13 +26,14 @@ const GeneralAgenda = () => {
     const [viewMode, setViewMode] = useState('DIARIO'); // DIARIO or MENSUAL
 
 
-    // Generate 7 days around selectedDate (3 before, 3 after)
-    const weekOfDays = [...Array(7)].map((_, i) => {
+    // Generate 14 days around selectedDate (3 before, 11 after)
+    const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+    const weekOfDays = [...Array(14)].map((_, i) => {
         const d = parseLocalDate(selectedDate);
         d.setDate(d.getDate() - 3 + i);
         return {
             date: formatLocalDate(d),
-            dayName: d.toLocaleDateString('es-ES', { weekday: 'short' }),
+            dayName: dayNames[d.getDay()],
             dayNum: d.getDate()
         };
     });
@@ -76,7 +77,7 @@ const GeneralAgenda = () => {
                                         <h2 className="text-3xl font-black uppercase tracking-tighter">{selectedApt.customer?.name || selectedApt.client}</h2>
                                     </div>
                                     <button onClick={() => setSelectedApt(null)} className="size-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                                        <span className="material-symbols-outlined">close</span>
+                                        <span className="material-symbols-outlined" translate="no">close</span>
                                     </button>
                                 </div>
 
@@ -104,7 +105,7 @@ const GeneralAgenda = () => {
                                         rel="noopener noreferrer"
                                         className="flex-1 h-12 bg-green-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:bg-green-700 transition-all active:scale-95"
                                     >
-                                        <span className="material-symbols-outlined !text-xl">chat</span> Contactar
+                                        <span className="material-symbols-outlined !text-xl" translate="no">chat</span> Contactar
                                     </a>
                                     {selectedApt.status !== 'Cancelada' && (
                                         <button
@@ -129,7 +130,7 @@ const GeneralAgenda = () => {
                             className={`p-2 rounded-xl border flex items-center gap-2 hover:bg-primary/10 transition-all ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}
                             title="Recargar Agenda"
                         >
-                            <span className="material-symbols-outlined !text-lg">refresh</span>
+                            <span className="material-symbols-outlined !text-lg" translate="no">refresh</span>
                         </button>
                         <div>
                             <div className="flex items-center gap-2">
@@ -186,7 +187,7 @@ const GeneralAgenda = () => {
                             >Mensual</button>
                         </div>
                         <div className={`flex items-center gap-2 p-2 px-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-                             <span className="material-symbols-outlined !text-lg text-primary">calendar_month</span>
+                             <span className="material-symbols-outlined !text-lg text-primary" translate="no">calendar_month</span>
                              <input 
                                 type="date" 
                                 value={selectedDate} 
@@ -211,7 +212,7 @@ const GeneralAgenda = () => {
                                     <th className="p-4 min-w-[170px] border-r border-[#007AFF]/20 bg-[#007AFF]/5">
                                         <div className="flex flex-col items-center">
                                             <div className="size-8 rounded-lg bg-[#007AFF]/20 flex items-center justify-center text-[#007AFF] font-bold text-[10px] mb-1.5 border border-[#007AFF]/30">
-                                                <span className="material-symbols-outlined !text-base">mic</span>
+                                                <span className="material-symbols-outlined !text-base" translate="no">mic</span>
                                             </div>
                                             <span className="text-xs font-bold tracking-tight text-[#007AFF]">MUSIC STUDIO</span>
                                         </div>
@@ -293,8 +294,8 @@ const GeneralAgenda = () => {
                                                             onClick={() => setSelectedApt(apt)}
                                                             className={`p-3 rounded-xl h-full flex flex-col justify-center cursor-pointer hover:scale-[1.02] transition-transform shadow-md border ${
                                                                 apt.status === 'Completed' ? 'bg-green-500/20 border-green-500/50 text-green-500' :
-                                                                apt.status === 'Confirmed' ? 'bg-primary border-primary/20 text-white' :
-                                                                'bg-orange-500 border-orange-500/20 text-white'
+                                                                apt.status === 'Confirmed' ? 'bg-primary border-primary/20 text-black' :
+                                                                'bg-orange-500 border-orange-500/20 text-black'
                                                             }`}
                                                         >
                                                             <span className="text-[10px] font-extrabold uppercase truncate leading-tight">

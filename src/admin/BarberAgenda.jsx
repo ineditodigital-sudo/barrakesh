@@ -31,17 +31,18 @@ const BarberAgenda = () => {
     // Use current local date instead of UTC
     const [selectedDate, setSelectedDate] = useState(() => formatLocalDate(new Date()));
     const [selectedApt, setSelectedApt] = useState(null);
-    const [appointments, { loading }] = useAppointments();
+    const [appointments, { updateItem, loading }] = useAppointments();
     const [viewMode, setViewMode] = useState('DIARIO'); // DIARIO or MENSUAL
 
 
-    // Generate 7 days around selectedDate (3 before, 3 after)
-    const weekOfDays = [...Array(7)].map((_, i) => {
+    // Generate 14 days around selectedDate (3 before, 11 after) to ensure Saturday is visible
+    const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+    const weekOfDays = [...Array(14)].map((_, i) => {
         const d = parseLocalDate(selectedDate);
         d.setDate(d.getDate() - 3 + i);
         return {
             date: formatLocalDate(d),
-            dayName: d.toLocaleDateString('es-ES', { weekday: 'short' }),
+            dayName: dayNames[d.getDay()],
             dayNum: d.getDate()
         };
     });
@@ -67,6 +68,13 @@ const BarberAgenda = () => {
         } catch (err) {
             console.error("Match error:", err);
             return false;
+        }
+    };
+
+    const handleCancelApt = async (apt) => {
+        if (window.confirm('¿Estás seguro de cancelar esta cita?')) {
+            await updateItem(apt.id, { ...apt, status: 'Cancelada' });
+            setSelectedApt(null);
         }
     };
 
@@ -122,20 +130,31 @@ const BarberAgenda = () => {
                                 </div>
                             </div>
 
-                            <div className="pt-4 flex justify-between items-end border-t border-white/10">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Inversión Final</span>
-                                    <span className="text-3xl font-black tracking-tighter text-primary">${selectedApt.total || selectedApt.services?.reduce((acc, s) => acc + (s.price || 0), 0) || 0}</span>
+                            <div className="pt-4 flex flex-col gap-3 border-t border-white/10">
+                                <div className="flex justify-between items-end">
+                                    <div className="flex flex-col">
+                                        <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Inversión Final</span>
+                                        <span className="text-3xl font-black tracking-tighter text-primary">${selectedApt.total || selectedApt.services?.reduce((acc, s) => acc + (s.price || 0), 0) || 0}</span>
+                                    </div>
+                                    <a
+                                        href={`https://wa.me/${(selectedApt.customer?.phone || '').replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="h-12 px-6 rounded-xl bg-green-600 text-white flex items-center justify-center gap-2 hover:bg-green-700 transition-all font-bold text-[10px] uppercase tracking-widest"
+                                    >
+                                        <span className="material-symbols-outlined !text-xl">chat</span>
+                                        WhatsApp
+                                    </a>
                                 </div>
-                                <a
-                                    href={`https://wa.me/${(selectedApt.customer?.phone || '').replace(/\D/g, '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="h-12 px-6 rounded-xl bg-green-600 text-white flex items-center justify-center gap-2 hover:bg-green-700 transition-all font-bold text-[10px] uppercase tracking-widest"
-                                >
-                                    <span className="material-symbols-outlined !text-xl">chat</span>
-                                    WhatsApp
-                                </a>
+                                
+                                {selectedApt.status !== 'Cancelada' && (
+                                    <button
+                                        onClick={() => handleCancelApt(selectedApt)}
+                                        className="w-full h-11 border border-red-500/30 text-red-500 rounded-xl font-bold uppercase text-[9px] tracking-widest hover:bg-red-500/10 transition-all mt-2"
+                                    >
+                                        Cancelar Cita
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -192,7 +211,7 @@ const BarberAgenda = () => {
                             >Mensual</button>
                         </div>
                         <div className={`flex items-center gap-2 p-2 px-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-                             <span className="material-symbols-outlined !text-lg text-primary">calendar_month</span>
+                             <span className="material-symbols-outlined !text-lg text-primary" translate="no">calendar_month</span>
                              <input 
                                 type="date" 
                                 value={selectedDate} 

@@ -127,8 +127,11 @@ try {
             $newDate = $data['date'] ?? date('Y-m-d');
             
             // Calculate new appointment duration
+            $isStudio = false;
+            foreach ($services as $s) { if (($s['category'] ?? '') === 'Music Studio') { $isStudio = true; break; } }
+
             $newDuration = 60;
-            if (isset($data['studioInfo']['hours'])) {
+            if ($isStudio && isset($data['studioInfo']['hours'])) {
                 $newDuration = intval($data['studioInfo']['hours']) * 60;
             } else if (!empty($services)) {
                 $newDuration = 0;
@@ -161,7 +164,14 @@ try {
                 $extStudio = json_decode($ext['studio_info_json'], true);
                 $extServices = json_decode($ext['services_json'], true);
                 
-                if (isset($extStudio['hours'])) {
+                $isExtStudio = false;
+                if (!empty($extServices)) {
+                    foreach ($extServices as $es) { if (($es['category'] ?? '') === 'Music Studio') { $isExtStudio = true; break; } }
+                } else if (isset($extStudio['hours'])) {
+                    $isExtStudio = true;
+                }
+
+                if ($isExtStudio && isset($extStudio['hours'])) {
                     $extDuration = intval($extStudio['hours']) * 60;
                 } else if (!empty($extServices)) {
                     $extDuration = 0;

@@ -1,10 +1,9 @@
 @font-face {
-  font-family: 'Barlow';
-  src: url('/BARLOW/Barlow-Bold.otf') format('opentype');
     font-family: 'Barlow';
     src: url('/BARLOW/Barlow-Bold.otf') format('opentype');
     font-weight: bold;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -12,6 +11,7 @@
     src: url('/Manrope/Manrope/static/Manrope-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -19,6 +19,7 @@
     src: url('/Manrope/Manrope/static/Manrope-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
+    font-display: swap;
 }
 
 @tailwind base;
@@ -34,7 +35,7 @@
   body {
     @apply bg-[#050505] text-white font-body antialiased transition-colors duration-500;
     min-height: 100vh;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Manrope', 'Rubik', sans-serif;
   }
 
   /* Light Mode Base */
@@ -45,11 +46,11 @@
 
 @layer utilities {
   .font-sans {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Manrope', 'Rubik', sans-serif;
   }
 
   .font-display {
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Barlow', 'Space Grotesk', sans-serif;
   }
 
 

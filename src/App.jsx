@@ -228,10 +228,14 @@ const App = () => {
         ...finalBooking,
         location: finalBooking.branch?.name || 'BK MATRIZ',
         status: 'Confirmed',
-        total: finalBooking.services.reduce((acc, s) => {
-          const price = (s.branchPrices && finalBooking.branch?.id && s.branchPrices[finalBooking.branch.id]) || s.price;
-          return acc + parseFloat(price || 0);
-        }, 0) * (finalBooking.studioInfo?.hours || 1)
+        total: (() => {
+          const isStudio = finalBooking.services.some(s => s.category === 'Music Studio');
+          const base = finalBooking.services.reduce((acc, s) => {
+            const price = (s.branchPrices && finalBooking.branch?.id && s.branchPrices[finalBooking.branch.id]) || s.price;
+            return acc + parseFloat(price || 0);
+          }, 0);
+          return isStudio ? base * (finalBooking.studioInfo?.hours || 1) : base;
+        })()
       });
       addToast('Cita agendada correctamente. ¡Te esperamos!', 'success');
       nextStep('CONFIRMATION');

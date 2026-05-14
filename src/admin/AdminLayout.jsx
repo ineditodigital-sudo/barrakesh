@@ -197,7 +197,7 @@ const AdminLayout = () => {
                             onClick={toggleTheme}
                             className={`size-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-black/5 transition-colors ${!isDarkMode ? 'text-blue-600' : 'text-primary'}`}
                         >
-                            <span className="material-symbols-outlined !text-xl">{isDarkMode ? 'light_mode' : 'dark_mode'}</span>
+                            <span className="material-symbols-outlined !text-xl" translate="no">{isDarkMode ? 'light_mode' : 'dark_mode'}</span>
                         </button>
                         <div className="relative">
                             <button
@@ -207,7 +207,7 @@ const AdminLayout = () => {
                                 }}
                                 className={`size-9 rounded-xl flex items-center justify-center cursor-pointer hover:bg-black/5 transition-colors relative ${isDarkMode ? 'text-white/60' : 'text-black/80'}`}
                             >
-                                <span className="material-symbols-outlined !text-xl">notifications</span>
+                                <span className="material-symbols-outlined !text-xl" translate="no">notifications</span>
                                 {unreadCount > 0 && (
                                     <span className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full border-2 border-[#121212] animate-pulse"></span>
                                 )}

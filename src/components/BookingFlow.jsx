@@ -139,7 +139,9 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             if (['Cancelado', 'Cancelada'].includes(apt.status)) return false;
             
             // Match barber (or Studio if barberName is KASH and apt.barber is null)
-            const aptBarberName = apt.barber?.name || apt.barber || apt.barber_name || "KASH";
+            const isAptStudio = apt.services?.some(s => s.category === 'Music Studio') || !!apt.studioInfo?.hours;
+            const aptBarberName = apt.barber?.name || apt.barber_name || (isAptStudio ? "ESTUDIO" : "KASH");
+            
             if (aptBarberName !== barberName) return false;
 
             const [aptH, aptM] = apt.time.split(':').map(Number);
@@ -147,7 +149,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
             
             // Calculate duration
             let aptDuration = 60; // Default
-            if (apt.studioInfo?.hours) {
+            if (isAptStudio && apt.studioInfo?.hours) {
                 aptDuration = parseInt(apt.studioInfo.hours) * 60;
             } else if (Array.isArray(apt.services)) {
                 aptDuration = apt.services.reduce((acc, s) => acc + (parseInt(s.duration) || 0), 0);
@@ -198,7 +200,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                         className="flex items-center justify-center size-10 text-white transition-colors"
                         style={{ '--hover-color': themeColor }}
                     >
-                        <span className="material-symbols-outlined !text-3xl">arrow_back</span>
+                        <span className="material-symbols-outlined !text-3xl" translate="no">arrow_back</span>
                     </button>
                     <div className="flex flex-col items-center">
                         <h1 className="font-display font-bold text-2xl tracking-tighter uppercase text-white">ASEGURA EL FLOW</h1>
@@ -239,7 +241,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                             <div className="font-mono text-[8px] uppercase opacity-30">{selectedLocation.addr}</div>
                                         </div>
                                         <div className="size-10 border border-white/10 flex items-center justify-center rounded-full">
-                                            <span className="material-symbols-outlined !text-xl" style={{ color: themeColor }}>check_circle</span>
+                                            <span className="material-symbols-outlined !text-xl" style={{ color: themeColor }} translate="no">check_circle</span>
                                         </div>
                                     </div>
                                 </div>
@@ -340,7 +342,7 @@ const BookingFlow = ({ onComplete, onBack, booking }) => {
                                 <div className="size-20 overflow-hidden border border-white/20" style={{ borderColor: themeColor }}>
                                     {isStudioBooking ? (
                                         <div className="w-full h-full flex items-center justify-center bg-white/5">
-                                            <span className="material-symbols-outlined !text-4xl" style={{ color: themeColor }}>mic</span>
+                                            <span className="material-symbols-outlined !text-4xl" style={{ color: themeColor }} translate="no">mic</span>
                                         </div>
                                     ) : (
                                         <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-3xl italic">BK</div>
